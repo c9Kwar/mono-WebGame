@@ -2,7 +2,8 @@ const {harness,assert}=require('./harness.cjs');
 const rows=[];
 for(const spec of [
  {boss:0,attack:10,vitality:5,guard:3,speed:5,expect:'defeated'},
- {boss:0,attack:22,vitality:22,guard:18,speed:10,expect:'victory'},
+ {boss:0,attack:22,vitality:22,guard:18,speed:10,expect:'defeated'},
+ {boss:0,attack:22,vitality:28,guard:18,speed:10,expect:'victory'},
  {boss:1,attack:35,vitality:30,guard:30,speed:15,expect:'defeated'},
  {boss:1,attack:40,vitality:50,guard:40,speed:15,expect:'victory'},
  {boss:2,attack:46,vitality:45,guard:60,speed:20,expect:'defeated'},

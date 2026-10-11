@@ -981,7 +981,7 @@ function changeGearPage(delta){gearPage+=delta;equipmentSignature='';renderEquip
 function attackAtLevel(level){return Math.round((10*Math.pow(1.12,level)*(1+gearStat('weapon','damage'))*(1+collectionBonus('attack'))+potentialSum('atkFlat'))*(1+potentialSum('atkPct'))*(1+(s.potentialBuff.left>0?s.potentialBuff.power:0))*(1+specialEffect('attack'))*passiveAttackMultiplier())}
 function speedAtLevel(level){return Math.min(3,(1+Math.min(30,level)*.03+potentialSum('speedFlat'))*(1+passiveValue('haste',.08,.02))*(1+potentialSum('speedPct'))*(1+specialEffect('speed')))}
 function hpAtLevel(level){return Math.round((140*Math.pow(1.08,level)+gearStat('chest','hp')+gearStat('legs','hp')+potentialSum('hpFlat')+potentialSum('trinket'))*(1+potentialSum('hpPct'))*(1+trailBonus())*(1+specialEffect('hp')))}
-function defenseAtLevel(level){return Math.round((8+level*2+gearStat('chest','armor')+gearStat('legs','armor')+potentialSum('defFlat'))*(1+potentialSum('defPct'))*(1+.10*passivePower('bark')))}
+function defenseAtLevel(level){return Math.round((8+level+gearStat('chest','armor')+gearStat('legs','armor')+potentialSum('defFlat'))*(1+potentialSum('defPct'))*(1+.10*passivePower('bark')))}
 function moveAtLevel(level){return (1+Math.min(30,level)*.015+potentialSum('moveFlat'))*(1+gearStat('boots','movement'))*(1+collectionBonus('movement'))*(1+potentialSum('movePct'))}
 $('potential-close').onclick=()=>{potentialGearId=null;$('potential-dialog').close()};
 $('potential-dialog').addEventListener('cancel',()=>{potentialGearId=null});
