@@ -8,3 +8,6 @@ r(`craftRarity='legendary';setCraftFilter('all')`);assert.equal(h.nodes.get('rec
 r(`setCraftFilter('weapon')`);assert.equal(h.nodes.get('recipe-card-shellcoat').hidden,true);assert.equal(h.nodes.get('recipe-card-groveblade').hidden,false);
 r(`openQuickBoss();selectQuickBoss(4)`);assert.equal(h.nodes.get('quick-boss-list').children.length,5);assert(h.nodes.get('quick-boss-stats').textContent.includes('620,000'));assert(h.nodes.get('quick-boss-survival').textContent.includes('강타'));assert.equal(h.nodes.get('quick-boss-enter').disabled,false);
 const counts=JSON.parse(r(`JSON.stringify({items:Object.keys(ITEMS).length,recipes:Object.keys(RECIPES).length,mobs:Object.keys(MOBS).length,bosses:BOSSES.length,sets:COLLECTION_SETS.length})`));console.log('PASS all item/monster art paths, unique DOM IDs, compact inventory filter, rarity + slot recipe filters, 5-boss detail modal',counts);
+
+assert(html.indexOf('id="save-import-dialog"')<html.indexOf('<script src="storage.js'));
+assert(html.indexOf('<script src="storage.js')<html.indexOf('<script src="game.js'));

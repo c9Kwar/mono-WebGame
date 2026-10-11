@@ -1,0 +1,36 @@
+name: Mosslight quality
+on:
+  push:
+    branches: [main, 'improve/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - run: npm test
+      - name: Prepare browser QA
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -r tests/requirements-browser.txt
+          .venv/bin/python -m playwright install --with-deps chromium
+      - name: Exercise real browser and save lifecycle
+        shell: bash
+        run: |
+          python3 -m http.server 8082 --bind 127.0.0.1 --directory dist > /tmp/mosslight-server.log 2>&1 &
+          game_server_pid=$!
+          trap 'kill "$game_server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..50}; do
+            if curl --fail --silent http://127.0.0.1:8082/ > /dev/null; then break; fi
+            sleep 0.1
+          done
+          curl --fail --silent http://127.0.0.1:8082/ > /dev/null
+          .venv/bin/python tests/browser-smoke.py
