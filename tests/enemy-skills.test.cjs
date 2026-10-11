@@ -83,7 +83,7 @@ test('hero contact uses no gameplay RNG, coalesces procs, and completes before t
  assert.ok(h.run('pendingTimers.get(strikeTimers.contact).ms<=heroStrikeDuration*.66+1'));
  assert.equal(h.nodes.get('impact-layer').children.length,0);
  h.run('pendingTimers.get(strikeTimers.contact).fn()');
- assert.match(h.nodes.get('impact-layer').children[0].textContent,/치명타 150/);
+ assert.match(h.nodes.get('impact-layer').children[0].children.at(-1).children.map(node=>node.textContent).join(' '),/치명타 150/);
  h.run('s.speed=0');assert.equal(h.run('JSON.stringify(s)'),before);
 });
 
@@ -101,9 +101,9 @@ test('final hit retains its cosmetic contact through victory but cancels across 
 test('impact-number timeouts are bounded and fully cancelled with their particles',()=>{
  const h=ready();timers(h);
  h.run('Math.random=()=>{throw Error("cosmetic RNG")};for(let i=0;i<100;i++)paintImpact(i,false,true)');
- assert.equal(h.nodes.get('impact-layer').children.length,10);
- assert.equal(h.run('impactTimers.size'),10);assert.equal(h.run('combatFxTimers.size'),5);
- assert.equal(h.run('pendingTimers.size'),15);
+ assert.equal(h.nodes.get('impact-layer').children.length,3);
+ assert.equal(h.run('impactTimers.size'),3);assert.equal(h.run('combatFxTimers.size'),0);
+ assert.equal(h.run('pendingTimers.size'),3);
  h.run('clearCombatEffects()');
  assert.equal(h.run('pendingTimers.size'),0);assert.equal(h.run('impactTimers.size'),0);assert.equal(h.nodes.get('impact-layer').children.length,0);
 });
@@ -131,7 +131,7 @@ test('critical upgrade keeps shoulder, wrist, weight and slash on the same conta
 test('critical enemy reactions add one bounded cosmetic timer and cancel with the encounter',()=>{
  const h=ready();timers(h);const before=h.run('JSON.stringify([s,hp,attackClock,enemyClock])');
  h.run('Math.random=()=>{throw Error("cosmetic RNG")};for(let i=0;i<100;i++)paintImpact(20,true)');
- assert.equal(h.run('pendingTimers.size'),16); // ten numbers, five bursts, one reaction
+ assert.equal(h.run('pendingTimers.size'),4); // three local contact groups, one reaction
  assert.equal(h.run('JSON.stringify([s,hp,attackClock,enemyClock])'),before);
  h.run('encounterSerial++;renderEncounter()');assert.equal(h.run('pendingTimers.size'),0);
 });

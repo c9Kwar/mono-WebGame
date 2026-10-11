@@ -1,0 +1,38 @@
+/* Confirmed contact: small ivory brush cuts, brass accents and verdigris guards.
+   The original articulated swing and species tells retain their own timelines. */
+#impact-layer{pointer-events:none;z-index:7;contain:layout style}
+.contact-feedback{--contact-ink:#e4d5b4;position:absolute;width:0;height:0;pointer-events:none}
+.feedback-mark{position:absolute;width:46px;height:54px;left:-23px;top:-27px;filter:drop-shadow(1px 1px 0 #203c37);animation:folio-contact var(--contact-duration) ease-out both}
+.feedback-mark::before,.feedback-mark::after{content:"";position:absolute;inset:0;background:var(--contact-ink);clip-path:polygon(12% 100%,0 92%,79% 9%,100% 0,88% 22%,34% 88%)}
+.feedback-mark::after{display:none}
+.feedback-critical{--contact-ink:#d8b67c}
+.feedback-critical .feedback-mark{width:56px;height:64px;left:-28px;top:-32px}
+.feedback-critical .feedback-mark::after{display:block;transform:rotate(78deg) scale(.62);background:#e4d5b4}
+.feedback-hurt,.feedback-heavy{--contact-ink:#d5a393}
+.feedback-hurt .feedback-mark::before,.feedback-heavy .feedback-mark::before{clip-path:polygon(0 20%,9% 8%,50% 46%,79% 20%,92% 35%,51% 70%,32% 51%,32% 93%,16% 78%,16% 37%)}
+.feedback-heavy .feedback-mark{width:54px;height:58px;left:-27px;top:-29px}
+.feedback-guard{--contact-ink:#b3c8ab}
+.feedback-guard .feedback-mark{width:44px;height:56px;left:-22px;top:-28px;animation-name:folio-guard}
+.feedback-guard .feedback-mark::before{clip-path:polygon(50% 0,96% 18%,90% 65%,72% 87%,50% 100%,28% 87%,10% 65%,4% 18%,50% 0,50% 10%,14% 24%,20% 61%,36% 79%,50% 89%,64% 79%,80% 61%,86% 24%,50% 10%)}
+.feedback-guard .feedback-mark::after{display:block;inset:16px 13px;clip-path:polygon(6% 40%,34% 59%,84% 0,100% 18%,39% 100%,0 58%);background:#e4d5b4}
+.feedback-dodge{--contact-ink:#c1cbc1}
+.feedback-dodge .feedback-mark{animation-name:folio-slip}
+.feedback-dodge .feedback-mark::before{inset:10px 0 13px;background:none;clip-path:none;border-top:2px dashed var(--contact-ink);border-bottom:2px dashed var(--contact-ink);transform:skewY(-14deg)}
+.feedback-fleck{position:absolute;width:8px;height:3px;left:-4px;top:-2px;background:var(--contact-ink);border-radius:70% 10% 60% 20%;animation:folio-fleck var(--contact-duration) cubic-bezier(.15,.65,.25,1) both}
+.contact-feedback .impact-number{display:flex;align-items:center;gap:5px;white-space:nowrap;line-height:1.15;color:var(--contact-ink);font-variant-numeric:tabular-nums;text-shadow:0 2px #203c37,1px 0 #203c37,-1px 0 #203c37;animation:folio-number var(--number-duration) linear both}
+.contact-feedback .impact-number small{font:700 10px/1.2 sans-serif;letter-spacing:.4px;background:#20352eeb;border:1px solid #8b977b99;padding:3px 4px;border-radius:1px}
+.contact-feedback .impact-number b{font-size:26px;font-weight:800}
+.feedback-critical .impact-number small{border-color:#b78c50}
+.feedback-critical .impact-number b{font-size:30px}
+.feedback-guard .impact-number small{border-color:#a1b394}
+.feedback-dodge .impact-number small{border-style:dashed}
+.feedback-quiet .feedback-mark{width:26px;height:32px;left:-13px;top:-16px;animation:none;opacity:.7;filter:none}
+.feedback-quiet .impact-number{animation:folio-number-still var(--number-duration) linear both}
+@keyframes folio-contact{0%{opacity:.95;transform:scale(.72)}16%{opacity:1;transform:scale(1)}42%{opacity:.9;transform:scale(1.03)}100%{opacity:0;transform:scale(.96)}}
+@keyframes folio-guard{0%{opacity:1;transform:scaleX(.85)}20%,60%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1)}}
+@keyframes folio-slip{0%{opacity:.8;transform:translateX(5px)}65%{opacity:.6}100%{opacity:0;transform:translateX(-10px)}}
+@keyframes folio-fleck{0%,12%{opacity:0;transform:translate(0,0) scale(.7)}25%{opacity:.8}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.45)}}
+@keyframes folio-number{0%{opacity:1;transform:translate(-50%,0)}20%{opacity:1;transform:translate(-50%,-6px)}72%{opacity:1}100%{opacity:0;transform:translate(-50%,-16px)}}
+@keyframes folio-number-still{0%,80%{opacity:1;transform:translateX(-50%)}100%{opacity:0;transform:translateX(-50%)}}
+@media(max-width:560px){.contact-feedback .impact-number{gap:3px}.contact-feedback .impact-number b{font-size:22px}.contact-feedback .impact-number small{font-size:9px;letter-spacing:0;padding:2px 3px}.feedback-critical .impact-number b{font-size:25px}}
+@media(prefers-reduced-motion:reduce){.contact-feedback .feedback-mark{animation:none!important;opacity:.7;filter:none}.contact-feedback .impact-number{animation:none!important;opacity:1;transform:translateX(-50%)}.feedback-fleck{display:none}}

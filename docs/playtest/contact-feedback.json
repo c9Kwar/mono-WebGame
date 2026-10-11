@@ -1,0 +1,217 @@
+{
+  "baseline_commit": "10280c4e1138d79c46e2ddb9820b2e9613d6a584",
+  "before": {
+    "label": "pr1-before",
+    "url": "http://127.0.0.1:8002/",
+    "method": "Chromium headless, DPR 1, 6s, 18 outgoing (4 critical), 5 received (2 blocked); live 100ms simulation/render; attack clocks held away from auto hits; screenshots outside timing. CDP durations are whole page, not isolated VFX.",
+    "results": [
+      {
+        "elapsed": 6005.600000000046,
+        "maxNodes": 1530,
+        "maxImpactNodes": 5,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "desktop",
+        "run": 1,
+        "frames": 353,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.8,
+        "raf_max_ms": 83.3,
+        "frames_over_33_ms": 1,
+        "errors": [],
+        "ScriptDuration_ms": 93.13,
+        "LayoutDuration_ms": 112.99,
+        "RecalcStyleDuration_ms": 191.74,
+        "TaskDuration_ms": 1038.48
+      },
+      {
+        "elapsed": 6008.199999999907,
+        "maxNodes": 1531,
+        "maxImpactNodes": 5,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "desktop",
+        "run": 2,
+        "frames": 342,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.8,
+        "raf_max_ms": 200.1,
+        "frames_over_33_ms": 4,
+        "errors": [],
+        "ScriptDuration_ms": 97.73,
+        "LayoutDuration_ms": 122.89,
+        "RecalcStyleDuration_ms": 194.43,
+        "TaskDuration_ms": 1114.98
+      },
+      {
+        "elapsed": 6001.9,
+        "maxNodes": 1530,
+        "maxImpactNodes": 5,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "mobile",
+        "run": 1,
+        "frames": 360,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.8,
+        "raf_max_ms": 16.8,
+        "frames_over_33_ms": 0,
+        "errors": [],
+        "ScriptDuration_ms": 98.42,
+        "LayoutDuration_ms": 100.17,
+        "RecalcStyleDuration_ms": 192.12,
+        "TaskDuration_ms": 948.34
+      },
+      {
+        "elapsed": 6008.8,
+        "maxNodes": 1530,
+        "maxImpactNodes": 5,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "mobile",
+        "run": 2,
+        "frames": 360,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.8,
+        "raf_max_ms": 16.8,
+        "frames_over_33_ms": 0,
+        "errors": [],
+        "ScriptDuration_ms": 104.19,
+        "LayoutDuration_ms": 101.64,
+        "RecalcStyleDuration_ms": 183.32,
+        "TaskDuration_ms": 870.09
+      }
+    ]
+  },
+  "after": {
+    "label": "pr1-final-verified",
+    "url": "http://127.0.0.1:8000/",
+    "method": "Chromium headless, DPR 1, 6s, 18 outgoing (4 critical), 5 received (2 blocked); live 100ms simulation/render; attack clocks held away from auto hits; screenshots outside timing. CDP durations are whole page, not isolated VFX.",
+    "results": [
+      {
+        "elapsed": 6015.700000000001,
+        "maxNodes": 1523,
+        "maxImpactNodes": 20,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "desktop",
+        "run": 1,
+        "frames": 360,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.8,
+        "raf_max_ms": 16.8,
+        "frames_over_33_ms": 0,
+        "errors": [],
+        "ScriptDuration_ms": 119.56,
+        "LayoutDuration_ms": 111.15,
+        "RecalcStyleDuration_ms": 142.48,
+        "TaskDuration_ms": 867.16
+      },
+      {
+        "elapsed": 6009.299999999814,
+        "maxNodes": 1523,
+        "maxImpactNodes": 20,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "desktop",
+        "run": 2,
+        "frames": 360,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.7,
+        "raf_max_ms": 16.8,
+        "frames_over_33_ms": 0,
+        "errors": [],
+        "ScriptDuration_ms": 95.84,
+        "LayoutDuration_ms": 121.4,
+        "RecalcStyleDuration_ms": 140.17,
+        "TaskDuration_ms": 815.0
+      },
+      {
+        "elapsed": 6001.7999999999065,
+        "maxNodes": 1521,
+        "maxImpactNodes": 18,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "mobile",
+        "run": 1,
+        "frames": 360,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.8,
+        "raf_max_ms": 16.8,
+        "frames_over_33_ms": 0,
+        "errors": [],
+        "ScriptDuration_ms": 100.68,
+        "LayoutDuration_ms": 97.45,
+        "RecalcStyleDuration_ms": 139.06,
+        "TaskDuration_ms": 800.59
+      },
+      {
+        "elapsed": 6008.2999999999065,
+        "maxNodes": 1521,
+        "maxImpactNodes": 18,
+        "hits": {
+          "outgoing": 18,
+          "critical": 4,
+          "received": 5,
+          "blocked": 2
+        },
+        "heroHp": 307967,
+        "phase": "combat",
+        "device": "mobile",
+        "run": 2,
+        "frames": 360,
+        "raf_p50_ms": 16.7,
+        "raf_p95_ms": 16.8,
+        "raf_max_ms": 16.8,
+        "frames_over_33_ms": 0,
+        "errors": [],
+        "ScriptDuration_ms": 92.26,
+        "LayoutDuration_ms": 102.21,
+        "RecalcStyleDuration_ms": 130.5,
+        "TaskDuration_ms": 744.0
+      }
+    ]
+  }
+}

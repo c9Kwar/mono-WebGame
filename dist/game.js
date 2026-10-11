@@ -133,12 +133,20 @@ function renderBattleScene(){
 // Combat visuals are deterministic presentation; rewards are credited only in damage().
 let encounterSerial=0,cinemaSignature='',rewardPainted='',rewardReview=false;
 let combatFxSerial=0,impactSerial=0,heroStrikeDuration=550,heroContactAt=0,heroStrikeAnimation=null,pendingHeroContact=null;const strikeTimers={},combatFxTimers=new Map(),impactTimers=new Map();
-function quietCombatEffects(){return s.effectsLite||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||document.hidden}
+const CONTACT_FEEDBACK={
+ duration:{slash:260,critical:340,hurt:280,heavy:340,guard:360,dodge:300},number:820,
+ labels:{slash:'명중',critical:'✦ 치명타',hurt:'피격',heavy:'강타',guard:'⬡ 방어',dodge:'↷ 회피'},
+ priority:{slash:1,hurt:1,heavy:2,critical:2,guard:3,dodge:3},
+ flecks:[[22,-12,25],[28,10,-30],[36,-4,48],[18,20,-15]]
+};
+function quietCombatEffects(){return s.effectsLite||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||document.hidden||$('view-battle').hidden}
+let contactQuietMode=null;
+function syncContactFeedbackMode(){const quiet=!!quietCombatEffects();if(quiet!==contactQuietMode){clearCombatEffects();contactQuietMode=quiet}}
 function clearCombatEffects(keepHeroStrike=false){
  for(const timer of combatFxTimers.values())clearTimeout(timer);combatFxTimers.clear();$('combat-fx').replaceChildren();
  for(const key of ['hero','contact','echo','enemy','skill','victory','critical']){if(keepHeroStrike&&(key==='hero'||key==='contact'||key==='echo'))continue;clearTimeout(strikeTimers[key]);strikeTimers[key]=null}
  if(!keepHeroStrike){pendingHeroContact=null;heroContactAt=0;heroStrikeAnimation=null;$('arena').classList.remove('hero-striking','hero-critical')}
- for(const timer of impactTimers.values())clearTimeout(timer);impactTimers.clear();$('impact-layer').replaceChildren();$('arena').classList.remove('enemy-striking','heavy-impact','skill-charging','impact-flash','enemy-critical-hit');$('arena').setAttribute('data-cast-skill','');
+ if(!keepHeroStrike){for(const timer of impactTimers.values())clearTimeout(timer);impactTimers.clear();$('impact-layer').replaceChildren()}$('arena').classList.remove('enemy-striking','heavy-impact','skill-charging','impact-flash','enemy-critical-hit');$('arena').setAttribute('data-cast-skill','');
 }
 function appendCombatBurst(burst,duration=760){
  const layer=$('combat-fx');layer.append(burst);
@@ -171,7 +179,7 @@ function emitCombatEffect(kind){
 }
 function encounterKind(){return boss?(bossTier==='mystic'?'mystic':bossTier==='elite'?'elite-boss':'boss'):currentMob==='treasure'?'treasure':MOBS[currentMob]?.elite?'elite':'normal'}
 function sceneImage(){return 'art/mosslight-clearing.png'}
-function renderEncounter(){const arena=$('arena'),kind=encounterKind(),victory=['victory','results'].includes(phase);const signature=[kind,bossId,currentMob,encounterSerial,phase].join('|');arena.classList.toggle('hero-defeated',phase==='defeated');arena.classList.toggle('scene-paused',s.paused||document.hidden);arena.classList.toggle('scene-victory',victory);arena.classList.toggle('cinema-lite',s.effectsLite);$('fx-toggle').setAttribute('aria-pressed',String(!s.effectsLite));$('fx-toggle').textContent=s.effectsLite?'연출 간소화':'연출 풍부하게';if(quietCombatEffects()||s.paused)clearCombatEffects();if(signature!==cinemaSignature){const finishingStrike=['loot','victory'].includes(phase)&&cinemaSignature===[kind,bossId,currentMob,encounterSerial,'combat'].join('|');clearCombatEffects(finishingStrike);cinemaSignature=signature;arena.setAttribute('data-encounter',kind);$('encounter-rank').textContent=({normal:'FOREST ENCOUNTER',elite:'ELITE HUNT',boss:'BOSS EXPEDITION','elite-boss':'ELITE BOSS',mystic:'MYSTIC BOSS',treasure:'GOLDEN ENCOUNTER'})[kind];$('encounter-trait').textContent=({normal:'숲의 작은 만남',elite:'강인한 개체 · 전용 수집품',boss:'숲의 수호자 · 보스 전리품','elite-boss':'보스 HP ×8 · 공격 ×3 · 전리품 ×3',mystic:'보스 HP ×60 · 공격 ×12 · 전리품 ×12',treasure:'황금 보물여우 · 확정 희귀 재료'})[kind];$('encounter-intro').className='encounter-intro';if(kind!=='normal'&&!victory&&phase==='combat'){void $('encounter-intro').offsetWidth;$('encounter-intro').classList.add('reveal')}$('intro-rank').textContent=({elite:'ELITE',boss:'GUARDIAN','elite-boss':'ELITE GUARDIAN',mystic:'MYSTIC AWAKENING',treasure:'A GOLDEN MIRACLE'})[kind]||'';$('intro-name').textContent=boss?BOSS_TIERS[bossTier].name+' · '+BOSSES[bossId].name:MOBS[currentMob].name;const particles=$('scene-particles');particles.replaceChildren();for(let i=0;i<18;i++){const p=document.createElement('i');p.className='scene-mote';p.style.cssText='--i:'+i+';left:'+(8+(i*37)%85)+'%;top:'+(20+(i*23)%64)+'%;animation-delay:-'+(i*.43)+'s';particles.append(p)}if(kind==='treasure'){if(phase==='combat')emitEncounterEffect(FOX_SKILL,'arrive');else if(phase==='victory')queueFoxVictory()}}
+function renderEncounter(){syncContactFeedbackMode();const arena=$('arena'),kind=encounterKind(),victory=['victory','results'].includes(phase);const signature=[kind,bossId,currentMob,encounterSerial,phase].join('|');arena.classList.toggle('hero-defeated',phase==='defeated');arena.classList.toggle('scene-paused',s.paused||document.hidden);arena.classList.toggle('scene-victory',victory);arena.classList.toggle('cinema-lite',s.effectsLite);$('fx-toggle').setAttribute('aria-pressed',String(!s.effectsLite));$('fx-toggle').textContent=s.effectsLite?'연출 간소화':'연출 풍부하게';if(s.paused||document.hidden||$('view-battle').hidden)clearCombatEffects();if(signature!==cinemaSignature){const finishingStrike=['loot','victory'].includes(phase)&&cinemaSignature===[kind,bossId,currentMob,encounterSerial,'combat'].join('|');clearCombatEffects(finishingStrike);cinemaSignature=signature;arena.setAttribute('data-encounter',kind);$('encounter-rank').textContent=({normal:'FOREST ENCOUNTER',elite:'ELITE HUNT',boss:'BOSS EXPEDITION','elite-boss':'ELITE BOSS',mystic:'MYSTIC BOSS',treasure:'GOLDEN ENCOUNTER'})[kind];$('encounter-trait').textContent=({normal:'숲의 작은 만남',elite:'강인한 개체 · 전용 수집품',boss:'숲의 수호자 · 보스 전리품','elite-boss':'보스 HP ×8 · 공격 ×3 · 전리품 ×3',mystic:'보스 HP ×60 · 공격 ×12 · 전리품 ×12',treasure:'황금 보물여우 · 확정 희귀 재료'})[kind];$('encounter-intro').className='encounter-intro';if(kind!=='normal'&&!victory&&phase==='combat'){void $('encounter-intro').offsetWidth;$('encounter-intro').classList.add('reveal')}$('intro-rank').textContent=({elite:'ELITE',boss:'GUARDIAN','elite-boss':'ELITE GUARDIAN',mystic:'MYSTIC AWAKENING',treasure:'A GOLDEN MIRACLE'})[kind]||'';$('intro-name').textContent=boss?BOSS_TIERS[bossTier].name+' · '+BOSSES[bossId].name:MOBS[currentMob].name;const particles=$('scene-particles');particles.replaceChildren();for(let i=0;i<18;i++){const p=document.createElement('i');p.className='scene-mote';p.style.cssText='--i:'+i+';left:'+(8+(i*37)%85)+'%;top:'+(20+(i*23)%64)+'%;animation-delay:-'+(i*.43)+'s';particles.append(p)}if(kind==='treasure'){if(phase==='combat')emitEncounterEffect(FOX_SKILL,'arrive');else if(phase==='victory')queueFoxVictory()}}
 $('enemy-intent').hidden=phase!=='combat';$('enemy-intent-text').textContent=phase==='combat'?(enemySkill()?.name||'다음 공격')+' '+Math.max(0,enemyInterval()-enemyClock).toFixed(1)+'초':'';$('enemy-intent-fill').style.width=Math.min(100,enemyClock/enemyInterval()*100)+'%';$('arena').classList.toggle('attack-approaching',phase==='combat'&&enemyInterval()-enemyClock<.45);$('reward-reopen').hidden=!s.battleReward;if(victory){$('battle-status').textContent='✦ 승리 · 전리품 확인';$('reward-label').textContent='보상이 가방에 저장되었습니다.'}
 }
 // CSS animations may start a frame after synchronous reward rendering. The live
@@ -471,7 +479,7 @@ function defeatHero(){
  log('전투 불능 · 8초 후 회복'+(wasBoss?' / 원정 종료':special?' / 특수 조우 · 스테이지와 처치 진행 보존':' / 한 단계 후퇴'));
  notify(special?'강적에게 패배했어요. 전리품은 없지만 스테이지와 처치 진행은 유지됩니다.':s.autoSafety&&(s.safetyDefeats>=3||s.fieldDefeats.length>=3)?'반복 사망 보호 · 장비를 준비하고 이정표에서 돌파를 재개하세요.':'쓰러졌어요. 방어구와 생존 능력을 강화해 보세요.');save();renderLoot();
 }
-function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const shieldActive=s.passiveBuffs.guard>0,pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';animateStrike(true,false,heavy);castEnemySkill(skill,false);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}if(s.passives.guard&&rng()<.04){s.passiveBuffs.guard=5;passiveNotice('숲의 방벽 · 5초간 받는 피해 −30%')}const blocked=s.passiveBuffs.guard>0,hit=Math.max(1,Math.round(pendingDamage*(blocked&&!shieldActive?.7:1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
+function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const shieldActive=s.passiveBuffs.guard>0,pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');paintContactFeedback('dodge',0);animateStrike(true,false,heavy);castEnemySkill(skill,false);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}if(s.passives.guard&&rng()<.04){s.passiveBuffs.guard=5;passiveNotice('숲의 방벽 · 5초간 받는 피해 −30%')}const blocked=s.passiveBuffs.guard>0,hit=Math.max(1,Math.round(pendingDamage*(blocked&&!shieldActive?.7:1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}if(s.heroHp<=0)defeatHero();render();return true}
 const movementSpeed=()=>moveAtLevel(s.move);
 const regionPenalty=()=>[1,1.2,1.45,1.8][regionIndex()];
 const travelDistance=()=> (3+Math.min(12,(s.stage-1)*.18))*regionPenalty();
@@ -758,7 +766,7 @@ const context=document.modelContext;if(context?.registerTool){const lifecycle=ne
 
 const VIEW_NAMES={boss:['EXPEDITION BOARD','보스 원정'],shop:['PASSIVE SHOP','작은 숲의 패시브 상점'],battle:['CHAPTER 01 / THE LITTLE FOREST','오늘도, 숲으로.'],equipment:['EQUIPMENT','모험을 함께할 장비'],inventory:['BACKPACK','차곡차곡 모은 보물'],codex:['FIELD GUIDE','숲속 친구들 도감'],journey:['ADVENTURE NOTES','우리의 모험 기록'],collection:['COLLECTION & RECORDS','모을수록, 더 멀리']};
 let activeView='battle';
-function showView(key,focus=false){if(!Object.hasOwn(VIEW_NAMES,key))return false;activeView=key;hideCraftTip();hideGearTip();hideAchievementTip();for(const id of Object.keys(VIEW_NAMES)){const chosen=id===key;$('view-'+id).hidden=!chosen;$('tab-'+id).setAttribute('aria-selected',String(chosen));$('tab-'+id).tabIndex=chosen?0:-1;}[$('view-eyebrow').textContent,$('view-title').textContent]=VIEW_NAMES[key];if(key==='boss')renderBossList();if(key==='shop')renderPassives();if(key==='equipment')renderEquipment();if(key==='inventory')renderLoot();if(key==='codex')renderCodex();if(key==='collection')renderCollection();if(focus)$('tab-'+key).focus();window.scrollTo({top:0,behavior:'instant'});return true}
+function showView(key,focus=false){if(!Object.hasOwn(VIEW_NAMES,key))return false;activeView=key;if(key!=='battle')clearCombatEffects();hideCraftTip();hideGearTip();hideAchievementTip();for(const id of Object.keys(VIEW_NAMES)){const chosen=id===key;$('view-'+id).hidden=!chosen;$('tab-'+id).setAttribute('aria-selected',String(chosen));$('tab-'+id).tabIndex=chosen?0:-1;}[$('view-eyebrow').textContent,$('view-title').textContent]=VIEW_NAMES[key];if(key==='boss')renderBossList();if(key==='shop')renderPassives();if(key==='equipment')renderEquipment();if(key==='inventory')renderLoot();if(key==='codex')renderCodex();if(key==='collection')renderCollection();if(focus)$('tab-'+key).focus();window.scrollTo({top:0,behavior:'instant'});return true}
 const viewKeys=['battle','boss','equipment','inventory','shop','collection','codex','journey'];for(const key of viewKeys){$('tab-'+key).onclick=()=>showView(key);$('tab-'+key).onkeydown=e=>{let i=viewKeys.indexOf(key);if(e.key==='ArrowRight'||e.key==='ArrowDown')i=(i+1)%viewKeys.length;else if(e.key==='ArrowLeft'||e.key==='ArrowUp')i=(i+viewKeys.length-1)%viewKeys.length;else if(e.key==='Home')i=0;else if(e.key==='End')i=viewKeys.length-1;else return;e.preventDefault();showView(viewKeys[i],true)}}
 
 $('open-collection').onclick=()=>showView('collection');
@@ -834,20 +842,66 @@ function renderExpedition(){
  $('trail-collection').replaceChildren();TRAILS.forEach((r,index)=>{const card=document.createElement('div');card.className='trail-route'+(index===t.route?' current':'');const title=document.createElement('strong');title.textContent=r.icon+' '+r.name;const line=document.createElement('p');line.textContent=r.relics.map((name,i)=>t.relics.includes(index*3+i)?'◆ '+name:'◇ ???').join(' · ');card.append(title,line);$('trail-collection').append(card)});
 }
 
+// Local paint follows a confirmed result; the articulated sword owns its existing
+// contact pose. No RNG, damage, cooldown or reward is owned by this presentation.
+function contactFeedbackPoint(received=false){
+ const arena=$('arena'),layer=$('impact-layer').getBoundingClientRect(),enemy=$('painted-enemy').getBoundingClientRect();
+ const width=layer.width||layer.right-layer.left||600,height=layer.height||400;
+ let x=enemy.left-layer.left+(enemy.width||enemy.right-enemy.left)*.48,y=enemy.top-layer.top+enemy.height*.55;
+ if(received){
+  const hero=arena.querySelector('.hero-position').getBoundingClientRect(),matrix=arena.querySelector('.hero-rig')?.getScreenCTM?.();
+  x=hero.left-layer.left+(hero.width||hero.right-hero.left)*.42;y=hero.top-layer.top+hero.height*.62;
+  // Same original-art torso point as the species attack paths, including SVG meet alignment.
+  if(matrix){x=matrix.a*635+matrix.c*610+matrix.e-layer.left;y=matrix.b*635+matrix.d*610+matrix.f-layer.top}
+ }
+ return {x,y,width,height};
+}
+function paintContactFeedback(kind,amount){
+ if(s.paused||document.hidden||$('view-battle').hidden)return false;
+ syncContactFeedbackMode();
+ const received=['hurt','heavy','guard','dodge'].includes(kind),side=received?'hero':'enemy';
+ const quiet=quietCombatEffects(),compact=window.innerWidth<=560,cap=quiet?1:compact?2:3;
+ const point=contactFeedbackPoint(received),now=Date.now();
+ const same=[...impactTimers.keys()].filter(node=>node.contactFeedback?.side===side);
+ const strongest=cap>1&&same.find(node=>node.contactFeedback.parts.length&&now-node.contactFeedback.started<120&&CONTACT_FEEDBACK.priority[node.contactFeedback.kind]>CONTACT_FEEDBACK.priority[kind]);
+ // New labels may stack, but only one contact silhouette survives per target.
+ if(!strongest)for(const old of same){for(const part of old.contactFeedback.parts)part.remove();old.contactFeedback.parts=[]}
+ while(same.length>=cap){const [old]=same.splice(Math.max(0,same.findIndex(node=>node!==strongest)),1);clearTimeout(impactTimers.get(old));impactTimers.delete(old);old.remove()}
+ const layer=$('impact-layer'),group=document.createElement('span'),number=document.createElement('span');
+ group.className='contact-feedback feedback-'+kind+(quiet?' feedback-quiet':'');
+ group.setAttribute('data-side',side);group.style.cssText='left:'+point.x+'px;top:'+point.y+'px;--contact-duration:'+CONTACT_FEEDBACK.duration[kind]+'ms';
+ const parts=[];
+ if(!strongest){
+  const mark=document.createElement('i');mark.className='feedback-mark';mark.setAttribute('aria-hidden','true');group.append(mark);parts.push(mark);
+  const count=quiet?0:kind==='dodge'?0:compact?2:kind==='critical'?4:2;
+  for(let i=0;i<count;i++){
+   const part=document.createElement('i'),[dx,dy,angle]=CONTACT_FEEDBACK.flecks[i];part.className='feedback-fleck';part.setAttribute('aria-hidden','true');
+   part.style.cssText='--dx:'+(received?-dx:dx)+'px;--dy:'+dy+'px;--turn:'+angle+'deg';group.append(part);parts.push(part);
+  }
+ }
+ const lane=quiet?0:impactSerial++%cap;
+ // Labels stay inside the scene and below the HUD even on a narrow touch viewport.
+ const margin=Math.min(point.width/2-8,Math.max(64,(fmt(amount).length*16+60)/2));
+ const labelX=Math.max(margin,Math.min(point.width-margin,point.x)),labelY=Math.max(point.height*.50,Math.min(point.height*.72,point.y-44-lane*25));
+ number.className='impact-number'+(kind==='critical'?' critical-hit':'')+(received?' received-hit':'');
+ number.style.cssText='left:'+(labelX-point.x)+'px;top:'+(labelY-point.y)+'px;--number-duration:'+CONTACT_FEEDBACK.number+'ms';
+ const tag=document.createElement('small'),value=document.createElement('b');
+ tag.textContent=CONTACT_FEEDBACK.labels[kind];value.textContent=kind==='dodge'?'0':(received?'−':'')+fmt(amount);number.append(tag,value);group.append(number);
+ group.contactFeedback={side,kind,started:now,parts};layer.append(group);
+ impactTimers.set(group,setTimeout(()=>{group.remove();impactTimers.delete(group)},CONTACT_FEEDBACK.number));
+ return true;
+}
 function paintImpact(amount,critical=false,received=false,blocked=false,heavy=false){
- if(quietCombatEffects()||s.paused)return;
- emitCombatEffect(blocked?'guard':received?(heavy?'heavy':'hurt'):critical?'critical':'slash');
- const layer=$('impact-layer'),n=document.createElement('span'),position=impactSerial++;
- n.className='impact-number'+(critical?' critical-hit':'')+(received?' received-hit':'');n.textContent=(blocked?'방어 ':critical?'치명타 ':'')+(received?'−':'')+fmt(amount);
- n.style.left=(received?24:48+(position*7)%15)+'%';n.style.top=(received?67:38+(position*5)%12)+'%';layer.append(n);while(layer.children.length>10){const oldest=layer.children[0];clearTimeout(impactTimers.get(oldest));impactTimers.delete(oldest);oldest.remove()}impactTimers.set(n,setTimeout(()=>{n.remove();impactTimers.delete(n)},1600));
- const arena=$('arena');arena.classList.remove('impact-flash');void arena.offsetWidth;arena.classList.add('impact-flash');
- if(critical&&!received){clearTimeout(strikeTimers.critical);arena.classList.remove('enemy-critical-hit');void arena.offsetWidth;arena.classList.add('enemy-critical-hit');strikeTimers.critical=setTimeout(()=>{arena.classList.remove('enemy-critical-hit');strikeTimers.critical=null},620)}
+ const shown=paintContactFeedback(blocked?'guard':received?(heavy?'heavy':'hurt'):critical?'critical':'slash',amount);
+ if(!shown||quietCombatEffects())return;
+ if(critical&&!received){const arena=$('arena');clearTimeout(strikeTimers.critical);arena.classList.remove('enemy-critical-hit');void arena.offsetWidth;arena.classList.add('enemy-critical-hit');strikeTimers.critical=setTimeout(()=>{arena.classList.remove('enemy-critical-hit');strikeTimers.critical=null},620)}
 }
 function showImpact(amount,critical=false,received=false,blocked=false,heavy=false,echoHit=false){
+ syncContactFeedbackMode();
  $('encounter-intro').classList.remove('reveal');animateStrike(received,critical,heavy);
  $('last-impact').textContent=received?'받은 피해 '+fmt(amount)+(blocked?' · 방어 성공':''):'준 피해 '+fmt(amount)+(critical?' · 치명타':'');
  if(received){paintImpact(amount,critical,received,blocked,heavy);return}
- if(quietCombatEffects()||s.paused)return;
+ if(quietCombatEffects()||s.paused){paintImpact(amount,critical);return}
  if(echoHit){const serial=encounterSerial;clearTimeout(strikeTimers.echo);atHeroPose('echo',.90,()=>{if(serial===encounterSerial&&['combat','loot','victory'].includes(phase))paintImpact(amount,critical)},Math.max(0,heroContactAt-Date.now())+100);return}
  if(pendingHeroContact){pendingHeroContact.amount+=amount;pendingHeroContact.critical||=critical;return}
  pendingHeroContact={amount,critical,serial:encounterSerial};
@@ -1225,3 +1279,7 @@ function passiveEffectText(key){
  if(key==='wither')return prefix+'보스 초당 재생 −'+pct(.20+step*.012)+' · 치명타 피해 시 20% 확률로 3초간 공격력 +'+pct(.20+step*.025)+' · 재발동 시 시간 갱신';
  return PASSIVES[key].desc+(lv>1?' · 효과량 ×'+power.toFixed(1):'');
 }
+
+// Viewport-dependent contact points are recomputed on the next confirmed hit.
+window.addEventListener('resize',()=>clearCombatEffects());
+window.addEventListener('pagehide',()=>clearCombatEffects());

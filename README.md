@@ -30,6 +30,7 @@ npm start
 .venv/bin/python tests/browser-smoke.py
 .venv/bin/python tests/browser-preparation.py
 .venv/bin/python tests/browser-effects.py
+.venv/bin/python tests/browser-contact-feedback.py
 .venv/bin/python tests/browser-skills.py
 .venv/bin/python tests/browser-art.py
 ```
@@ -45,6 +46,7 @@ npm start
 - [전체 분석과 28개 개선 과제](docs/improvement-plan.md)
 - [확률·경제 분석](docs/balance-review.md)
 - [실행한 테스트와 제한](docs/validation-report.md)
+- [전투 접촉 피드백: 명중·방어·회피와 접근성](docs/combat-contact-feedback.md)
 
 
 ## 배포

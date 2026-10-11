@@ -145,9 +145,9 @@ with sync_playwright() as playwright:
         assert page.locator('#arena').evaluate("el => el.classList.contains('hero-striking')")
         if boss_id is None:
             assert page.locator('#travel-overlay').evaluate("el => getComputedStyle(el).visibility") == 'hidden'
-        assert page.locator('.fx-slash').count() == 0
+        assert page.locator('.contact-feedback.feedback-slash').count() == 0
         receipt = reward_snapshot(page)
-        page.wait_for_function("document.querySelector('.fx-slash') !== null", timeout=1500)
+        page.wait_for_function("document.querySelector('.contact-feedback.feedback-slash') !== null", timeout=1500)
         contact = page.evaluate('''() => {
             const sword = document.querySelector('.hero-sword-hand');
             const headActor = document.querySelector('.hero-head');
@@ -202,19 +202,21 @@ with sync_playwright() as playwright:
         encounter(page, boss_id=3)
         result = page.evaluate('''defense => {
             bossStrikes = BOSS_BALANCE[bossId].every - 1;
-            const oldBoots = s.slots.boots, oldGuard = s.passives.guard;
+            const oldBoots = s.slots.boots, oldGuard = s.passives.guard, oldGuardBuff = s.passiveBuffs.guard;
+            s.passiveBuffs.guard = 0;
             if (defense === 'dodge') {
                 const boots = award('scoutboots', 1, () => .5);
                 boots.potentials = [{type:'dodge', value:.05, grade:3},{type:'movePct', value:.01, grade:0}];
                 s.slots.boots = boots.id;
             } else s.passives.guard = 1;
             render();
-            const expected = defense === 'dodge' ? 0 : Math.max(1, Math.round(incomingDamage() * .65));
+            const expected = defense === 'dodge' ? 0 : Math.max(1, Math.round(incomingDamage() * .70));
             const before = s.heroHp;
             let draws = 0;
-            monsterHit(() => defense === 'dodge' ? 0 : draws++ === 0 ? .9 : .1);
+            // Current guard: 4% proc, then 30% reduction for five seconds.
+            monsterHit(() => defense === 'dodge' ? 0 : draws++ === 0 ? .9 : .01);
             const result = {expected, actual:before - s.heroHp, impact:$('last-impact').textContent};
-            s.slots.boots = oldBoots;
+            s.slots.boots = oldBoots; s.passiveBuffs.guard = oldGuardBuff;
             if (oldGuard) s.passives.guard = oldGuard; else delete s.passives.guard;
             return result;
         }''', defense)
