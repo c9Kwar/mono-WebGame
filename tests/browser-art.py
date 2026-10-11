@@ -109,6 +109,7 @@ with sync_playwright() as playwright:
 
     # Inspect the actual paginated armory, not a synthetic atlas gallery.
     page.locator('#tab-equipment').click()
+    page.locator('.preparation-help > summary').click()
     portrait = page.locator('.preparation-art img')
     assert portrait.is_visible()
     assert portrait.get_attribute('src') == 'art/mosslight-adventurer.png'

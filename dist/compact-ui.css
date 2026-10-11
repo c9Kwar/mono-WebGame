@@ -1,0 +1,79 @@
+/* Keep combat and primary actions prominent; details open on click, touch or keyboard. */
+.view-heading{margin:14px 0 12px}.view-heading h1{font-size:26px}
+.section-title{margin-bottom:12px}.section-title h2{font-size:21px}
+.equipment-panel,.inventory-panel,.collection-panel,.passive-shop,.codex{padding:18px}
+.compact-help{margin:8px 0;padding:8px 10px}.compact-help summary{cursor:pointer;font-size:12px;min-height:28px;align-content:center}
+.compact-help summary:focus-visible,.boss-select:focus-visible{outline:2px solid #e0cc94;outline-offset:3px}
+.boss-view-masthead{padding:12px 0;min-height:0}.boss-view-masthead h2{font-size:24px}.boss-seal{display:none}
+#boss-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#boss-list .boss-select{display:grid;grid-template-columns:76px minmax(0,1fr);padding:8px;gap:12px;text-align:left;min-width:0;border:1px solid #9d9b76;background:#ccc6a6;color:#283c2e;border-radius:1px;cursor:pointer}
+#boss-list .boss-select:hover{background:#ded4ae}
+#boss-list .boss-card-art{width:76px;height:76px;min-height:0;padding:0;border:0}
+#boss-list .boss-card-content{padding:0;align-self:center;min-width:0}
+#boss-list h3{font-size:16px;margin:0 0 6px;line-height:1.4}
+#boss-list p{font-size:12px;margin:0;line-height:1.5}
+#quick-boss-dialog{width:min(740px,calc(100vw - 28px));padding:18px;max-height:90dvh}
+.quick-boss-heading h2{font-size:22px}.quick-boss-heading+.muted{font-size:12px;margin:8px 0}
+#quick-boss-list{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scroll-snap-type:x proximity}
+#quick-boss-list .quick-boss-row{display:grid;grid-template-columns:36px minmax(0,1fr);gap:2px 6px;flex:1 0 130px;min-height:68px;padding:8px;text-align:left;scroll-snap-align:start}
+.quick-boss-row .quick-boss-art{width:36px;height:36px;grid-row:span 2}
+.quick-boss-row strong{font-size:12px;white-space:normal;line-height:1.4}.quick-boss-row small{font-size:11px}
+#quick-boss-detail{margin-top:10px;padding-top:10px}#quick-boss-name{font-size:19px;margin:4px 0 8px}
+#quick-boss-stats{display:block;font-size:12px;line-height:1.7}#quick-boss-survival{font-size:12px;margin:6px 0}
+.boss-preparation{padding:12px;margin:10px 0}.boss-preparation h4{font-size:15px;margin:6px 0}.boss-preparation dl{margin:8px 0}.boss-preparation dd{font-size:16px}.boss-preparation p,.boss-preparation details{font-size:12px;line-height:1.6}
+#boss-extra-details p,#boss-extra-details small{font-size:12px;line-height:1.7;margin:8px 0}
+#quick-boss-reason{font-size:12px;margin:8px 0}
+.preparation-help{margin:0 0 10px}.preparation-banner{min-height:140px;padding:15px;margin:8px 0}.preparation-copy h3{font-size:20px}.preparation-art img{height:130px;width:150px}
+.loadout-roles{gap:6px}.loadout-roles button{padding:8px;min-height:46px;grid-template-columns:18px minmax(0,1fr)}.loadout-roles button>span{font-size:18px}.loadout-roles strong{font-size:12px}.loadout-roles small{font-size:10px}
+.loadout-focus{margin:6px 0 10px;font-size:12px}.loadout-panel{padding:12px}.loadout-heading{margin:0;gap:8px}.loadout-heading h3{font-size:15px}
+#equip-recommended{min-height:36px;padding:7px 10px;font-size:12px;white-space:normal}
+.loadout-plan{gap:6px;margin:8px 0}.loadout-choice{padding:8px}.loadout-choice strong{margin:3px 0}.loadout-disclaimer{margin:8px 0;font-size:12px}
+.equipped-caption{margin:10px 0 6px}.equipment-slots{gap:6px;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible}
+#view-equipment .equipment-slots .gear-tile,#view-equipment .empty-gear-slot{min-height:78px;padding:8px}
+#view-equipment .empty-gear-slot{font-size:12px}.gear-effects{font-size:12px;margin:8px 0 0;line-height:1.6}
+.armory-workbench{grid-template-columns:112px minmax(0,1fr)}.armory-panel{padding:12px}.armory-tools{gap:8px;margin:8px 0}.armory-tools label,.armory-tools button{font-size:12px}
+#view-equipment .gear-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:7px;max-height:580px}
+#view-equipment .gear-cell{min-width:0;padding:0}
+#view-equipment .gear-tile{grid-template-columns:32px minmax(0,1fr);padding:7px;min-height:62px;gap:2px 7px}
+#view-equipment .gear-tile strong{font-size:12px;line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+#view-equipment .gear-tile small{font-size:11px;line-height:1.4}
+#view-equipment .gear-icon{width:32px;height:36px}
+#view-equipment .gear-icon .premium-item-art{width:30px;height:30px}
+#view-equipment .gear-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+#view-equipment .gear-actions button{padding:5px 2px;min-height:32px;font-size:11px;white-space:nowrap}
+.gear-actions button:disabled{opacity:.7}.salvage-rule{font-size:12px;color:#cbd5b4;margin:8px 0;line-height:1.5}
+.gear-pagination{margin:10px 0 6px;gap:10px}.gear-pagination button{min-height:34px}.gear-hover-hint{font-size:12px;margin:8px 0}
+.recipe-card .recipe-info{min-height:60px;padding:8px}.recipe-grid{gap:8px}.item-slot{padding:8px}.shop-banner{padding:16px}.passive-card{padding:14px}
+@media(max-width:700px){
+ #boss-list{grid-template-columns:1fr}.equipment-panel,.inventory-panel,.collection-panel,.passive-shop,.codex{padding:12px}
+ #view-equipment .armory-workbench{grid-template-columns:1fr}
+ #view-equipment .gear-category-tree{display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-right:0}
+ #view-equipment .gear-category-tree>strong{display:none}#view-equipment .gear-category-tree button{flex:1 0 28%;min-height:34px;padding:5px;font-size:12px}
+ #view-equipment .armory-panel{padding:9px}
+ #view-equipment .gear-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ #view-equipment .equipment-slots{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #view-equipment .equipment-slots .gear-tile{grid-template-columns:24px minmax(0,1fr);gap:4px;padding:5px}
+ #view-equipment .equipment-slots .gear-icon{width:24px;height:30px}
+ #view-equipment .equipment-slots .gear-icon .premium-item-art{width:22px;height:22px}
+ .view-heading h1{font-size:23px}.view-heading{margin:10px 0}.loadout-roles{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .preparation-banner{grid-template-columns:1fr 85px}.preparation-art img{width:100px;height:110px}.preparation-orbit{width:80px;height:100px}
+ #quick-boss-dialog{padding:12px}#quick-boss-list .quick-boss-row{flex-basis:140px}.boss-preparation dl{gap:8px}.boss-preparation dd{font-size:14px}
+}
+@media(max-width:350px){#view-equipment .gear-list{grid-template-columns:1fr}}
+#boss-list .boss-card-art{margin:0}
+#view-equipment .gear-actions .gear-lock{grid-column:auto}
+#view-equipment .gear-category-tree{flex-direction:row;align-content:flex-start}
+#view-equipment .gear-category-tree button{height:auto}
+#view-boss>h3{font-size:16px;margin:10px 0}
+#view-boss>.boss-entry-note{font-size:12px;margin:8px 0 12px}
+@media(max-width:700px){#view-equipment .gear-category-tree button{flex:1 0 28%;height:34px}}
+#boss-preparation{padding:10px;margin:8px 0}
+#boss-preparation h4{font-size:15px;margin:6px 0;line-height:1.5}
+#boss-preparation dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
+#boss-preparation dl>div{padding:8px;min-width:0}#boss-preparation dt{font-size:11px}#boss-preparation dd{font-size:14px;line-height:1.5}
+#boss-preparation-tip{font-size:12px;line-height:1.6;margin:8px 0}
+#boss-preparation details{font-size:12px;margin:8px 0}
+#boss-preparation-equip{min-height:36px;padding:7px;font-size:12px}
+.boss-entry-actions{position:sticky;bottom:-12px;z-index:2;background:#22372a;border-top:1px solid #748461;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0}
+.boss-entry-actions #quick-boss-reason{grid-column:1/-1;margin:0;font-size:12px}
+.boss-entry-actions button{margin:0!important;min-height:40px;padding:8px!important;font-size:12px!important}

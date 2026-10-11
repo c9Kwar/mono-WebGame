@@ -39,3 +39,4 @@ jobs:
           .venv/bin/python tests/browser-skills.py
           .venv/bin/python tests/browser-art.py
           .venv/bin/python tests/browser-boss-growth.py
+          .venv/bin/python tests/browser-compact.py

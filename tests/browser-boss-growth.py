@@ -10,8 +10,10 @@ with sync_playwright() as p:
  page.locator('#header-boss').click();page.locator('#quick-boss-list button').nth(4).click()
  assert '관통 35%' in page.locator('#quick-boss-stats').inner_text()
  assert '재생 2,232 HP' in page.locator('#quick-boss-stats').inner_text()
+ page.locator('#boss-extra-details > summary').click()
  assert 'T6 장비 확정' in page.locator('#quick-boss-rewards').inner_text()
  assert 'T8' in page.locator('#quick-boss-variants').inner_text()
+ page.locator('#boss-extra-details > summary').click()
  for width in [390,800,1440]:
   page.set_viewport_size({'width':width,'height':1080})
   assert page.locator('#quick-boss-dialog').evaluate('(el)=>el.scrollWidth<=el.clientWidth'),width

@@ -56,6 +56,7 @@ with sync_playwright() as p:
  page.locator('#auto-safety').click();assert page.evaluate('s.autoSafety') is False
  page.locator('#pause').click();page.locator('#header-boss').click()
  page.locator('#quick-boss-list button').first.click()
+ page.locator('#boss-extra-details > summary').click()
  assert '최대 1회' in page.locator('#quick-boss-blueprint').inner_text()
  page.locator('#quick-boss-normal').click()
  page.wait_for_function("phase==='results'",timeout=70000)
