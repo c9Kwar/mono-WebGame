@@ -1,0 +1,61 @@
+/* Brass field annotations, terracotta impact cuts and an ivory defeated seal.
+   Cues identify the source and target; this auto battler has no dodgeable AoE. */
+#boss-feedback-layer{position:absolute;inset:0;z-index:6;pointer-events:none;contain:layout style}
+.boss-tell{position:absolute;display:grid;grid-template-columns:21px auto;gap:1px 5px;width:126px;box-sizing:border-box;padding:5px 7px;transform:translateX(-50%);color:#e4d5b4;background:#203c37e8;border:1px solid #b78c50;border-radius:1px;font:600 10px/1.2 sans-serif}
+.boss-tell[hidden],.boss-tell-target[hidden]{display:none}
+.boss-tell-glyph{grid-row:span 2;align-self:center;text-align:center;font:21px/1 Georgia,serif;color:#cba76e}
+.boss-tell-label{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:9px}
+.boss-tell-rule{display:block;height:2px;background:#73817466;overflow:hidden}
+.boss-tell-rule i{display:block;width:100%;height:100%;background:#cfaa73;transform-origin:left center}
+.boss-tell-imminent{border-top:3px solid #d5a393;padding-top:3px}
+.boss-tell-imminent .boss-tell-glyph{color:#e4d5b4}
+.boss-tell-target{position:absolute;width:24px;height:10px;transform:translate(-50%,-50%);border-left:2px solid #b78c50;border-right:2px solid #b78c50;border-top:1px solid #d5a393;clip-path:polygon(0 0,100% 0,100% 100%,85% 100%,85% 25%,15% 25%,15% 100%,0 100%)}
+.arena:is([data-encounter=boss],[data-encounter=elite-boss],[data-encounter=mystic]) .charge-rune{display:none!important}
+.arena.boss-charging .enemy-sigil,.arena.boss-charging .enemy-motion{filter:none}
+.arena.heavy-impact .battle-stage{animation:none}
+/* The original species source/path motion remains, but impact is now selected
+   from the confirmed hit/guard/dodge outcome rather than generic skill particles. */
+.arena:is([data-encounter=boss],[data-encounter=elite-boss],[data-encounter=mystic]) .encounter-fx .skill-impact,
+.arena:is([data-encounter=boss],[data-encounter=elite-boss],[data-encounter=mystic]) .encounter-fx .skill-fragment{display:none}
+.boss-strong-impact,.boss-defeat-seal{position:absolute;width:0;height:0;pointer-events:none;--boss-ink:#d5a393}
+.boss-impact-mark{position:absolute;width:72px;height:70px;left:-36px;top:-35px;animation:boss-contact var(--boss-impact-ms,520ms) cubic-bezier(.15,.65,.25,1) both}
+.boss-impact-mark::before,.boss-impact-mark::after{content:"";position:absolute;inset:0;background:var(--boss-ink);clip-path:polygon(13% 10%,21% 17%,11% 47%,17% 72%,36% 91%,30% 98%,8% 79%,0 49%)}
+.boss-impact-mark::after{inset:6px;transform:rotate(150deg);background:#e4d5b4;opacity:.55}
+.boss-impact-chip{position:absolute;left:-2px;top:-2px;width:9px;height:5px;background:#b78c50;clip-path:polygon(0 10%,90% 0,100% 70%,24% 100%);animation:boss-chip 460ms ease-out both}
+.boss-impact-guard{--boss-ink:#b3c8ab}
+.boss-impact-guard .boss-impact-mark::before{background:none;border:2px solid var(--boss-ink);clip-path:polygon(0 0,22% 0,22% 5%,5% 5%,5% 80%,24% 96%,76% 96%,95% 80%,95% 5%,78% 5%,78% 0,100% 0,100% 84%,79% 100%,21% 100%,0 84%)}
+.boss-impact-guard .boss-impact-mark::after{display:none}
+.boss-impact-guard .boss-impact-mark{width:65px;height:76px;left:-32px;top:-38px;animation-name:boss-guard}
+.boss-impact-dodge{--boss-ink:#c1cbc1}
+.boss-impact-dodge .boss-impact-mark{width:62px;height:40px;left:-31px;top:-20px;animation-name:boss-slip}
+.boss-impact-dodge .boss-impact-mark::before{background:none;border-top:2px dashed var(--boss-ink);border-bottom:2px dashed var(--boss-ink);clip-path:none;transform:skewY(-14deg)}
+.boss-impact-dodge .boss-impact-mark::after{display:none}
+.boss-defeat-ring{position:absolute;width:76px;height:76px;left:-38px;top:-38px;border:2px solid #b78c50;border-top-color:transparent;border-bottom-color:transparent;border-radius:45% 55% 47% 53%;animation:boss-seal var(--boss-defeat-ms,1120ms) ease-out both}
+.boss-defeat-ring::before,.boss-defeat-ring::after{content:"";position:absolute;width:12px;height:5px;background:#e4d5b4;border-radius:100% 0 100% 0;top:3px;left:6px;transform:rotate(-35deg)}
+.boss-defeat-ring::after{left:auto;top:auto;right:6px;bottom:3px;transform:rotate(-35deg)}
+.boss-defeat-glyph{position:absolute;left:-22px;top:-22px;width:44px;text-align:center;font:36px/44px Georgia,serif;color:#e4d5b4;text-shadow:1px 2px #203c37;animation:boss-seal-glyph var(--boss-defeat-ms,1120ms) ease-out both}
+.boss-defeat-leaf{position:absolute;left:-5px;top:-2px;width:11px;height:5px;background:#b78c50;border-radius:100% 0 100% 0;animation:boss-seal-leaf 860ms ease-out both}
+/* Preserve the killing sword. Collapse begins only at its actual contact pose. */
+.arena.scene-victory:is([data-encounter=boss],[data-encounter=elite-boss],[data-encounter=mystic]) .enemy-position{animation:none;opacity:1;filter:none}
+.arena.scene-victory.boss-defeat-landed .enemy-position{animation:boss-folio-collapse var(--boss-collapse-ms,820ms) ease-out both}
+.arena.scene-victory.boss-defeat-settled .enemy-position{animation:none;opacity:.2}
+.arena.scene-victory:is([data-encounter=boss],[data-encounter=elite-boss],[data-encounter=mystic]) .victory-burst{display:none}
+.arena.scene-victory:is([data-encounter=boss],[data-encounter=elite-boss],[data-encounter=mystic]) .victory-stamp{visibility:hidden;animation:none}
+.arena.scene-victory.boss-defeat-landed .victory-stamp{visibility:visible;animation:boss-victory-title 650ms ease-out both}
+.arena.scene-victory.boss-defeat-settled .victory-stamp{visibility:visible;animation:none;opacity:1;transform:none}
+.boss-feedback-quiet .boss-impact-mark{animation:none;opacity:.7;transform:scale(.65)}
+.boss-feedback-quiet .boss-defeat-ring,.boss-feedback-quiet .boss-defeat-glyph{animation:none;opacity:.85}
+.boss-feedback-quiet .boss-defeat-ring{transform:scale(.8)}
+.arena.cinema-lite.scene-victory.boss-defeat-landed .enemy-position{animation:none!important;opacity:.2}
+.arena.cinema-lite.scene-victory .victory-stamp{animation:none!important;opacity:1;transform:none}
+@keyframes boss-contact{0%{opacity:1;transform:translateX(5px) scale(.78)}12%{opacity:1;transform:translateX(0) scale(1.04)}38%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:translateX(-4px) scale(.94)}}
+@keyframes boss-chip{0%,8%{opacity:0;transform:translate(0,0) scale(.7)}24%{opacity:.8}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.5)}}
+@keyframes boss-guard{0%{opacity:1;transform:scaleX(.88)}18%,48%{opacity:1;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1)}}
+@keyframes boss-slip{0%{opacity:.8;transform:translateX(6px)}70%{opacity:.45}100%{opacity:0;transform:translateX(-14px)}}
+@keyframes boss-seal{0%{opacity:0;transform:scale(.8)}18%{opacity:.9;transform:scale(1)}66%{opacity:.7}100%{opacity:0;transform:scale(1.08)}}
+@keyframes boss-seal-glyph{0%{opacity:0;transform:translateY(3px)}18%,60%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-4px)}}
+@keyframes boss-seal-leaf{0%,8%{opacity:0;transform:translate(0,0)}26%{opacity:.85}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.55)}}
+@keyframes boss-folio-collapse{0%{opacity:1;transform:translateY(0)}20%{opacity:.85;transform:translateY(3px)}65%{opacity:.3;transform:translateY(7px)}100%{opacity:.12;transform:translateY(9px)}}
+@keyframes boss-victory-title{0%{opacity:0;transform:translateY(5px)}35%,100%{opacity:1;transform:translateY(0)}}
+@media(max-width:560px){.boss-tell{width:122px;padding-left:5px;padding-right:5px}.boss-impact-mark{width:62px;height:60px;left:-31px;top:-30px}.boss-defeat-ring{width:54px;height:54px;left:-27px;top:-27px}.boss-defeat-glyph{left:-16px;top:-16px;width:32px;font-size:27px;line-height:32px}}
+@media(prefers-reduced-motion:reduce){.boss-impact-mark,.boss-defeat-ring,.boss-defeat-glyph{animation:none!important;opacity:.75}.boss-impact-mark{transform:scale(.65)}.boss-impact-chip,.boss-defeat-leaf{display:none}.arena.scene-victory.boss-defeat-landed .enemy-position{animation:none!important;opacity:.2}}

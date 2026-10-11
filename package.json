@@ -9,7 +9,7 @@
   "scripts": {
     "test": "node tests/run-all.cjs",
     "start": "python3 -m http.server 8082 --bind 127.0.0.1 --directory dist",
-    "test:browser": "python3 tests/browser-smoke.py && python3 tests/browser-preparation.py && python3 tests/browser-effects.py && python3 tests/browser-contact-feedback.py && python3 tests/browser-skills.py && python3 tests/browser-art.py && python3 tests/browser-boss-growth.py && python3 tests/browser-compact.py && python3 tests/browser-progression-v2.py && python3 tests/browser-craft-tempo.py && python3 tests/browser-hero-polish.py && python3 tests/browser-field-attacks.py && python3 tests/browser-chapter-economy.py && python3 tests/browser-adventure-guide.py && python3 tests/browser-jade.py && python3 tests/browser-passive-expansion.py && python3 tests/browser-passive-patch.py",
+    "test:browser": "python3 tests/browser-smoke.py && python3 tests/browser-preparation.py && python3 tests/browser-effects.py && python3 tests/browser-contact-feedback.py && python3 tests/browser-boss-reward-feedback.py && python3 tests/browser-skills.py && python3 tests/browser-art.py && python3 tests/browser-boss-growth.py && python3 tests/browser-compact.py && python3 tests/browser-progression-v2.py && python3 tests/browser-craft-tempo.py && python3 tests/browser-hero-polish.py && python3 tests/browser-field-attacks.py && python3 tests/browser-chapter-economy.py && python3 tests/browser-adventure-guide.py && python3 tests/browser-jade.py && python3 tests/browser-passive-expansion.py && python3 tests/browser-passive-patch.py",
     "test:players": "node tests/player-simulation.cjs"
   }
 }
