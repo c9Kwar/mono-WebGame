@@ -15,7 +15,8 @@ MOTIONS = {
     'mushroom': 'field-cap-puff',
     'snail': 'field-snail-lash',
     'moth': 'field-moth-beat',
-    'rabbit': 'field-rabbit-kick',
+    'rabbit': 'field-rabbit-claw',
+    'eliteRabbit': 'field-rabbit-claw',
 }
 
 
@@ -27,7 +28,7 @@ def encounter(page, mob):
         render(); clearCombatEffects(); renderBattleScene();
     }''', mob)
     page.wait_for_function('''mob =>
-        $('arena').dataset.species===mob && $('arena').getAttribute('aria-busy')!=='true'
+        $('arena').dataset.species===mob.replace(/^elite/,'').toLowerCase() && $('arena').getAttribute('aria-busy')!=='true'
     ''', arg=mob)
 
 
@@ -62,22 +63,51 @@ with sync_playwright() as playwright:
             page.evaluate('monsterHit(()=>.99)')
             state = page.evaluate('''() => {
                 for (const a of $('arena').getAnimations({subtree:true})) {
-                    if(a.animationName.startsWith('field-')) {a.pause();a.currentTime=240;}
+                    if(a.animationName?.startsWith('field-')) {a.pause();a.currentTime=360;}
                 }
                 const body=$('arena').querySelector('.enemy-position');
-                const mote=document.querySelector('.field-mote');
+                const contact=document.querySelector('.field-contact');
+                const hero=$('arena').querySelector('.hero-position');
                 return {motion:getComputedStyle(body).animationName,
                     transform:getComputedStyle(body).transform,
                     motes:document.querySelectorAll('.field-mote').length,
-                    width:parseFloat(getComputedStyle(mote).width),
-                    path:getComputedStyle(mote).offsetPath};
+                    claws:document.querySelectorAll('.field-claw-mark').length,
+                    clouds:document.querySelectorAll('.field-cloud').length,
+                    whips:document.querySelectorAll('.field-tether path').length,
+                    gusts:document.querySelectorAll('.field-gust').length,
+                    contactWidth:parseFloat(getComputedStyle(contact).width),
+                    contactOpacity:parseFloat(getComputedStyle(contact).opacity),
+                    heroMotion:getComputedStyle(hero).animationName,
+                    heroTransform:getComputedStyle(hero).transform,
+                    lunge:parseFloat($('arena').style.getPropertyValue('--field-lunge-x'))};
             }''')
             assert state['motion'] == motion, (width, mob, state)
             assert state['transform'] not in ['none', 'matrix(1, 0, 0, 1, 0, 0)'], (mob, state)
-            assert state['motes'] == 6 and state['width'] > 0, (mob, state)
-            assert state['path'].startswith('path(') and ' Q ' in state['path'], (mob, state)
+            assert state['motes'] == (4 if mob == 'slime' else 0), (mob, state)
+            assert state['claws'] == (3 if mob in ['rabbit','eliteRabbit'] else 0), (mob, state)
+            assert state['clouds'] == (1 if mob == 'mushroom' else 0), (mob, state)
+            assert state['whips'] == (2 if mob == 'snail' else 0), (mob, state)
+            assert state['gusts'] == (3 if mob == 'moth' else 0), (mob, state)
+            assert state['contactWidth'] >= 78 and state['contactOpacity'] > .5, (width,mob,state)
+            assert state['heroMotion'] in ['field-hero-hit','field-hero-buffet'], state
+            assert state['heroTransform'] != 'none', state
+            if mob in ['rabbit','eliteRabbit']:
+                assert state['lunge'] < -30, (width,state)
+                # At contact the actual painted creature must close the gap.
+                dx=page.locator('.enemy-position').evaluate('(el)=>new DOMMatrix(getComputedStyle(el).transform).m41')
+                assert dx < -30, (width,dx)
+            # The trace must remain readable after the initial flash has passed.
+            lingering=page.evaluate('''() => {
+                for(const a of $('arena').getAnimations({subtree:true}))
+                    if(a.animationName?.startsWith('field-')) a.currentTime=720;
+                const n=document.querySelector('.field-claw-mark')||document.querySelector('.field-contact');
+                return parseFloat(getComputedStyle(n).opacity);
+            }''')
+            assert lingering > .2, (width,mob,lingering)
+            page.evaluate('''() => {for(const a of $('arena').getAnimations({subtree:true}))
+                if(a.animationName?.startsWith('field-')) a.currentTime=360;}''')
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'), width
-            if width == 1440 or mob == 'snail':
+            if width == 1440 or width == 390:
                 page.locator('#arena').screenshot(path=f'/tmp/mosslight-field-{mob}-{width}.png')
 
     # Repeated fast attacks must create a fresh body animation even while the
@@ -94,6 +124,10 @@ with sync_playwright() as playwright:
     }''')
     assert restarted['fresh'] and restarted['time'] < 100, restarted
 
+    encounter(page, 'rabbit')
+    page.evaluate('dodgeChance=()=>1;monsterHit(()=>0)')
+    assert page.locator('.field-claw-mark').first.evaluate('(el)=>getComputedStyle(el).display') == 'none'
+    assert page.locator('.hero-position').evaluate('(el)=>getComputedStyle(el).animationName') == 'field-hero-dodge'
     page.evaluate('for(let i=0;i<100;i++)emitFieldAttack(FIELD_SKILLS.moth)')
     assert page.locator('.combat-burst').count() == 5
     assert page.evaluate('combatFxTimers.size') == 5
@@ -120,5 +154,5 @@ with sync_playwright() as playwright:
     assert '자두빛 포자 숨결' in page.locator('#enemy-intent-text').inner_text()
 
     assert not errors, errors
-    print(json.dumps({'result': 'PASS five species motions, curved paths and hero contact at 390/800/1440; fast recast restart; five-burst budget; pause/lite/reduced cleanup; no JS errors'}))
+    print(json.dumps({'result': 'PASS five distinct attack structures, lunging claws, broad impacts and lingering traces at 390/800/1440; fast recast restart; five-burst budget; pause/lite/reduced cleanup; no JS errors'}))
     browser.close()

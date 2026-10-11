@@ -20,6 +20,9 @@ def encounter(page, guardian=False):
         encounterSerial++; render(); renderBattleScene(); $('encounter-intro').classList.remove('reveal');
     }''', guardian)
     page.wait_for_function("$('arena').getAttribute('aria-busy') === 'false'")
+    # Commit the recovered style before a synchronous test defeat. Otherwise the
+    # renderer can coalesce combat -> defeated and retain the last finished fall.
+    page.locator('.hero-upper-body').evaluate('(el)=>getComputedStyle(el).animationName')
 
 
 def seek(page, ms):

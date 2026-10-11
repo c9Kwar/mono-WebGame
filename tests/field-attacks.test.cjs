@@ -8,15 +8,19 @@ function ready(mob='slime'){
 
 test('ordinary species use distinct named attacks without an added hit or status effect',()=>{
  const ids=new Set();
- for(const mob of ['slime','mushroom','snail','moth','rabbit']){
+ for(const mob of ['slime','mushroom','snail','moth','rabbit','eliteRabbit']){
   const h=ready(mob),skill=h.run('enemySkill()'),before=h.run('s.heroHp'),damage=h.run('incomingDamage()');
   assert.equal(skill.field,true);ids.add(skill.id);
   assert.ok(h.nodes.get('enemy-intent-text').textContent.includes(skill.name));
-  assert.equal(h.nodes.get('boss-pattern').hidden,true);
+  assert.equal(h.nodes.get('boss-pattern').hidden,mob!=='eliteRabbit');
   h.run('Math.random=()=>{throw Error("presentation consumed gameplay RNG")};monsterHit(()=>.99)');
   assert.equal(before-h.run('s.heroHp'),damage);
   const burst=h.nodes.get('combat-fx').children.find(n=>n.className.includes('skill-'+skill.id));
-  assert.ok(burst);assert.equal(burst.children.length,11);
+  assert.ok(burst);assert.ok(burst.children.length<=13);
+  const parts=burst.children.map(n=>n.className);
+  assert.equal(parts.includes('field-mote'),mob==='slime','Only acid uses flying droplets');
+  const unique={eliteRabbit:'field-claw-mark',rabbit:'field-claw-mark',mushroom:'field-cloud',snail:'field-tether',moth:'field-gust',slime:'field-mote'};
+  assert.ok(parts.includes(unique[mob]));
   assert.ok(h.nodes.get('last-impact').textContent.includes(skill.name));
  }
  assert.equal(ids.size,5);
@@ -56,3 +60,12 @@ test('reduced motion, lightweight mode, pause and hidden page keep cues but supp
  const h=ready('rabbit');h.run('emitFieldAttack(FIELD_SKILLS.rabbit);phase="travel";renderEncounter()');
  assert.equal(h.nodes.get('combat-fx').children.length,0);assert.equal(h.run('pendingTimers.size'),0);
 });
+
+ test('rabbit dodge suppresses contact marks and never loses health',()=>{
+ const h=ready('rabbit');h.run('dodgeChance=()=>1');const before=h.run('s.heroHp');
+ h.run('monsterHit(()=>0)');assert.equal(h.run('s.heroHp'),before);
+ const burst=h.nodes.get('combat-fx').children.find(n=>n.className.includes('field-attack'));
+ assert.ok(burst.className.includes('field-dodged'));
+ assert.equal(burst.children.filter(n=>n.className==='field-claw-mark').length,3);
+ assert.ok(h.nodes.get('last-impact').textContent.includes('받은 피해 0'));
+ });

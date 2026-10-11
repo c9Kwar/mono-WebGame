@@ -223,7 +223,7 @@ with sync_playwright() as playwright:
         assert page.locator('.skill-moon.skill-cast').count() == 1, defense
 
     for mob, skill in [('eliteSlime', 'moss'), ('eliteMushroom', 'spore'),
-                       ('eliteMoth', 'wing'), ('eliteSnail', 'shell'), ('eliteRabbit', 'leap')]:
+                       ('eliteMoth', 'wing'), ('eliteSnail', 'shell'), ('eliteRabbit', 'field-claw')]:
         encounter(page, mob=mob)
         page.evaluate('enemyClock = enemyInterval() - .3; render()')
         assert page.locator('#arena').get_attribute('data-skill') == skill, mob

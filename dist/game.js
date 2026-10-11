@@ -146,18 +146,20 @@ function appendCombatBurst(burst,duration=760){
  combatFxTimers.set(burst,setTimeout(()=>{burst.remove();combatFxTimers.delete(burst)},duration));return true;
 }
 // All skill particles share the combat layer's five-burst budget and use fixed geometry.
-function emitEncounterEffect(skill,event='cast'){
- if(skill?.field)return event==='cast'&&emitFieldAttack(skill);
+function emitEncounterEffect(skill,event='cast',hit=true){
+ if(skill?.field)return event==='cast'&&emitFieldAttack(skill,hit);
  if(!skill||!['cast','arrive','victory'].includes(event)||quietCombatEffects()||s.paused)return false;
  const burst=document.createElement('div');burst.className='combat-burst encounter-fx skill-'+skill.id+' skill-'+event;
  for(const part of ['source','path','impact']){const node=document.createElement('i');node.className='skill-'+part;if(part==='source')node.textContent=skill.glyph;burst.append(node)}
  for(let i=0;i<6;i++){const node=document.createElement('i');node.className='skill-fragment';const angle=(i*60-30)*Math.PI/180;node.style.cssText='--i:'+i+';--dx:'+Math.round(Math.cos(angle)*94)+'px;--dy:'+Math.round(Math.sin(angle)*68)+'px;--turn:'+(i*60)+'deg';burst.append(node)}
  return appendCombatBurst(burst,event==='cast'?1050:1250);
 }
-function castEnemySkill(skill){
+function castEnemySkill(skill,hit=true){
  if(!skill)return false;
- const shown=emitEncounterEffect(skill);
- if(shown){clearTimeout(strikeTimers.skill);const arena=$('arena');if(skill.field){arena.setAttribute('data-cast-skill','');void arena.offsetWidth}arena.setAttribute('data-cast-skill',skill.id);strikeTimers.skill=setTimeout(()=>arena.setAttribute('data-cast-skill',''),1050)}
+ const arena=$('arena');
+ if(skill.field){arena.setAttribute('data-cast-skill','');void arena.offsetWidth}
+ const shown=emitEncounterEffect(skill,'cast',hit);
+ if(shown){clearTimeout(strikeTimers.skill);arena.setAttribute('data-field-contact',hit?'hit':'dodge');arena.setAttribute('data-cast-skill',skill.id);strikeTimers.skill=setTimeout(()=>arena.setAttribute('data-cast-skill',''),skill.field?1350:1050)}
  return shown;
 }
 function emitCombatEffect(kind){
@@ -343,7 +345,7 @@ const ELITE_SKILLS={
  eliteMushroom:{id:'spore',name:'보랏빛 포자 폭발',cue:'퍼져 나가는 포자 고리',glyph:'✺'},
  eliteMoth:{id:'wing',name:'반짝 날개 칼바람',cue:'교차하는 빛의 날개',glyph:'✧'},
  eliteSnail:{id:'shell',name:'나선껍질 파동',cue:'겹쳐지는 나선 고리',glyph:'◎'},
- eliteRabbit:{id:'leap',name:'새싹 도약차기',cue:'높이 뛰어 내려차기',glyph:'ϟ'}
+ eliteRabbit:{...FIELD_SKILLS.rabbit,name:'새싹 맹렬 할퀴기',cue:'낮게 뛰어들어 앞발로 깊게 할퀩니다'}
 };
 const FOX_SKILL={id:'fox',name:'황금 꼬리 유성',cue:'황금빛 궤적과 옥빛 잔광',glyph:'✦'};
 function enemySkill(){return boss?(bossCharged()?{...BOSS_SKILL_VISUALS[bossId],name:BOSS_BALANCE[bossId].skill}:null):currentMob==='treasure'?FOX_SKILL:ELITE_SKILLS[currentMob]||FIELD_SKILLS[currentMob]||null}
@@ -359,7 +361,7 @@ function regenerateBoss(dt){if(boss&&phase==='combat'&&!s.paused&&hp>0)hp=Math.m
 function bossPatternText(id){const b=BOSS_BALANCE[id];return bossDefenseText(id)+' · '+b.every+'번째 공격마다 '+b.skill+' ×'+b.power+' · HP 35% 이하 공격 +15%, 공격 간격 −15%'}
 function renderBossPattern(){
  const active=phase==='combat',skill=active?enemySkill():null,charged=active&&boss&&bossCharged(),frenzy=active&&bossFrenzy(),remaining=Math.max(0,enemyInterval()-enemyClock);
- $('boss-pattern').hidden=!(active&&(boss||(skill&&!skill.field)));$('arena').classList.toggle('boss-charging',charged);$('arena').classList.toggle('boss-frenzy',frenzy);
+ $('boss-pattern').hidden=!(active&&(boss||(skill&&(!skill.field||MOBS[currentMob]?.elite))));$('arena').classList.toggle('boss-charging',charged);$('arena').classList.toggle('boss-frenzy',frenzy);
  $('arena').setAttribute('data-skill',skill?.id||'');
  $('arena').classList.toggle('skill-charging',!!skill&&(boss||remaining<=.8)&&!s.paused&&!quietCombatEffects());
  if(!active||(!boss&&!skill))return;
@@ -400,7 +402,7 @@ function mobTempoText(key){const m=MOBS[key];return m.tempo+' · 공격 간격 '
 const mitigation=()=>Math.min(.3,(equippedGear('chest')?.ward||0)+(equippedGear('legs')?.ward||0)+collectionBonus('reduction')+potentialSum('reduction'));
 function incomingDamage(){return Math.max(1,Math.round(Math.max(0,enemyAttack()-heroDefense()*(boss?1-bossPenetration(bossId,bossTier):1))*(1-mitigation())*(boss?1-bossMitigation():1)))}
 function defeatHero(){clearCombatEffects();const wasBoss=boss;s.potentialBuff={left:0,power:0};s.blockLeft=0;boss=false;s.heroHp=0;s.deaths++;phase='defeated';phaseLeft=8;travelTotal=8;attackClock=0;enemyClock=0;lastLoot=[];if(!wasBoss){s.stage=Math.max(1,s.stage-1);s.kills=0;s.safetyDefeats=Math.min(3,s.safetyDefeats+1);if(s.autoSafety&&s.safetyDefeats>=3){s.farmMode=true;log('안전 사냥 · 연속 사망으로 현재 지역 반복 사냥을 켰습니다. 장비를 준비한 뒤 자동 돌파를 다시 켜세요.')}}log('전투 불능 · 8초 후 회복'+(!wasBoss?' / 한 단계 후퇴':''));notify(s.autoSafety&&s.safetyDefeats>=3?'반복 사망으로 안전 사냥을 켰어요. 체력·방어를 준비한 뒤 돌파를 재개하세요.':'쓰러졌어요. 방어구와 생존 능력을 강화해 보세요.');save();renderLoot()}
-function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';animateStrike(true,false,heavy);castEnemySkill(skill);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}const blocked=passivePower('guard')>0&&rng()<.15; const hit=Math.max(1,Math.round(pendingDamage*(blocked?1-.35*passivePower('guard'):1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
+function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';animateStrike(true,false,heavy);castEnemySkill(skill,false);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}const blocked=passivePower('guard')>0&&rng()<.15; const hit=Math.max(1,Math.round(pendingDamage*(blocked?1-.35*passivePower('guard'):1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
 const movementSpeed=()=>moveAtLevel(s.move);
 const regionPenalty=()=>[1,1.2,1.45,1.8][regionIndex()];
 const travelDistance=()=> (3+Math.min(12,(s.stage-1)*.18))*regionPenalty();
