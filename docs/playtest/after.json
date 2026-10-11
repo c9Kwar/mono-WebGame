@@ -1,0 +1,848 @@
+[
+  {
+    "profile": "explorer",
+    "seed": 7,
+    "deathSources": {
+      "eliteSlime": 7,
+      "eliteMushroom": 7,
+      "eliteSnail": 5,
+      "eliteMoth": 4,
+      "snail": 2,
+      "moth": 4,
+      "eliteRabbit": 6,
+      "mushroom": 1,
+      "rabbit": 1
+    },
+    "actions": 132,
+    "claims": 4,
+    "crafts": 3,
+    "bossAttempts": 3,
+    "farmSeconds": 1535,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 11,
+        "highest": 11,
+        "deaths": 6,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 14,
+        "highest": 14,
+        "deaths": 14,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 14,
+        "highest": 15,
+        "deaths": 28,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 17,
+        "highest": 18,
+        "deaths": 37,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 17,
+    "highest": 18,
+    "deaths": 37,
+    "farmMode": false,
+    "gold": 1238,
+    "kills": 504,
+    "gear": 10,
+    "unclaimed": [],
+    "levels": {
+      "attack": 28,
+      "vitality": 28,
+      "guard": 25
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "explorer",
+    "seed": 42,
+    "deathSources": {
+      "eliteMushroom": 4,
+      "eliteSlime": 5,
+      "eliteMoth": 3,
+      "snail": 3,
+      "moth": 3,
+      "rabbit": 4,
+      "eliteSnail": 4,
+      "eliteRabbit": 3
+    },
+    "actions": 133,
+    "claims": 4,
+    "crafts": 4,
+    "bossAttempts": 3,
+    "farmSeconds": 1566,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 10,
+        "highest": 10,
+        "deaths": 5,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 13,
+        "highest": 14,
+        "deaths": 15,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 14,
+        "highest": 15,
+        "deaths": 25,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 17,
+        "highest": 18,
+        "deaths": 29,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 17,
+    "highest": 18,
+    "deaths": 29,
+    "farmMode": false,
+    "gold": 642,
+    "kills": 557,
+    "gear": 10,
+    "unclaimed": [],
+    "levels": {
+      "attack": 28,
+      "vitality": 29,
+      "guard": 26
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "explorer",
+    "seed": 99,
+    "deathSources": {
+      "eliteSlime": 7,
+      "eliteMushroom": 6,
+      "snail": 2,
+      "moth": 3,
+      "eliteMoth": 6,
+      "eliteRabbit": 5,
+      "rabbit": 4,
+      "eliteSnail": 1
+    },
+    "actions": 136,
+    "claims": 4,
+    "crafts": 4,
+    "bossAttempts": 4,
+    "farmSeconds": 1732,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 12,
+        "highest": 12,
+        "deaths": 4,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 14,
+        "highest": 14,
+        "deaths": 15,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 16,
+        "highest": 17,
+        "deaths": 26,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 16,
+        "highest": 17,
+        "deaths": 34,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 16,
+    "highest": 17,
+    "deaths": 34,
+    "farmMode": true,
+    "gold": 1528,
+    "kills": 562,
+    "gear": 12,
+    "unclaimed": [],
+    "levels": {
+      "attack": 28,
+      "vitality": 29,
+      "guard": 26
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "collector",
+    "seed": 7,
+    "deathSources": {
+      "eliteMushroom": 8,
+      "mushroom": 2,
+      "eliteSlime": 3,
+      "moth": 3,
+      "snail": 2,
+      "eliteRabbit": 2,
+      "rabbit": 2,
+      "eliteSnail": 7,
+      "treasure": 1
+    },
+    "actions": 136,
+    "claims": 4,
+    "crafts": 5,
+    "bossAttempts": 3,
+    "farmSeconds": 1837,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 10,
+        "highest": 10,
+        "deaths": 4,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 14,
+        "highest": 14,
+        "deaths": 10,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 15,
+        "highest": 15,
+        "deaths": 22,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 16,
+        "highest": 17,
+        "deaths": 30,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 16,
+    "highest": 17,
+    "deaths": 30,
+    "farmMode": true,
+    "gold": 1015,
+    "kills": 539,
+    "gear": 11,
+    "unclaimed": [],
+    "levels": {
+      "attack": 28,
+      "vitality": 29,
+      "guard": 24
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "collector",
+    "seed": 42,
+    "deathSources": {
+      "eliteMushroom": 4,
+      "eliteSlime": 3,
+      "eliteSnail": 4,
+      "eliteRabbit": 3,
+      "eliteMoth": 3,
+      "snail": 3,
+      "rabbit": 2,
+      "moth": 3,
+      "mushroom": 1
+    },
+    "actions": 142,
+    "claims": 4,
+    "crafts": 4,
+    "bossAttempts": 4,
+    "farmSeconds": 1040,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 11,
+        "highest": 11,
+        "deaths": 5,
+        "bosses": 1
+      },
+      {
+        "minute": 60,
+        "stage": 14,
+        "highest": 15,
+        "deaths": 13,
+        "bosses": 2
+      },
+      {
+        "minute": 90,
+        "stage": 17,
+        "highest": 18,
+        "deaths": 18,
+        "bosses": 3
+      },
+      {
+        "minute": 120,
+        "stage": 18,
+        "highest": 19,
+        "deaths": 26,
+        "bosses": 4
+      }
+    ],
+    "firstBoss": null,
+    "stage": 18,
+    "highest": 19,
+    "deaths": 26,
+    "farmMode": true,
+    "gold": 1090,
+    "kills": 503,
+    "gear": 15,
+    "unclaimed": [],
+    "levels": {
+      "attack": 29,
+      "vitality": 30,
+      "guard": 26
+    },
+    "bosses": [
+      4,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "collector",
+    "seed": 99,
+    "deathSources": {
+      "eliteMushroom": 8,
+      "snail": 3,
+      "eliteMoth": 7,
+      "eliteSnail": 4,
+      "moth": 3,
+      "eliteSlime": 7,
+      "eliteRabbit": 5,
+      "rabbit": 1
+    },
+    "actions": 129,
+    "claims": 3,
+    "crafts": 3,
+    "bossAttempts": 3,
+    "farmSeconds": 2961,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 10,
+        "highest": 11,
+        "deaths": 6,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 12,
+        "highest": 13,
+        "deaths": 15,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 14,
+        "highest": 15,
+        "deaths": 28,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 15,
+        "highest": 15,
+        "deaths": 38,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 15,
+    "highest": 15,
+    "deaths": 38,
+    "farmMode": false,
+    "gold": 560,
+    "kills": 554,
+    "gear": 9,
+    "unclaimed": [],
+    "levels": {
+      "attack": 27,
+      "vitality": 27,
+      "guard": 23
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "casual",
+    "seed": 7,
+    "deathSources": {
+      "eliteMoth": 6,
+      "moth": 5,
+      "eliteSlime": 7,
+      "mushroom": 1,
+      "eliteSnail": 5,
+      "eliteMushroom": 1,
+      "snail": 1,
+      "eliteRabbit": 3,
+      "rabbit": 2
+    },
+    "actions": 118,
+    "claims": 3,
+    "crafts": 0,
+    "bossAttempts": 3,
+    "farmSeconds": 2578,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 9,
+        "highest": 9,
+        "deaths": 9,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 13,
+        "highest": 13,
+        "deaths": 16,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 14,
+        "highest": 15,
+        "deaths": 24,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 15,
+        "highest": 15,
+        "deaths": 31,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 15,
+    "highest": 15,
+    "deaths": 31,
+    "farmMode": false,
+    "gold": 1077,
+    "kills": 535,
+    "gear": 6,
+    "unclaimed": [],
+    "levels": {
+      "attack": 28,
+      "vitality": 25,
+      "guard": 21
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "casual",
+    "seed": 42,
+    "deathSources": {
+      "mushroom": 1,
+      "eliteMushroom": 6,
+      "eliteMoth": 7,
+      "moth": 7,
+      "eliteSlime": 6,
+      "eliteSnail": 7,
+      "snail": 2,
+      "eliteRabbit": 4
+    },
+    "actions": 112,
+    "claims": 3,
+    "crafts": 0,
+    "bossAttempts": 2,
+    "farmSeconds": 3375,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 8,
+        "highest": 9,
+        "deaths": 9,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 9,
+        "highest": 10,
+        "deaths": 22,
+        "bosses": 0
+      },
+      {
+        "minute": 90,
+        "stage": 13,
+        "highest": 14,
+        "deaths": 34,
+        "bosses": 1
+      },
+      {
+        "minute": 120,
+        "stage": 13,
+        "highest": 15,
+        "deaths": 40,
+        "bosses": 2
+      }
+    ],
+    "firstBoss": null,
+    "stage": 13,
+    "highest": 15,
+    "deaths": 40,
+    "farmMode": true,
+    "gold": 1082,
+    "kills": 647,
+    "gear": 4,
+    "unclaimed": [],
+    "levels": {
+      "attack": 27,
+      "vitality": 26,
+      "guard": 20
+    },
+    "bosses": [
+      2,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "casual",
+    "seed": 99,
+    "deathSources": {
+      "eliteSlime": 8,
+      "eliteMushroom": 7,
+      "eliteMoth": 8,
+      "rabbit": 2,
+      "snail": 4,
+      "eliteSnail": 10,
+      "moth": 1,
+      "eliteRabbit": 3
+    },
+    "actions": 110,
+    "claims": 3,
+    "crafts": 0,
+    "bossAttempts": 2,
+    "farmSeconds": 3340,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 9,
+        "highest": 10,
+        "deaths": 9,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 12,
+        "highest": 12,
+        "deaths": 16,
+        "bosses": 0
+      },
+      {
+        "minute": 90,
+        "stage": 13,
+        "highest": 14,
+        "deaths": 30,
+        "bosses": 1
+      },
+      {
+        "minute": 120,
+        "stage": 13,
+        "highest": 14,
+        "deaths": 43,
+        "bosses": 2
+      }
+    ],
+    "firstBoss": null,
+    "stage": 13,
+    "highest": 14,
+    "deaths": 43,
+    "farmMode": true,
+    "gold": 921,
+    "kills": 533,
+    "gear": 5,
+    "unclaimed": [],
+    "levels": {
+      "attack": 28,
+      "vitality": 22,
+      "guard": 20
+    },
+    "bosses": [
+      2,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "challenger",
+    "seed": 7,
+    "deathSources": {
+      "eliteSlime": 6,
+      "eliteMushroom": 5,
+      "eliteSnail": 5,
+      "eliteMoth": 6,
+      "eliteRabbit": 5,
+      "snail": 1,
+      "mushroom": 1,
+      "moth": 3,
+      "rabbit": 1
+    },
+    "actions": 128,
+    "claims": 4,
+    "crafts": 3,
+    "bossAttempts": 3,
+    "farmSeconds": 2076,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 11,
+        "highest": 11,
+        "deaths": 10,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 14,
+        "highest": 14,
+        "deaths": 20,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 14,
+        "highest": 15,
+        "deaths": 27,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 17,
+        "highest": 18,
+        "deaths": 33,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 17,
+    "highest": 18,
+    "deaths": 33,
+    "farmMode": false,
+    "gold": 1103,
+    "kills": 473,
+    "gear": 10,
+    "unclaimed": [],
+    "levels": {
+      "attack": 26,
+      "vitality": 27,
+      "guard": 24
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "challenger",
+    "seed": 42,
+    "deathSources": {
+      "eliteMushroom": 3,
+      "eliteSlime": 5,
+      "eliteSnail": 5,
+      "mushroom": 1,
+      "moth": 5,
+      "eliteRabbit": 2,
+      "rabbit": 2,
+      "eliteMoth": 3
+    },
+    "actions": 126,
+    "claims": 3,
+    "crafts": 4,
+    "bossAttempts": 3,
+    "farmSeconds": 2406,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 11,
+        "highest": 11,
+        "deaths": 5,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 12,
+        "highest": 13,
+        "deaths": 13,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 14,
+        "highest": 14,
+        "deaths": 18,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 15,
+        "highest": 15,
+        "deaths": 26,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 15,
+    "highest": 15,
+    "deaths": 26,
+    "farmMode": false,
+    "gold": 190,
+    "kills": 541,
+    "gear": 9,
+    "unclaimed": [],
+    "levels": {
+      "attack": 26,
+      "vitality": 26,
+      "guard": 23
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "profile": "challenger",
+    "seed": 99,
+    "deathSources": {
+      "eliteSnail": 5,
+      "eliteSlime": 4,
+      "moth": 5,
+      "snail": 2,
+      "eliteMoth": 1,
+      "eliteMushroom": 5,
+      "eliteRabbit": 2,
+      "rabbit": 2,
+      "mushroom": 1
+    },
+    "actions": 132,
+    "claims": 4,
+    "crafts": 3,
+    "bossAttempts": 3,
+    "farmSeconds": 1095,
+    "checkpoints": [
+      {
+        "minute": 30,
+        "stage": 11,
+        "highest": 11,
+        "deaths": 4,
+        "bosses": 0
+      },
+      {
+        "minute": 60,
+        "stage": 12,
+        "highest": 13,
+        "deaths": 9,
+        "bosses": 1
+      },
+      {
+        "minute": 90,
+        "stage": 16,
+        "highest": 16,
+        "deaths": 18,
+        "bosses": 2
+      },
+      {
+        "minute": 120,
+        "stage": 18,
+        "highest": 18,
+        "deaths": 27,
+        "bosses": 3
+      }
+    ],
+    "firstBoss": null,
+    "stage": 18,
+    "highest": 18,
+    "deaths": 27,
+    "farmMode": false,
+    "gold": 965,
+    "kills": 524,
+    "gear": 11,
+    "unclaimed": [],
+    "levels": {
+      "attack": 28,
+      "vitality": 28,
+      "guard": 24
+    },
+    "bosses": [
+      3,
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+]
