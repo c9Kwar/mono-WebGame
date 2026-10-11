@@ -580,7 +580,7 @@ function renderFieldNotes(){
  $('item-blueprint-open').hidden=!ITEMS[selectedItem]?.blueprint;
  $('pinned-target-name').textContent=target?'제작 목표 · '+ITEMS[target].name:'나의 다음 보물';
  $('pinned-target-body').textContent=target?(!ITEMS['bp_'+target]||known('bp_'+target)?Object.entries(RECIPES[target]).map(([k,n])=>ITEMS[k].name+' '+Math.min(n,s.inventory[k]||0)+'/'+n).join(' · ')+' · 골드 '+fmt(s.gold)+'/'+fmt(CRAFT_GOLD[target]):'설계도 미획득 · '+sourceText('bp_'+target)):'제작창에서 목표를 고정하면 필요한 재료와 진행도를 이곳에서 볼 수 있어요.';
- $('pinned-target-status').textContent=target?(canCraft(target)?'✦ 모든 준비 완료 · 제작 가능':'사냥·원정·분해로 재료를 모으세요'):'선택은 자유 · 자동 사냥은 계속됩니다';
+ $('pinned-target-status').textContent=target?(canCraft(target)?'✦ 모든 준비 완료 · 제작 가능':'사냥·원정·분해로 재료를 모으세요'):'선택은 자유 · 자동 사냥은 계속됩니다';const needs=craftNeeds(target);$('pinned-target-sources').hidden=!target||!needs.length;$('pinned-target-needs').replaceChildren();for(const need of needs){const row=document.createElement('li');row.textContent=need.name+' '+fmt(need.missing)+'개 부족 · '+need.source;$('pinned-target-needs').append(row)}
  for(const key of Object.keys(RECIPES)){$('pin-'+key).textContent=target===key?'◆ 추적 중':'◇ 목표';$('pin-'+key).setAttribute('aria-pressed',String(target===key))}
  const signature=JSON.stringify(s.fieldNotes.finds);if(signature===findJournalSignature)return;findJournalSignature=signature;
  const list=$('find-journal');list.replaceChildren();for(const row of s.fieldNotes.finds){const item=ITEMS[row.key];if(!item)continue;const line=document.createElement('div');line.className='find-row '+item.rarity;const icon=document.createElement('span');paintItemIcon(icon,item);const text=document.createElement('span');const name=document.createElement('strong');name.textContent=(row.fresh?'NEW · ':'')+item.name;const sub=document.createElement('small');sub.textContent=row.source+' · '+new Date(row.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});text.append(name,sub);line.append(icon,text);list.append(line)}
@@ -640,3 +640,12 @@ function toggleGearLock(id){if(!canMutate())return false;const g=s.gear.find(x=>
 function rollTrailRelic(rng=Math.random){const roll=Math.min(9999,Math.max(0,Math.floor(rng()*10000)));return roll<6500?0:roll<9300?1:2;}
 
 $('quick-boss-normal').onclick=()=>{if(quickBossId!==null)startBoss(quickBossId,Math.random,true)};
+
+function craftNeeds(key){
+ if(!Object.hasOwn(RECIPES,key))return [];
+ const rows=[],blueprint='bp_'+key;
+ if(Object.hasOwn(ITEMS,blueprint)&&!known(blueprint))rows.push({key:blueprint,name:ITEMS[blueprint].name,missing:1,source:sourceText(blueprint)});
+ for(const [material,count] of Object.entries(RECIPES[key])){const missing=Math.max(0,count-(s.inventory[material]||0));if(missing)rows.push({key:material,name:ITEMS[material].name,missing,source:sourceText(material)});}
+ if(s.gold<CRAFT_GOLD[key])rows.push({key:'gold',name:'골드',missing:Math.ceil(CRAFT_GOLD[key]-s.gold),source:'일반 사냥 · 생존 가능한 오프라인 사냥 · 보스 원정'});
+ return rows;
+}
