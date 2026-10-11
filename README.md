@@ -18,18 +18,28 @@
 
 ## 검증
 
-Node.js 22 이상에서 실행합니다.
+Node.js 22 이상과 Python 3을 사용합니다. 의존성 없는 로직·자산 검사는 `npm test`로 모두 실행합니다.
 
 ```sh
-node --check dist/game.js
-node tests/content-update.cjs
-node tests/assets-ui.cjs
-node tests/images.cjs
-node tests/balance-simulation.cjs
-node tests/passive-budget.cjs
+npm test
+python3 -m venv .venv
+.venv/bin/pip install -r tests/requirements-browser.txt
+.venv/bin/python -m playwright install chromium
+npm start
+# 별도 터미널에서:
+.venv/bin/python tests/browser-smoke.py
 ```
 
-테스트는 실제 브라우저 시각 검증을 대신하지 않습니다.
+브라우저 테스트는 기본적으로 8082 포트 서버를 사용합니다. `GAME_URL`로 주소, `CHROMIUM_PATH`로 실행 파일을 지정할 수 있습니다. GitHub Actions에도 동일한 검사를 구성했습니다.
+
+## 이번 개선
+
+저장 파일 내보내기·확인 후 가져오기·교체 전 백업, 탭 충돌 감지, 장비 잠금, 일반 보스 선택, 설계도 미획득 60회 보장, 연속 사망 시 선택적 반복 사냥, 제작 목표의 부족 재료와 수급처를 추가했습니다. 기존 저장 키와 기본 전투·드롭 확률은 유지합니다.
+
+- [전체 분석과 28개 개선 과제](docs/improvement-plan.md)
+- [확률·경제 분석](docs/balance-review.md)
+- [실행한 테스트와 제한](docs/validation-report.md)
+
 
 ## 배포
 
