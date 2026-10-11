@@ -1,6 +1,6 @@
 const {harness,assert}=require('./harness.cjs'),fs=require('fs'),path=require('path');
 const h=harness({v:1,lastSeen:Date.now(),total:100,highestStage:25}),r=h.run;
-const assets=JSON.parse(r(`JSON.stringify([...Object.values(MOBS).map(m=>m.image),...BOSSES.map((_,i)=>bossSprite(i)),...Object.values(ITEMS).filter(i=>['legendary','mythic'].includes(i.rarity)).map(i=>i.art||'icon-'+(i.blueprint?'blueprint':i.slot||'crystal')+'.webp')])`));
+const assets=JSON.parse(r(`JSON.stringify([CREATURE_ATLAS.src,EQUIPMENT_ATLAS.src,sceneImage(),'art/mosslight-adventurer.png',...Object.values(MOBS).map(m=>m.image),...BOSSES.map((_,i)=>bossSprite(i))])`));
 for(const asset of assets)assert(fs.existsSync(path.join(__dirname,'../dist',asset)),asset);
 const html=fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8');const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length);
 r(`s.gold=1e6;award('jadeorb');award('bp_shellcoat');award('shellcoat');inventoryFilter='blueprints';renderLoot()`);assert.equal(h.nodes.get('inventory-grid').children.length,1);

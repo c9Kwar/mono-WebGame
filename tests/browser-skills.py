@@ -52,7 +52,7 @@ def sword_poses(page, critical=False, received=False):
         clearCombatEffects(); animateStrike(false, critical);
         if (received) animateStrike(true, false, true);
         const sword = document.querySelector('.hero-sword-hand');
-        const helmet = document.querySelector('.hero-helmet');
+        const headActor = document.querySelector('.hero-head');
         const point = (element, x, y) => {
             const p = new DOMPoint(x, y).matrixTransform(element.getScreenCTM());
             return {x: p.x, y: p.y};
@@ -66,7 +66,7 @@ def sword_poses(page, critical=False, received=False):
             return {
                 tip: point(sword, Number(sword.dataset.tipX), Number(sword.dataset.tipY)),
                 grip: point(sword, Number(sword.dataset.gripX), Number(sword.dataset.gripY)),
-                head: point(helmet, 740, 55),
+                head: point(headActor, Number(headActor.dataset.topX), Number(headActor.dataset.topY)),
             };
         });
         const bounds = $('arena').getBoundingClientRect();
@@ -110,7 +110,7 @@ with sync_playwright() as playwright:
                                  'lift_px': round(rest['tip']['y'] - raised['tip']['y'], 1),
                                  'drop_px': round(down['tip']['y'] - held['tip']['y'], 1)})
         for label, time in [('raised', 220), ('downstroke', 352)]:
-            page.evaluate('clearCombatEffects(); animateStrike(false, true)')
+            page.evaluate("clearCombatEffects(); $('encounter-intro').classList.remove('reveal'); animateStrike(false, true)")
             seek_arena(page, time)
             page.locator('#arena').screenshot(path=f'/tmp/mosslight-sword-{label}-{width}.png')
         assert_no_overflow(page, width)
@@ -150,9 +150,9 @@ with sync_playwright() as playwright:
         page.wait_for_function("document.querySelector('.fx-slash') !== null", timeout=1500)
         contact = page.evaluate('''() => {
             const sword = document.querySelector('.hero-sword-hand');
-            const helmet = document.querySelector('.hero-helmet');
+            const headActor = document.querySelector('.hero-head');
             const tip = new DOMPoint(Number(sword.dataset.tipX), Number(sword.dataset.tipY)).matrixTransform(sword.getScreenCTM());
-            const head = new DOMPoint(740,55).matrixTransform(helmet.getScreenCTM());
+            const head = new DOMPoint(Number(headActor.dataset.topX),Number(headActor.dataset.topY)).matrixTransform(headActor.getScreenCTM());
             return {at:performance.now(), tipY:tip.y, headY:head.y,
                 poseAnimations: document.querySelector('.hero-arm').getAnimations().map(animation => ({
                     name:animation.animationName, currentTime:animation.currentTime,

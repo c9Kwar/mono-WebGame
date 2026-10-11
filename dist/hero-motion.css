@@ -1,12 +1,12 @@
-/* The original knight art is clipped into a body, shoulder and wrist.
+/* The illustrated adventurer art is clipped into a body, shoulder and wrist.
    Shoulder and wrist rotations lift the blade overhead before the downstroke. */
 .hero-rig{display:block;overflow:visible}
 .hero-rig g{transform-box:view-box}
-.hero-arm{transform-origin:935px 610px}
-.hero-sword-hand{transform-origin:1000px 665px}
-.hero-arm-joint,.hero-arm-highlight{opacity:0}
-.hero-striking .hero-arm-joint,.hero-critical .hero-arm-joint,
-.hero-striking .hero-arm-highlight,.hero-critical .hero-arm-highlight{opacity:1}
+.hero-position{left:1%;width:44%;height:65%;bottom:16%}
+.hero-arm{transform-origin:750px 202px}
+.hero-sword-hand{transform-origin:1028px 254px}
+.hero-arm-joint{opacity:0}
+.hero-striking .hero-arm-joint,.hero-critical .hero-arm-joint{opacity:1}
 .hero-striking .hero-arm,.hero-critical .hero-arm{animation:hero-overhead-shoulder var(--hero-strike-duration,550ms) both}
 .hero-striking .hero-sword-hand,.hero-critical .hero-sword-hand{animation:hero-overhead-wrist var(--hero-strike-duration,550ms) both}
 .hero-striking .hero-motion,.hero-critical .hero-motion{animation:hero-overhead-weight var(--hero-strike-duration,550ms) both}
@@ -20,14 +20,14 @@
 .hero-striking #travel-overlay,.hero-critical #travel-overlay{visibility:hidden}
 @keyframes hero-overhead-shoulder{
   0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.25,.1,.25,1)}
-  34%,44%{transform:rotate(-112deg);animation-timing-function:cubic-bezier(.65,0,.9,.4)}
-  64%,72%{transform:rotate(34deg);animation-timing-function:ease-out}
+  34%,44%{transform:rotate(-100deg);animation-timing-function:cubic-bezier(.65,0,.9,.4)}
+  64%,72%{transform:rotate(30deg);animation-timing-function:ease-out}
   100%{transform:rotate(0deg)}
 }
 @keyframes hero-overhead-wrist{
   0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.25,.1,.25,1)}
-  34%,44%{transform:rotate(66deg);animation-timing-function:cubic-bezier(.65,0,.9,.4)}
-  64%,72%{transform:rotate(47deg);animation-timing-function:ease-out}
+  34%,44%{transform:rotate(70deg);animation-timing-function:cubic-bezier(.65,0,.9,.4)}
+  64%,72%{transform:rotate(60deg);animation-timing-function:ease-out}
   100%{transform:rotate(0deg)}
 }
 @keyframes hero-overhead-weight{
@@ -44,9 +44,11 @@
 /* Simplified effects retain the resting pose; pausing never leaves a raised blade. */
 .scene-paused .hero-rig g,.cinema-lite .hero-rig g,
 .scene-paused .hero-motion,.cinema-lite .hero-motion{animation:none!important;transform:none!important}
-.scene-paused .hero-arm-joint,.scene-paused .hero-arm-highlight,
-.cinema-lite .hero-arm-joint,.cinema-lite .hero-arm-highlight{opacity:0}
+.scene-paused .hero-arm-joint,.cinema-lite .hero-arm-joint{opacity:0}
 @media(prefers-reduced-motion:reduce){
   .hero-rig g,.arena .hero-motion{animation:none!important;transform:none!important}
-  .hero-arm-joint,.hero-arm-highlight{opacity:0!important}
+  .hero-arm-joint{opacity:0!important}
 }
+
+@media(max-width:800px){.hero-position{left:0%;width:44%;height:64%;bottom:16%}}
+@media(max-width:560px){.hero-position{left:-5%;width:61%;height:59%;bottom:17%}}

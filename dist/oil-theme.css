@@ -1,0 +1,380 @@
+/* Mosslight — The Mossbound Atlas.
+   Original art direction: an oil-painted forest recorded in an expedition ledger.
+   This sheet changes presentation only; combat choreography stays in its own sheets. */
+:root {
+  --bg: #15231f;
+  --surface: #1d2e28;
+  --surface-2: #2a3930;
+  --surface-3: #354238;
+  --line: #536052;
+  --text: #e5dfcb;
+  --muted: #aeb4a2;
+  --gold: #ceb481;
+  --green: #9fb29a;
+  --danger: #d99f8e;
+  --ink: #28382e;
+  --paper: #d8cfad;
+  --paper-light: #e5ddc5;
+  --brass: #a88b56;
+  --jade: #7b9c88;
+  --plum: #403944;
+  --tooltip-surface: #e5ddc5;
+  --tooltip-ink: #28382e;
+  --tooltip-muted: #59604e;
+  --tooltip-line: #afa586;
+  --tooltip-positive: #315e45;
+  --tooltip-warning: #8a422d;
+  --atlas-serif: Georgia, 'Noto Serif KR', Batang, '바탕', serif;
+  --atlas-paper: linear-gradient(110deg, #e4d5a807, transparent 45%, #06160f08);
+}
+
+body {
+  background: var(--atlas-paper), radial-gradient(ellipse at 83% 0, #53604a26, transparent 58%), var(--bg);
+  color: var(--text);
+}
+::selection { background: #b39d69; color: #19271f; }
+button, select { border-radius: 2px; }
+button { background: #293b31; border-color: #65705a; }
+button:hover:not(:disabled) { background: #3d4b3d; border-color: #ad9c70; }
+button:disabled { background: #29342d; color: #939c89; border-color: #505b4b; }
+button:focus-visible, a:focus-visible, select:focus-visible, summary:focus-visible {
+  outline-color: #e0c999;
+}
+h1, h2, h3, h4 { font-family: var(--atlas-serif); font-weight: 500; }
+.eyebrow { color: #c3ad7e; font-weight: 500; letter-spacing: 2.4px; }
+.panel { border-radius: 2px; border-color: #65705a; background: var(--atlas-paper), var(--surface); }
+.primary, .boss-primary, #quick-boss-enter, .victory-footer button {
+  border-color: #d0ba85;
+  background: var(--atlas-paper), #ccbb8e;
+  color: #26382c;
+  border-radius: 1px;
+}
+.primary:hover:not(:disabled), .boss-primary:hover:not(:disabled), #quick-boss-enter:hover:not(:disabled), .victory-footer button:hover:not(:disabled) {
+  background: #ded0a4;
+  border-color: #e7d7ad;
+}
+
+/* A clothbound spine, ruled labels and brass hardware frame the painted plates. */
+body > header {
+  background: var(--atlas-paper), #192b24;
+  border-bottom: 1px solid #9a8658;
+  box-shadow: 0 3px 0 #101b17, 0 4px 0 #a48e4c33;
+  backdrop-filter: none;
+}
+.brand { color: var(--paper-light); font-family: var(--atlas-serif); font-weight: 500; letter-spacing: 4px; }
+.brand-icon { color: #c4a669; font-size: 29px; }
+.brand small { color: #a9b09a; letter-spacing: 2.1px; }
+.wallet strong { color: #d7c296; font-family: var(--atlas-serif); font-weight: 500; }
+.coin { color: #c1a16b; }
+.header-boss { background: #354031; color: #e0d2ad; border-color: #8e8058; }
+.header-boss b { color: #b4c4a7; }
+.icon-button { border-radius: 50%; background: transparent; border-color: #73795e; color: #d7c99f; }
+.navigation-rail { background: var(--atlas-paper), #192923; border-right-color: #716c4e; }
+.rail-title { border-bottom-color: #777053; }
+.rail-title small, .rail-note span { color: #b4a177; }
+.rail-title strong { font-family: var(--atlas-serif); color: #d6d3ba; }
+.workspace-tabs button { color: #b5beab; border-radius: 1px; font-family: var(--atlas-serif); transition: none; }
+.workspace-tabs button::before { color: #a9b397; font-size: 17px; font-variant-emoji: text; }
+.workspace-tabs #tab-equipment::before { content: '\2694\FE0E'; }
+.workspace-tabs button[aria-selected=true] {
+  background: #d0c4a1;
+  color: #24392c;
+  border-color: #d1bc84;
+  box-shadow: inset 3px 0 #8b7042;
+}
+.workspace-tabs button[aria-selected=true]::before { color: #586448; }
+.workspace-tabs #tab-boss { background: #303b2d; border-color: #6f6d4e; color: #d8c693; }
+.workspace-tabs #tab-boss::before { color: #b9a373; }
+.workspace-tabs #tab-boss[aria-selected=true] { background: #cbb78b; color: #293b2c; box-shadow: inset 3px 0 #7c653a; }
+.workspace-tabs #tab-boss[aria-selected=true]::before { color: #67542f; }
+.rail-note { border-top-color: #777053; }
+.rail-note strong { color: #d1d1b8; }
+.rail-note p { color: #9ba994; }
+.view-heading { padding-bottom: 16px; border-bottom: 1px solid #6b70584d; }
+.view-heading h1 { font-family: var(--atlas-serif); color: #e3dcc3; letter-spacing: -.5px; }
+.adventure-status { border-radius: 1px; background: #24372c; border-color: #6c7f5f; color: #c9d0b6; }
+main > footer { border-top-color: #606b505c; color: #9caa91; }
+
+/* The live battle is a painting in a narrow museum mat. No overlay catches input. */
+.arena-panel { border: 1px solid #ac9564; box-shadow: 0 12px 35px #08120f55, 0 0 0 4px #b6a4770b; }
+.arena-top { background: var(--atlas-paper), #d8cfad; border-bottom: 1px solid #a6956e; }
+.arena-top .eyebrow { color: #5e5135; }
+.arena-top h2 { color: #273a2d; font-family: var(--atlas-serif); }
+.arena-top .badge { color: #4c563e; font-family: var(--atlas-serif); letter-spacing: 1px; }
+.combat-controls button { background: #c5bd9c; color: #364431; border-color: #938766; border-radius: 1px; }
+.combat-controls button:hover:not(:disabled) { background: #ece2c4; color: #25372a; border-color: #796b48; }
+.hero-vitals { background: #25392c; border-bottom-color: #9b8a60; }
+.hero-vitals strong { color: #c1cfac; }
+.hero-vitals #hero-hp-label { color: #e0e6c8; font-family: var(--atlas-serif); font-weight: 500; }
+.hero-vitals #hero-defense { color: #b8c5aa; }
+.hero-vitals .bar { height: 8px; border-radius: 0; background: #13251e; border-color: #708266; }
+.hero-vitals .bar > div { background: linear-gradient(90deg, #768f6e, #b0bb90); }
+.hero-vitals.critical { background: #45352f; }
+.hero-vitals.critical .bar > div { background: #ba7c67; }
+.arena { border: 5px solid #17241f; container-type: inline-size; background-color: #23382b; background-image: none; }
+.arena-shade { background: linear-gradient(180deg, #14221e38, transparent 40%, #14221e0d 70%, #101e1acc); }
+.enemy-card { background: #182b24e8; border-color: #b8a778a6; border-radius: 1px; box-shadow: 0 4px 16px #071a1744; }
+.enemy-card strong { color: #e3dcc2; font-family: var(--atlas-serif); font-weight: 500; }
+.enemy-card .bar { border-radius: 0; border-color: #866f58; background: #3d2b27; }
+.enemy-card .bar > div { background: #b98f70; }
+.encounter-heading > span, .encounter-heading small { color: #cfc6a5; }
+.battle-status, .last-impact { background: #21352ade; border-color: #9e946d80; border-radius: 1px; color: #e1d7b7; }
+.movement-strip, .stage-track, .battle-toolstrip { background: #24372c; border-color: #687258; color: #b8c3a7; }
+.stage-track strong { color: #d3bd8d; }
+.stage-track .bar { background: #192b22; border-radius: 0; }
+.stage-track .bar > div { background: #b4a273; }
+.battle-toolstrip button, .farm-controls button { background: #263b2e; border-color: #647455; color: #c6d0b6; border-radius: 1px; }
+.farm-controls button[aria-pressed=true] { background: #b8bea0; border-color: #c3c6a4; color: #263d2c; }
+.boss-timer { background: #26372beb; color: #e4c78f; border-color: #b49b68; border-radius: 1px; }
+.boss-timer b { font-family: var(--atlas-serif); font-weight: 500; }
+.boss-timer strong { white-space: nowrap; }
+#boss-pattern { border-radius: 1px; border-color: #b39b6c; background: #23372bef; }
+.arena #boss-pattern {
+  top: 7px;
+  right: 12px;
+  left: auto;
+  max-width: calc(100% - 160px);
+  padding: 5px 8px;
+  gap: 2px;
+}
+.arena #boss-pattern strong { font-size: 10px; line-height: 1.3; }
+.arena #boss-pattern small { font-size: 9px; line-height: 1.3; }
+.boss-charging #boss-pattern { background: #503b2dee; border-color: #d0a06b; }
+.travel-overlay { background: #172b22d9; backdrop-filter: none; }
+.travel-overlay h3 { font-family: var(--atlas-serif); color: #e6ddbb; }
+.encounter-intro { border-color: #aa9868; background: #1a2c24e8; }
+.encounter-intro strong, .victory-stamp strong { font-family: var(--atlas-serif); }
+
+/* The expedition board reads as a mounted illustration with a paper caption. */
+.boss-dock { background: var(--atlas-paper), #d3c9a8; border-color: #a99667; border-radius: 2px; box-shadow: 0 9px 22px #06131040; }
+.dock-art { border-bottom: 1px solid #9b8d67; background: #23372a; }
+.dock-art img { filter: none; }
+.dock-art::after { background: linear-gradient(180deg, transparent 46%, #15251fd1); }
+.dock-art-label { color: #ded2ad; font-family: var(--atlas-serif); letter-spacing: 2px; }
+.dock-heading .eyebrow { color: #5e5135; }
+.ready-count { background: #bbc09c; border-color: #7a8763; color: #3d5035; border-radius: 0; }
+.dock-body h2 { color: #273b2c; font-family: var(--atlas-serif); }
+.dock-body > p { color: #4c563e; }
+.dock-roster, .dock-boss-row { border-color: #8b88684d; }
+.dock-boss-row small { color: #5e5135; }
+.dock-boss-row b { color: #35472f; }
+.dock-boss-row > strong { color: #4c563e; }
+.dock-boss-row > strong.available { color: #405339; }
+.dock-body .boss-primary { background: #344835; border-color: #344835; color: #e8dfbd; }
+.dock-body .boss-primary:hover:not(:disabled) { background: #4b5c40; border-color: #4b5c40; }
+.dock-footnote { color: #4c563e; }
+.goal-strip, .passive-strip, .stat-drawer { background: #24382c; border-color: #69785c; border-radius: 1px; }
+.goal-strip { border-left-color: #a49465; }
+.goal-strip strong { color: #d5d7bb; font-family: var(--atlas-serif); }
+.goal-strip span, .goal-strip small { color: #b0bda3; }
+.forge { background: var(--atlas-paper), #22352b; border-color: #6c765c; }
+.forge-heading h2 { font-family: var(--atlas-serif); font-size: 16px; color: #ddd7ba; }
+.upgrade { background: #293e2f; border-color: #647452; border-radius: 0; }
+.upgrade strong { color: #d7dfc1; }
+.upgrade button { background: #bdb38b; border-color: #c6b88e; color: #2b3c2a; border-radius: 0; }
+.upgrade button:hover:not(:disabled) { background: #d9ca9e; border-color: #d9ca9e; }
+.buy-modes button { background: #24362a; border-color: #6c7558; color: #b7c4a7; border-radius: 0; }
+.buy-modes button[aria-pressed=true] { background: #b9c0a0; border-color: #b9c0a0; color: #2c402a; }
+.expedition-strip { background: #34383a; border-color: #6b6670; border-left-color: #a196a7; border-radius: 1px; }
+.expedition-strip strong { color: #d7ced8; font-family: var(--atlas-serif); }
+.expedition-strip button { background: #b3a8b5; border-color: #b3a8b5; color: #33323a; border-radius: 0; }
+
+.boss-view-masthead { background: linear-gradient(90deg, transparent, #65704718); border-color: #99875d; }
+.boss-view-masthead h2 { color: #ded5b6; font-family: var(--atlas-serif); }
+.boss-seal { color: #c8b17c; border-color: #9d875b; outline-color: #746444; }
+.boss-variant-chances { border-color: #807354; border-radius: 0; background: #313c2e; }
+.boss-card { background: var(--atlas-paper), #d8cfad; border-color: #a89971; border-radius: 1px; box-shadow: 0 8px 20px #08150f40; }
+.boss-card-art { background: #293a2c; padding: 12px; border-bottom: 1px solid #897957; }
+.boss-card-content { background: var(--atlas-paper); }
+.boss-card-index { color: #5e5135; font-family: var(--atlas-serif); letter-spacing: 2px; }
+.boss-card h3 { color: #293d2e; font-family: var(--atlas-serif); }
+.boss-card p { color: #4c563e; }
+.boss-card-reward { color: #5e5135 !important; border-color: #9c91674d; }
+.boss-card .boss-wait { color: #4d563b; }
+.boss-card .boss-personal-best, .boss-card .boss-entry-note { color: #4d513a; }
+.boss-card button { background: #384b37; border-color: #384b37; color: #e8dfbd; border-radius: 0; }
+.boss-card button:hover:not(:disabled) { background: #506042; border-color: #506042; }
+.boss-card button:disabled { background: #bebc9d; color: #656b50; border-color: #a6aa87; }
+
+/* Rarity is quiet pigment, with readable labels and a contrasting art mount. */
+.common, [data-rarity=common] { --tier: #c1c7ae; --tier-bg: #303f31; }
+.rare, [data-rarity=rare] { --tier: #acc5c0; --tier-bg: #2b403b; }
+.epic, [data-rarity=epic] { --tier: #c7b7ca; --tier-bg: #3a363e; }
+.legendary, [data-rarity=legendary] { --tier: #d6bd83; --tier-bg: #433d2c; }
+.mythic, [data-rarity=mythic] { --tier: #d3aaa9; --tier-bg: #463537; }
+.equipment-panel, .inventory-panel, .collection-panel, .passive-shop, .codex { background: var(--atlas-paper), #1c2e25; border-color: #626f53; }
+.preparation-banner { background: var(--atlas-paper), linear-gradient(110deg, #31452f, #273c2d 58%, #182b24); border-color: #9b9468; border-radius: 1px; }
+.preparation-banner::before { border-color: #bba77955; border-radius: 0; }
+.preparation-copy .eyebrow { color: #cbbb8b; }
+.preparation-copy h3 { font-family: var(--atlas-serif); color: #e9dfbb; word-break: keep-all; }
+.preparation-copy p { color: #c0c9ad; }
+.preparation-orbit { border-color: #bba77775; background: transparent; box-shadow: 0 0 0 12px #b3a47105, 0 0 0 13px #b3a47133; border-radius: 45% 45% 1px 1px; }
+.preparation-art { display: flex; align-items: center; justify-content: center; }
+.preparation-art img { width: 270px; height: 240px; max-width: none; flex-shrink: 0; object-fit: contain; filter: drop-shadow(0 12px 9px #101d1766); }
+.preparation-seal { color: #d1ba80; border-color: #baaa775e; border-radius: 0; }
+.loadout-roles button { background: #253b2d; border-color: #647454; border-radius: 1px; }
+.loadout-roles button[aria-pressed=true] { background: var(--atlas-paper), #cfc4a0; border-color: #cfbd89; box-shadow: inset 0 0 0 3px #bba77544; }
+.loadout-roles button[aria-pressed=true] strong { color: #2c432f; }
+.loadout-roles button[aria-pressed=true] small { color: #405339; }
+.loadout-roles button[aria-pressed=true] > span { color: #7a704a; }
+.loadout-panel { background: #283e2f; border-color: #82916a; border-radius: 1px; }
+.loadout-heading h3, .armory-panel h3, .craft-designs h4 { font-family: var(--atlas-serif); color: #dcdcc0; }
+.loadout-choice { border-radius: 0; background: #203629; border-color: #566e4b; }
+.loadout-choice.suggested { background: #394631; border-color: #9d9a65; }
+.armory-panel, .craft-designs { background: #21372b; }
+.craft-tree { background: #1b3025; border-color: #5a6a4e; }
+.craft-tree > strong { color: #c3ccae; }
+.craft-tree button { border-radius: 0; color: #b5c4a7; }
+.craft-tree button[aria-pressed=true] { background: #b9be9d; color: #2b412d; border-color: #b9be9d; }
+.craft-tree button[aria-pressed=true] small { color: #566344; }
+.gear-cell, .item-slot, .inventory-grid .item-slot, .recipe-card, .passive-card { border-radius: 1px; }
+.gear-cell { border-color: color-mix(in srgb, var(--tier), #26362a 48%); border-top: 2px solid var(--tier); }
+.gear-tile { grid-template-columns: 46px minmax(0, 1fr); gap: 2px 11px; min-height: 82px; }
+.gear-icon { width: 46px; height: 52px; border: 1px solid #a99c754f; border-radius: 1px; background: #d5c8a01c; }
+.gear-icon .premium-item-art { width: 44px; height: 48px; }
+.premium-item-art.mythic, .premium-item-art.legendary { filter: none; }
+.equipment-slots .gear-tile, .empty-gear-slot { border-top-width: 2px; border-radius: 1px; min-height: 116px; }
+.equipment-slots .gear-icon { width: 45px; height: 48px; background: transparent; border-color: #b4aa7f44; }
+.equipment-slots .gear-icon .premium-item-art { width: 43px; height: 46px; }
+.gear-actions { border-color: #b4aa7733; }
+.gear-actions button { border-radius: 0; }
+.item-slot { border-color: color-mix(in srgb, var(--tier), #28392a 45%); }
+.item-slot.selected { outline-color: #d9c99d; }
+.item-detail { background: #2c4131; border-color: #70835b; border-radius: 1px; }
+.recipe-card { border-color: #8e9e70; background: #2e442f; }
+.recipe-card.legendary { border-color: #a99564; background: linear-gradient(110deg, #453f2a, #27392a); }
+.recipe-card.mythic { border-color: #a78b96; background: linear-gradient(110deg, #46353e, #28372c); }
+.recipe-card.legendary strong, .recipe-card.legendary small { color: #ddc999; }
+.recipe-card.mythic strong, .recipe-card.mythic small { color: #d9bdca; }
+.recipe-info .premium-item-art { width: 48px; height: 50px; }
+.recipe-craft { background: #c5b789; border-color: #c5b789; color: #30442d; border-radius: 0; }
+.pinned-target, .find-journal-panel, .research-board { background: #2b3d2d; border-color: #929369; border-radius: 1px; }
+.find-row { border-radius: 0; background: #21382b; border-color: #5b7254; }
+.special-shop, .draw-panel { border-radius: 1px; background: #293d2e; border-color: #8d8a62; }
+.special-options button, .special-options button[aria-pressed=true] { border-radius: 0; }
+.special-options button[aria-pressed=true] { background: #bfb28b; color: #2d402b; border-color: #c9b991; }
+
+/* Field specimens sit on warm paper, like hand annotated plates in a forest atlas. */
+.codex-tabs button, .boss-tier-picker button, .collection-inner-tabs button { border-radius: 0; background: #263b2c; color: #b9c5a8; border-color: #667851; }
+.boss-tier-picker button[aria-pressed=true], .codex-tabs button.active, .collection-inner-tabs button[aria-pressed=true] { background: #c9bc96; color: #2b3f2d; border-color: #c9bc96; }
+.codex-layout nav button { background: #24382b; color: #bac8ad; border-color: #5f7252; border-radius: 0; }
+.codex-layout nav button.active { background: #c7bd97; color: #2c412d; border-color: #cebc86; }
+.codex-intro { padding: 18px; border: 1px solid #a39a74; background: var(--atlas-paper), #d8cfad; gap: 22px; }
+.codex-intro img { object-fit: contain; object-position: center; padding: 6px; background: #bdb899; border: 1px solid #94896a; border-radius: 0; }
+.codex-intro h3 { color: #2c432f; font-family: var(--atlas-serif); }
+.codex-intro p { color: #4c563e; }
+.codex-intro small { color: #4d563b; }
+.table-scroll { border-color: #6a795a; border-radius: 0; }
+th { background: #34472f; color: #cfcdad; }
+td { color: #c6d0b1; border-color: #6b7f5240; }
+td:first-child { color: #d5d8ba; }
+tr.undiscovered td { color: #a1ad91; }
+.rare-note { border-color: #8f835e; background: #343d2d; color: #d4c79e; border-radius: 0; }
+.record-badge, .achievement-effect, .achievement-badge, .research-grid article { border-radius: 1px; }
+.achievement-badge.earned { border-color: #a5a373; background: #3a4830; }
+.achievement-badge.earned strong { color: #dad8ad; }
+.journey-item { border-color: #667b534d; }
+.journey-item.active strong { color: #dfdab8; }
+.journey-item.active > span, .journey-item.active > b { color: #c6b580; }
+.log-panel .eyebrow { color: #b0c29a; }
+
+/* Dialogs remain restrained, legible ledger pages; rarity never relies on glow. */
+dialog, #potential-dialog, #quick-boss-dialog, #victory-dialog, #save-import-dialog {
+  border-radius: 2px;
+  border-color: #b09b6a;
+  background: var(--atlas-paper), #24382b;
+  color: #e1ddc3;
+  box-shadow: 0 20px 80px #05100ed9, inset 0 0 0 5px #bcab7533;
+}
+dialog::backdrop, #potential-dialog::backdrop, #quick-boss-dialog::backdrop, #victory-dialog::backdrop {
+  background: #101b17df;
+  backdrop-filter: none;
+}
+dialog h2, dialog h3 { font-family: var(--atlas-serif); }
+.quick-boss-row, #quick-boss-detail, .potential-base, .potential-block, .potential-reforge { border-radius: 1px; }
+.quick-boss-row { border-color: #6e805c; background: #2c422f; }
+.quick-boss-row[aria-pressed=true] { background: #445037; border-color: #c1b177; }
+.quick-boss-row img { border: 1px solid #a597624f; background: #d3c39115; }
+#quick-boss-detail { background: #21372a; border-color: #8c9667; }
+.boss-preparation, .boss-preparation[data-status=ready] { border-radius: 0; background: #35462e; border-color: #9c9561; }
+.boss-preparation dl > div { border-radius: 0; background: #223a2880; }
+#victory-dialog { --reward-color: #d3ba83; }
+#victory-dialog[data-tier=elite] { --reward-color: #c6b3c7; border-color: #a491ab; }
+#victory-dialog[data-tier=mystic] { --reward-color: #d1b3ae; background: var(--atlas-paper), #38313a; border-color: #af939d; }
+.victory-halo { opacity: .25; }
+.victory-header > span { color: var(--reward-color); letter-spacing: 3px; }
+.victory-header h2 { font-family: var(--atlas-serif); font-weight: 500; }
+.victory-item { border-radius: 1px; box-shadow: none; }
+.victory-item.rare { --item-color: #adc8c1; background: #2d453e; }
+.victory-item.epic { --item-color: #c9b9cb; background: #403948; }
+.victory-item.legendary { --item-color: #d8bf86; background: #49412e; box-shadow: none; }
+.victory-item.mythic { --item-color: #d5b1b2; background: #47353e; box-shadow: none; }
+.victory-item-emblem { border-radius: 1px; }
+.victory-wallet { border-radius: 0; background: #a7925c14; border-color: #a7925c66; }
+.victory-wallet b { font-family: var(--atlas-serif); font-weight: 500; }
+.gear-tooltip { border-radius: 1px; background: var(--atlas-paper), var(--tooltip-surface); border-color: #9b9270; box-shadow: 0 9px 25px #07181088; }
+.gear-tooltip h3 { font-family: var(--atlas-serif); color: #2d442f; }
+.gear-tooltip .potential-block { background: #393541; }
+.toast { border-radius: 1px; background: #d8ceab; border-color: #b8a170; color: #273c2c; box-shadow: 0 6px 24px #06171077; }
+
+/* Keep the established compact layouts and touch targets on narrow screens. */
+@media (min-width: 1001px) {
+  .boss-card-art { height: 215px; }
+  .codex-intro img { width: 190px; height: 170px; }
+}
+@media (min-width: 561px) and (max-width: 800px) {
+  .boss-card-art { border-bottom: 0; border-right: 1px solid #897957; }
+}
+@media (max-width: 800px) {
+  .navigation-rail { border-top-color: #a68e5c; background: var(--atlas-paper), #1d2e25; }
+  .workspace-tabs button { font-family: inherit; }
+  .workspace-tabs button[aria-selected=true] { box-shadow: inset 0 2px #8b7042; }
+  .workspace-tabs #tab-boss[aria-selected=true] { box-shadow: inset 0 2px #7c653a; }
+  .view-heading { padding-bottom: 12px; }
+  .dock-body h2 { font-size: 23px; }
+  .gear-tile { grid-template-columns: 42px minmax(0, 1fr); }
+  .gear-icon { width: 42px; height: 48px; }
+  .gear-icon .premium-item-art { width: 40px; height: 45px; }
+}
+@media (max-width: 560px) {
+  .brand { letter-spacing: 2.5px; }
+  .brand-icon { font-size: 22px; }
+  .view-heading { gap: 10px; }
+  .view-heading h1 { font-size: 27px; }
+  .arena { border-width: 3px; }
+  .boss-timer b { font-size: 20px; }
+  .boss-timer strong { font-size: 10px; }
+  .arena-top .badge { letter-spacing: 0; }
+  .dock-body h2 { font-size: 20px; }
+  .boss-card-art { height: 215px; padding: 12px; }
+  .boss-card h3 { font-size: 24px; }
+  .gear-tile { grid-template-columns: 44px minmax(0, 1fr); gap: 2px 8px; padding: 10px 8px; min-height: 80px; }
+  .gear-icon { width: 44px; height: 49px; }
+  .equipment-slots .gear-tile, .empty-gear-slot { min-height: 110px; }
+  .codex-intro { gap: 12px; padding: 12px; align-items: flex-start; }
+  .codex-intro img { width: 108px; height: 135px; flex: 0 0 108px; }
+  .codex-intro h3 { font-size: 19px; }
+  .codex-intro p { font-size: 11px; }
+  .preparation-banner { padding: 22px 16px; }
+  .preparation-copy h3 { font-size: 22px; }
+  .preparation-orbit { width: 96px; height: 142px; }
+  .preparation-art img { width: 160px; height: 180px; }
+  .recipe-info .premium-item-art { width: 42px; height: 45px; }
+}
+
+/* Keep skill warnings in the caption band, above the health card and clear of
+   the hero's raised sword, face and the enemy's silhouette at every width. */
+@container (min-width: 650px) {
+  .arena #boss-pattern {
+    top: 14px;
+    left: auto;
+    right: 18px;
+    max-width: 340px;
+    padding: 7px 10px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  .arena #boss-pattern strong { font-size: 12px; white-space: nowrap; }
+  .arena #boss-pattern small { font-size: 10px; }
+}
