@@ -97,13 +97,8 @@
 .trail-shortcut{font-size:12px;min-height:32px;padding:5px 8px;color:#d9e8b8;background:#2e4934;border:1px solid #7b9267}
 #reset-dialog{width:min(460px,calc(100vw - 28px));padding:20px}#reset-dialog p{font-size:13px;line-height:1.7}#reset-input{display:block;width:100%;padding:10px;margin:12px 0;background:#15281e;color:#f1e8ca;border:1px solid #b8a876}#reset-error{color:#efb4a0}
 #save-reset{color:#e2b6a2}
-.arena.hero-defeated .hero-motion{transform-origin:48% 85%;animation:hero-collapse .75s ease-in forwards!important}
-.arena.hero-defeated .hero-position{animation:none!important}.arena.hero-defeated .hero-arm,.arena.hero-defeated .hero-sword-hand{animation:none!important}
-@keyframes hero-collapse{0%{transform:translateY(0) rotate(0);opacity:1}35%{transform:translateY(7%) rotate(12deg)}100%{transform:translateY(23%) rotate(68deg);opacity:.65}}
-.arena.hero-defeated #travel-overlay{background:transparent}
-.arena.scene-paused.hero-defeated .hero-motion{animation-play-state:paused!important}
-@media(prefers-reduced-motion:reduce){.arena.hero-defeated .hero-motion{animation:none!important;transform:translateY(15%) rotate(35deg);opacity:.65}.expedition-strip #trail-progress{transition:none}}
-.arena.cinema-lite.hero-defeated .hero-motion{animation:none!important;transform:translateY(15%) rotate(35deg);opacity:.65}
+/* Articulated defeat choreography lives with the SVG rig in hero-motion.css. */
+@media(prefers-reduced-motion:reduce){.expedition-strip #trail-progress{transition:none}}
 .craft-ready-filter{display:inline-flex;align-items:center;gap:7px;min-height:36px;font-size:13px;color:#d5e3c7;cursor:pointer}
 .craft-ready-filter input{width:17px;height:17px;accent-color:#486445}
 .craft-empty{padding:16px;border:1px dashed var(--line);font-size:13px;line-height:1.7}

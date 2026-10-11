@@ -11,16 +11,18 @@ with sync_playwright() as p:
  assert '관통 35%' in page.locator('#quick-boss-stats').inner_text()
  assert '재생 5,400 HP' in page.locator('#quick-boss-stats').inner_text()
  page.locator('#boss-extra-details > summary').click()
- assert 'T6 장비 확정' in page.locator('#quick-boss-rewards').inner_text()
- assert 'T8' in page.locator('#quick-boss-variants').inner_text()
+ assert 'T3 장비 확정' in page.locator('#quick-boss-rewards').inner_text()
+ assert '엘리트 장비 T3 / 미스틱 T3' in page.locator('#quick-boss-variants').inner_text()
  page.locator('#boss-extra-details > summary').click()
  for width in [390,800,1440]:
   page.set_viewport_size({'width':width,'height':1080})
   assert page.locator('#quick-boss-dialog').evaluate('(el)=>el.scrollWidth<=el.clientWidth'),width
   page.screenshot(path=f'/tmp/mosslight-boss-growth-{width}.png')
- page.evaluate("document.querySelector('#quick-boss-dialog').close();award('mossblade',1,()=>.5,'test',1);award('mossblade',1,()=>.5,'test',6);renderLoot();save()")
+ # A saved T6 remains valid; a new award asking for T6 must now stop at T3.
+ page.evaluate("document.querySelector('#quick-boss-dialog').close();award('mossblade',1,()=>.5,'test',1);const fresh=award('mossblade',1,()=>.5,'test',6);if(fresh.tier!==3)throw Error('new chapter tier escaped');const legacy={...fresh,id:'g'+s.nextGearId++,tier:6,potentials:rollPotentials('mossblade',()=>.5,6)};s.gear.push(legacy);s.inventory.mossblade++;renderLoot();save()")
  page.locator('#tab-equipment').click()
- assert 'T6' in page.locator('#gear-list').inner_text() and 'T1' in page.locator('#gear-list').inner_text()
+ assert all(tier in page.locator('#gear-list').inner_text() for tier in ['T1','T3','T6'])
+ assert '챕터 1 · 신규 장비 T1~T3' in page.locator('#equipped-label').inner_text()
  page.locator('#gear-list .gear-tile').first.hover();assert 'T6' in page.locator('#tip-stats').inner_text()
  page.reload();page.locator('#tab-equipment').click();assert 'T6' in page.locator('#gear-list').inner_text()
  page.set_viewport_size({'width':390,'height':1080});page.screenshot(path='/tmp/mosslight-tier-mobile.png',full_page=True)
@@ -28,8 +30,8 @@ with sync_playwright() as p:
  assert abs(result['healed']-100540)<.001 and result['healed']==result['paused'],result
  assert '방어 관통 35%' in result['ui']
  page.evaluate("s.paused=false;damage(1e12);s.paused=true;save();render()")
- assert page.evaluate('s.battleReward.rows.some(r=>r.gear?.tier===6)')
+ assert page.evaluate('s.battleReward.rows.filter(r=>r.gear).length>0&&s.battleReward.rows.filter(r=>r.gear).every(r=>r.gear.tier===3)')
  count=page.evaluate('s.gear.length');page.reload();assert page.evaluate('s.gear.length')==count
  assert not errors,errors
- print(json.dumps({'result':'PASS boss penetration/regen/rewards, three viewport layouts, T1/T6 comparison, saved tiers and victory receipt','regeneration':result['healed']-100000}))
+ print(json.dumps({'result':'PASS boss penetration/regen/rewards, three viewport layouts, Chapter 1 T1–T3 cap, legacy T6 comparison/persistence and T3 victory receipt','regeneration':result['healed']-100000}))
  browser.close()

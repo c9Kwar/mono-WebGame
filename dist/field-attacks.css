@@ -1,0 +1,70 @@
+/* Brush-shaped matter belongs to the painted forest: sap, spores, dew and leaves.
+   Outer position = species attack; inner actor remains free for hit reactions. */
+.arena[data-skill=field-acid],.skill-field-acid{--skill:#b7c58b;--field-dark:#526c48;--field-light:#d5dbb4}
+.arena[data-skill=field-spore],.skill-field-spore{--skill:#b6a0b6;--field-dark:#6c566f;--field-light:#d8c6cd}
+.arena[data-skill=field-mucus],.skill-field-mucus{--skill:#9ab6a5;--field-dark:#426c60;--field-light:#d0dfcc}
+.arena[data-skill=field-wing],.skill-field-wing{--skill:#d9cba6;--field-dark:#8c987d;--field-light:#ece4cd}
+.arena[data-skill=field-kick],.skill-field-kick{--skill:#b0ba89;--field-dark:#6b7958;--field-light:#dfd6af}
+.arena[data-skill^=field-] .charge-rune,.arena[data-skill^=field-] .enemy-wave{display:none}
+.arena[data-skill^=field-].skill-charging:not([data-cast-skill^=field-]) .enemy-motion{animation:field-gather .55s ease-out both}
+.arena[data-skill=field-mucus].skill-charging:not([data-cast-skill^=field-]) .enemy-motion{animation:field-snail-gather .55s ease-out both}
+.arena[data-skill=field-wing].skill-charging:not([data-cast-skill^=field-]) .enemy-motion{animation:field-wing-gather .42s ease-in-out both}
+.arena[data-cast-skill^=field-] .enemy-position{transform-origin:50% 94%}
+.arena[data-cast-skill^=field-] .enemy-motion{animation:none}
+.arena[data-cast-skill=field-acid] .enemy-position{animation:field-slime-spit .82s both}
+.arena[data-cast-skill=field-spore] .enemy-position{animation:field-cap-puff .86s both}
+.arena[data-cast-skill=field-mucus] .enemy-position{animation:field-snail-lash .94s both}
+.arena[data-cast-skill=field-wing] .enemy-position{animation:field-moth-beat .70s both}
+.arena[data-cast-skill=field-kick] .enemy-position{animation:field-rabbit-kick .76s both}
+.arena[data-cast-skill^=field-].enemy-striking .hero-position{animation:contact-recoil .30s .27s ease-out}
+.field-attack{inset:0;width:100%;height:100%;transform:none;--field-size:1;filter:drop-shadow(0 2px 1px #16372c55)}
+.field-attack i{position:absolute;display:block;box-sizing:border-box;pointer-events:none}
+.field-source{left:var(--source-x);top:var(--source-y);width:31px;height:22px;margin:-11px -16px;background:var(--skill);border-radius:63% 37% 55% 45%;animation:field-source-puff .7s both;box-shadow:inset 4px 3px 0 var(--field-light),inset -4px -3px 0 var(--field-dark)}
+.field-mote{left:0;top:0;width:calc((13px + var(--i)*1px)*var(--field-size));height:calc((8px + var(--i)*1px)*var(--field-size));background:var(--skill);border-radius:65% 35% 50% 50%;offset-rotate:auto;animation:field-flight .65s var(--delay) cubic-bezier(.2,.45,.65,1) both;box-shadow:inset 2px 2px 0 var(--field-light),inset -2px -1px 0 var(--field-dark)}
+.field-contact{left:var(--target-x);top:var(--target-y);width:46px;height:38px;margin:-19px -23px;background:var(--skill);border-radius:37% 63% 41% 59% / 64% 45% 55% 36%;animation:field-sap-contact .86s both}
+.field-fleck{left:var(--target-x);top:var(--target-y);width:7px;height:10px;background:var(--field-light);border-radius:70% 30% 60% 40%;animation:field-contact-fleck .90s both}
+/* Acid is a lumpy stream; the rim stays matte, with only one small pale glint. */
+.skill-field-acid .field-mote:nth-child(even){width:10px;height:7px;background:var(--field-dark)}
+.skill-field-acid .field-contact{background:radial-gradient(ellipse at 32% 23%,#d5dbb49c 0 7%,transparent 11%),linear-gradient(140deg,#b7c58bd1,#829766bd 55%,#526c4880);box-shadow:9px 3px 0 -6px #a8b780a0,-8px 5px 0 -5px #889c7299}
+/* Soft, uneven cap-shaped puffs, never a neon poison ring or a persistent debuff. */
+.skill-field-spore .field-source{width:53px;height:24px;margin:-12px -26px;border-radius:45% 55% 34% 66%;background:radial-gradient(ellipse,#cbb8c5b8,#80618440 65%,transparent 72%);box-shadow:none}
+.skill-field-spore .field-mote{width:calc((18px + var(--i)*3px)*var(--field-size));height:calc((16px + var(--i)*2px)*var(--field-size));border-radius:45% 55% 63% 37%;background:radial-gradient(ellipse at 35% 30%,#d3c0cfad,#9c7d9d88 38%,#6e526c3b 64%,transparent 73%);box-shadow:none;offset-rotate:0deg;animation-name:field-spore-flight}
+.skill-field-spore .field-contact{width:72px;height:60px;margin:-30px -36px;clip-path:none;border-radius:47% 53% 38% 62%;background:radial-gradient(ellipse,#b699bb77,#8e6a983d 52%,transparent 73%);animation-name:field-spore-contact}
+.skill-field-spore .field-fleck{width:4px;height:4px;background:#d8bfad;box-shadow:8px -5px 0 #b098b6,-6px 7px 0 #927699}
+/* Flattened curved droplets overlap into a viscous ribbon, then fall apart. */
+.skill-field-mucus .field-source{width:38px;height:13px;margin:-7px -19px}
+.skill-field-mucus .field-mote{width:calc(42px*var(--field-size));height:calc((7px + var(--i)*.5px)*var(--field-size));border-radius:80% 30% 65% 25%;background:linear-gradient(170deg,#d0dfcc 5%,#9ab6a5cc 29%,#426c6099 75%,transparent);box-shadow:none;animation-name:field-ribbon-flight}
+.skill-field-mucus .field-contact{width:48px;height:29px;margin:-8px -24px;border-radius:68% 32% 51% 49%;clip-path:none;background:linear-gradient(145deg,#d0dfccaa,#83a18bb0 40%,#426c6044);animation-name:field-mucus-contact}
+.skill-field-mucus .field-fleck{width:5px;height:15px;border-radius:50% 50% 65% 35%;animation-name:field-mucus-drip}
+/* Moth dust follows thin, leaf-vein crescents; rabbit leaves skim the ground. */
+.skill-field-wing .field-source{background:none;border:0;box-shadow:none;width:42px;height:30px;border-top:3px solid #e6debd;border-radius:80% 35% 0 0}
+.skill-field-wing .field-mote{width:calc((32px + var(--i)*3px)*var(--field-size));height:calc(18px*var(--field-size));background:none;border-top:2px solid var(--skill);border-bottom:1px solid #8c987d80;border-radius:80% 25% 60% 0;box-shadow:none}
+.skill-field-wing .field-contact{clip-path:none;background:none;border-left:3px solid var(--field-light);border-bottom:2px solid var(--skill);border-radius:55% 0 65% 0;transform-origin:center;animation-name:field-wing-contact}
+.skill-field-wing .field-fleck{width:3px;height:3px;border-radius:50%;box-shadow:9px -3px 0 #d9cba677,-4px -9px 0 #d9cba655}
+.skill-field-kick .field-source{width:45px;height:12px;margin:9px -23px;border-radius:50%;background:#938a6740;box-shadow:none}
+.skill-field-kick .field-mote{width:calc((14px + var(--i)*1px)*var(--field-size));height:calc(8px*var(--field-size));border-radius:100% 0 90% 0;box-shadow:inset 0 1px 0 #dcd3a5;offset-rotate:auto;animation-name:field-leaf-flight}
+.skill-field-kick .field-contact{width:54px;height:23px;margin:-12px -27px;border-radius:80% 10% 85% 15%;background:linear-gradient(172deg,transparent 12%,#dfd6afbd 20%,#a4a87899 40%,transparent 62%);box-shadow:0 8px 0 -6px #dfd6af99;animation-name:field-kick-contact}
+.skill-field-kick .field-fleck{width:14px;height:7px;border-radius:100% 0 90% 0;background:#8c9a67}
+@keyframes field-gather{to{transform:translateY(4px) scale(1.04,.95)}}
+@keyframes field-snail-gather{to{transform:translateX(4px) scale(.94,.97)}}
+@keyframes field-wing-gather{to{transform:translateY(-4px) scaleX(.9) rotate(3deg)}}
+@keyframes field-slime-spit{0%{transform:scale(1.03,.97)}17%{transform:translate(3px,5px) scale(1.14,.82)}30%{transform:translate(-6px,-4px) scale(.93,1.1)}42%{transform:translate(-10px,1px) scale(1.09,.96)}63%{transform:scale(.98,1.04)}100%{transform:none}}
+@keyframes field-cap-puff{0%{transform:scale(1.03,.96)}18%{transform:translate(2px,7px) scale(1.08,.87) rotate(2deg)}32%{transform:translate(-3px,-6px) scale(.96,1.06) rotate(-2deg)}49%{transform:translate(0,2px) scale(1.04,.97)}72%{transform:rotate(1deg)}100%{transform:none}}
+@keyframes field-snail-lash{0%{transform:translateX(3px) scale(.96,.98)}20%{transform:translateX(8px) scale(.86,1.03)}34%{transform:translate(-13px,2px) scale(1.12,.95) rotate(-2deg)}48%{transform:translate(-7px,1px) scale(1.05,.99)}75%{transform:translateX(2px) scale(.99,1.01)}100%{transform:none}}
+@keyframes field-moth-beat{0%{transform:translateY(-3px) scaleX(.94)}18%{transform:translate(3px,-7px) scale(.8,1.03) rotate(5deg)}32%{transform:translate(-6px,-12px) scale(1.1,.96) rotate(-4deg)}46%{transform:translate(-8px,-4px) scaleX(.9)}62%{transform:translate(-2px,-7px) scaleX(1.05)}100%{transform:none}}
+@keyframes field-rabbit-kick{0%{transform:scale(1.03,.96)}16%{transform:translate(5px,5px) scale(1.08,.85) rotate(5deg)}31%{transform:translate(-19px,-20px) scale(.95,1.07) rotate(-13deg)}44%{transform:translate(-30px,-9px) scale(1.12,.94) rotate(-8deg)}59%{transform:translate(-9px,4px) scale(1.06,.92) rotate(3deg)}77%{transform:translateY(-2px) scale(.99,1.02)}100%{transform:none}}
+@keyframes field-source-puff{0%,7%{opacity:0;transform:scale(.3)}22%{opacity:.75;transform:scale(1,.75)}46%{opacity:.15;transform:scale(1.3,.6)}70%,100%{opacity:0;transform:scale(1.4,.6)}}
+@keyframes field-flight{0%,15%{offset-distance:0%;opacity:0;transform:scale(.4)}23%{opacity:1;transform:scale(1)}57%{offset-distance:100%;opacity:.9;transform:scale(.7)}72%,100%{offset-distance:100%;opacity:0;transform:scale(.2)}}
+@keyframes field-spore-flight{0%,14%{offset-distance:0%;opacity:0;transform:scale(.3)}24%{opacity:.75;transform:scale(.8)}60%{offset-distance:100%;opacity:.7;transform:scale(1.45)}100%{offset-distance:100%;opacity:0;transform:scale(2)}}
+@keyframes field-ribbon-flight{0%,15%{offset-distance:0%;opacity:0;transform:scaleX(.2)}25%{opacity:.88;transform:scaleX(.9)}59%{offset-distance:100%;opacity:.7;transform:scaleX(.8)}85%,100%{offset-distance:100%;opacity:0;transform:scale(.2,.7)}}
+@keyframes field-leaf-flight{0%,15%{offset-distance:0%;opacity:0;transform:rotate(0deg)}25%{opacity:.7}59%{offset-distance:100%;opacity:.9;transform:rotate(var(--turn))}100%{offset-distance:100%;opacity:0;transform:translateY(16px) rotate(calc(var(--turn) + 60deg))}}
+@keyframes field-sap-contact{0%,34%{opacity:0;transform:scale(.12)}44%{opacity:.85;transform:scale(.75)}60%{opacity:.55;transform:scale(1,.8)}100%{opacity:0;transform:translateY(9px) scale(.85,.45)}}
+@keyframes field-spore-contact{0%,32%{opacity:0;transform:scale(.2)}46%{opacity:.8;transform:scale(.85)}100%{opacity:0;transform:translate(-7px,-17px) scale(1.5)}}
+@keyframes field-mucus-contact{0%,34%{opacity:0;transform:scale(.2)}47%{opacity:.8;transform:scale(1.1,.65)}100%{opacity:0;transform:translateY(20px) scale(.75,.7)}}
+@keyframes field-wing-contact{0%,33%{opacity:0;transform:rotate(10deg) scale(.2)}47%{opacity:.85;transform:rotate(-15deg) scale(.9)}100%{opacity:0;transform:translate(-12px,4px) rotate(-35deg) scale(1.25)}}
+@keyframes field-kick-contact{0%,32%{opacity:0;transform:scale(.2)}43%{opacity:.9;transform:scale(1.15,.8)}65%{opacity:.4;transform:scale(1.3,.75)}100%{opacity:0;transform:scale(1.35,.65)}}
+@keyframes field-contact-fleck{0%,34%{opacity:0;transform:scale(.3)}45%{opacity:.75}100%{opacity:0;transform:translate(var(--scatter-x),var(--scatter-y)) rotate(var(--turn)) scale(.5)}}
+@keyframes field-mucus-drip{0%,36%{opacity:0;transform:scale(.3)}47%{opacity:.7}100%{opacity:0;transform:translate(var(--scatter-x),28px) rotate(var(--turn)) scale(.4,.8)}}
+.arena.scene-paused .field-attack,.arena.cinema-lite .field-attack{display:none}
+.arena.scene-paused[data-skill^=field-] .enemy-motion,.arena.cinema-lite[data-skill^=field-] .enemy-motion{animation:none!important}
+@media(prefers-reduced-motion:reduce){.field-attack{display:none!important}.arena[data-skill^=field-] .enemy-motion{animation:none!important}}

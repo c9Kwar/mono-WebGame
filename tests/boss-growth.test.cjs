@@ -9,11 +9,11 @@ test('legacy equipment keeps exact stats, options, lock and quantity across tier
  assert.deepEqual(plain(h.run('s.gear[0]')),{...gear,tier:1});h.run('save()');
  const restored=harness(JSON.parse(h.stored['mosslight.save.v1']));assert.deepEqual(plain(restored.run('s.gear[0]')),{...gear,tier:1});
 });
-test('same-rarity higher tier improves stats, score and recommended loadout and tier-scaled potentials',()=>{
- const h=harness(base);h.run("var a=award('mossblade',1,()=>.5,'test',1),b=award('mossblade',1,()=>.5,'test',6);s.slots.weapon=a.id;var oldStat=gearStat('weapon','damage');s.slots.weapon=b.id");
- assert.equal(h.run("gearStat('weapon','damage')/oldStat"),2);assert.ok(h.run('baseGearScore(b)>baseGearScore(a)'));h.run('s.slots.weapon=a.id');assert.equal(h.run("recommendedGear('weapon').id"),h.run('b.id'));h.run('s.slots.weapon=b.id');
- assert.ok(h.run('b.potentials.every((p,i)=>p.value>=a.potentials[i].value)'));assert.match(h.run('gearText(b)'),/^T6/);
- h.run('save()');const restored=harness(JSON.parse(h.stored['mosslight.save.v1']));assert.equal(restored.run('equippedGear("weapon").tier'),6);
+test('same-rarity T3 improves stats, score, recommendations and new potential rolls over T1',()=>{
+ const h=harness(base);h.run("var a=award('mossblade',1,()=>.5,'test',1),b=award('mossblade',1,()=>.5,'test',3);s.slots.weapon=a.id;var oldStat=gearStat('weapon','damage');s.slots.weapon=b.id");
+ assert.ok(Math.abs(h.run("gearStat('weapon','damage')/oldStat")-1.4)<1e-12);assert.ok(h.run('baseGearScore(b)>baseGearScore(a)'));h.run('s.slots.weapon=a.id');assert.equal(h.run("recommendedGear('weapon').id"),h.run('b.id'));h.run('s.slots.weapon=b.id');
+ assert.ok(h.run('b.potentials.every((p,i)=>p.value>=a.potentials[i].value)'));assert.match(h.run('gearText(b)'),/^T3/);
+ h.run('save()');const restored=harness(JSON.parse(h.stored['mosslight.save.v1']));assert.equal(restored.run('equippedGear("weapon").tier'),3);
  assert.equal(h.run('gearTier({tier:99})'),8);assert.equal(h.run('gearTier({tier:-3})'),1);assert.equal(h.run('gearTier({tier:NaN})'),1);
 });
 test('all bosses and variants have three reachable guaranteed choices and correct reward tiers',()=>{
@@ -22,7 +22,7 @@ test('all bosses and variants have three reachable guaranteed choices and correc
    const h=harness(base);h.run(`bossTier='${variant}';rollLoot(true,${id},()=>${roll})`);
    const gears=plain(h.run('s.gear'));const pool=plain(h.run(`BOSS_GEAR_POOLS[${id}]`));
    const selected=pool[Math.floor(roll*3)];assert.ok(gears.some(g=>g.key===selected));seen.add(selected);
-   assert.ok(gears.every(g=>g.tier===id+2+['normal','elite','mystic'].indexOf(variant)));
+   assert.ok(gears.every(g=>g.tier===Math.min(3,id+1+['normal','elite','mystic'].indexOf(variant))));
   }assert.equal(seen.size,3);
  }
 });
@@ -40,10 +40,10 @@ test('regeneration uses elapsed combat time, caps HP and never runs while hidden
  h.run('hp=0;regenerateBoss(1)');assert.equal(h.run('hp'),0);
  assert.equal(h.run('bossRegenPerSecond(4,"normal",1)'),0);assert.equal(h.run('bossRegenPerSecond(4,"normal",.5)'),2700);
 });
-test('field/crafting tiers follow region while boss reward snapshots retain tier and never duplicate on reload',()=>{
- const h=harness({...base,gold:1e9});assert.equal(h.run('fieldGearTier(1)'),1);assert.equal(h.run('fieldGearTier(11)'),3);assert.equal(h.run('fieldGearTier(999)'),5);
+test('field/crafting tiers stop at T3 and new boss reward snapshots retain tier without duplication',()=>{
+ const h=harness({...base,gold:1e9});assert.equal(h.run('fieldGearTier(1)'),1);assert.equal(h.run('fieldGearTier(11)'),3);assert.equal(h.run('fieldGearTier(999)'),3);
  h.run("currentMob='slime';rollLoot(false,0,()=>0)");assert.equal(h.run('s.gear.length'),0);
- h.run("for(const [key,n] of Object.entries(RECIPES.practiceblade))award(key,n);craft('practiceblade')");assert.equal(h.run('s.gear.at(-1).tier'),5);
- h.run("boss=true;bossId=4;bossTier='mystic';bossLeft=60;spawn();damage(1e12)");const count=h.run('s.gear.length');assert.ok(h.run('s.battleReward.rows.filter(x=>x.gear).every(x=>x.gear.tier===8)'));
+ h.run("for(const [key,n] of Object.entries(RECIPES.practiceblade))award(key,n);craft('practiceblade')");assert.equal(h.run('s.gear.at(-1).tier'),3);
+ h.run("boss=true;bossId=4;bossTier='mystic';bossLeft=60;spawn();damage(1e12)");const count=h.run('s.gear.length');assert.ok(h.run('s.battleReward.rows.filter(x=>x.gear).every(x=>x.gear.tier===3)'));
  h.run('save()');const restored=harness(JSON.parse(h.stored['mosslight.save.v1']));assert.equal(restored.run('s.gear.length'),count);restored.run('finishBattleReward();finishBattleReward()');assert.equal(restored.run('s.gear.length'),count);
 });

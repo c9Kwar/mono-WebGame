@@ -25,9 +25,11 @@ with sync_playwright() as p:
  page.evaluate("s.paused=false;boss=false;phase='combat';s.heroHp=1;defeatHero();render()")
  page.wait_for_timeout(1000)
  assert page.locator('#arena').evaluate('(e)=>e.classList.contains("hero-defeated")')
- pose=page.locator('.hero-motion').evaluate('(e)=>getComputedStyle(e).transform');assert pose!='none'
+ pose=page.locator('.hero-upper-body').evaluate('(e)=>getComputedStyle(e).transform');assert pose!='none'
+ assert page.locator('.hero-shin-front').evaluate('(e)=>getComputedStyle(e).transform')!='none'
  page.locator('#arena').scroll_into_view_if_needed();page.screenshot(path='/tmp/mosslight-growth2-defeat.png')
  page.emulate_media(reduced_motion='reduce');assert page.locator('.hero-motion').evaluate('(e)=>getComputedStyle(e).animationName')=='none'
+ assert page.locator('.hero-shin-front').evaluate('(e)=>getComputedStyle(e).transform')!='none'
  page.evaluate('s.paused=true;save()')
  before=page.evaluate('localStorage.getItem(KEY)');page.locator('#save-reset').click()
  assert page.locator('#reset-confirm').is_disabled();page.locator('#reset-input').fill('잘못된 입력');assert page.locator('#reset-confirm').is_disabled()

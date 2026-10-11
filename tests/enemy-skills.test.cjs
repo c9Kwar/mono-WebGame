@@ -120,3 +120,18 @@ test('cosmetic contact and recovery wait for the CSS pose under delayed renderin
  h.run('heroStrikeAnimation.currentTime=0;heroStrikeAnimation.playState="running";atHeroPose("contact",.66,()=>landed++,0);runVisualTimer("contact");clearCombatEffects()');
  assert.equal(h.run('landed'),1);assert.equal(h.run('pendingTimers.size'),0);
 });
+
+test('critical upgrade keeps shoulder, wrist, weight and slash on the same contact timeline',()=>{
+ const h=ready();timers(h);
+ h.run(`var clips={'.hero-arm':{animationName:'hero-critical-shoulder',currentTime:0},'.hero-sword-hand':{animationName:'hero-critical-wrist',currentTime:0},'.hero-motion':{animationName:'hero-critical-weight',currentTime:0},'.sword-arc':{animationName:'hero-critical-trace',currentTime:0}};$('arena').querySelector=selector=>({getAnimations:()=>[clips[selector]]});heroStrikeAnimation={animationName:'hero-overhead-shoulder',currentTime:280};strikeTimers.hero=1;animateStrike(false,true)`);
+ assert.ok(h.run('Object.values(clips).every(a=>a.currentTime===280)'));
+ assert.equal(h.run('heroStrikeAnimation.animationName'),'hero-critical-shoulder');
+});
+
+test('critical enemy reactions add one bounded cosmetic timer and cancel with the encounter',()=>{
+ const h=ready();timers(h);const before=h.run('JSON.stringify([s,hp,attackClock,enemyClock])');
+ h.run('Math.random=()=>{throw Error("cosmetic RNG")};for(let i=0;i<100;i++)paintImpact(20,true)');
+ assert.equal(h.run('pendingTimers.size'),16); // ten numbers, five bursts, one reaction
+ assert.equal(h.run('JSON.stringify([s,hp,attackClock,enemyClock])'),before);
+ h.run('encounterSerial++;renderEncounter()');assert.equal(h.run('pendingTimers.size'),0);
+});

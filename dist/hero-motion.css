@@ -1,22 +1,33 @@
-/* The illustrated adventurer art is clipped into a body, shoulder and wrist.
-   Shoulder and wrist rotations lift the blade overhead before the downstroke. */
+/* Original painted artwork, articulated in place: no replacement sprite or
+   combat state is introduced. SVG coordinates keep every joint resolution independent. */
 .hero-rig{display:block;overflow:visible}
 .hero-rig g{transform-box:view-box}
 .hero-position{left:1%;width:44%;height:65%;bottom:16%}
 .hero-arm{transform-origin:750px 202px}
 .hero-sword-hand{transform-origin:1028px 254px}
+.hero-upper-body{transform-origin:660px 450px}
+.hero-coat-tail{transform-origin:570px 430px}
+.hero-leg-back{transform-origin:618px 475px}
+.hero-leg-front{transform-origin:699px 455px}
+.hero-shin-back{transform-origin:621px 665px}
+.hero-shin-front{transform-origin:817px 678px}
 .hero-arm-joint{opacity:0}
-.hero-striking .hero-arm-joint,.hero-critical .hero-arm-joint{opacity:1}
-.hero-striking .hero-arm,.hero-critical .hero-arm{animation:hero-overhead-shoulder var(--hero-strike-duration,550ms) both}
-.hero-striking .hero-sword-hand,.hero-critical .hero-sword-hand{animation:hero-overhead-wrist var(--hero-strike-duration,550ms) both}
-.hero-striking .hero-motion,.hero-critical .hero-motion{animation:hero-overhead-weight var(--hero-strike-duration,550ms) both}
-/* Combat recoil remains on hero-position; the articulated cut lives inside it. */
+.hero-striking .hero-arm-joint,.hero-critical .hero-arm-joint,.hero-defeated .hero-arm-joint{opacity:1}
+.hero-striking .hero-arm{animation:hero-overhead-shoulder var(--hero-strike-duration,550ms) both}
+.hero-striking .hero-sword-hand{animation:hero-overhead-wrist var(--hero-strike-duration,550ms) both}
+.hero-striking .hero-motion{animation:hero-overhead-weight var(--hero-strike-duration,550ms) both}
+.hero-critical .hero-arm{animation:hero-critical-shoulder var(--hero-strike-duration,550ms) both}
+.hero-critical .hero-sword-hand{animation:hero-critical-wrist var(--hero-strike-duration,550ms) both}
+.hero-critical .hero-motion{animation:hero-critical-weight var(--hero-strike-duration,550ms) both}
+/* Received-hit recoil belongs to the outer position; the swing remains articulated. */
 .hero-striking .hero-position,.hero-critical .hero-position{animation:none}
 .enemy-striking .hero-position{animation:contact-recoil .4s .13s ease-out}
-.hero-striking .sword-arc,.hero-critical .sword-arc{animation:hero-downward-trace var(--hero-strike-duration,550ms) both}
-.hero-striking .enemy-position,.hero-critical .enemy-position{animation:contact-recoil .25s calc(var(--hero-strike-duration,550ms)*.66) ease-out}
-.hero-critical .hero-rig{filter:drop-shadow(0 8px 4px #071b2266) drop-shadow(0 0 5px #f5ce77a0)}
-/* A normal killing blow finishes before the loot overlay covers the actors. */
+.hero-striking .sword-arc{animation:hero-downward-trace var(--hero-strike-duration,550ms) both}
+.hero-critical .sword-arc{animation:hero-critical-trace var(--hero-strike-duration,550ms) both}
+.hero-striking .enemy-position{animation:contact-recoil .25s calc(var(--hero-strike-duration,550ms)*.66) ease-out}
+.hero-critical:where(:not(.scene-victory)) .enemy-position{animation:none}
+.hero-critical .hero-rig{filter:drop-shadow(0 8px 4px #071b2266)}
+/* A final blow keeps its blade and contact visible through loot/victory transitions. */
 .hero-striking #travel-overlay,.hero-critical #travel-overlay{visibility:hidden}
 @keyframes hero-overhead-shoulder{
   0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.25,.1,.25,1)}
@@ -41,14 +52,107 @@
   63%{opacity:1;transform:translate(8%,15%) rotate(45deg) scale(1.1)}
   78%,100%{opacity:0;transform:translate(10%,30%) rotate(72deg) scale(1.2)}
 }
-/* Simplified effects retain the resting pose; pausing never leaves a raised blade. */
-.scene-paused .hero-rig g,.cinema-lite .hero-rig g,
-.scene-paused .hero-motion,.cinema-lite .hero-motion{animation:none!important;transform:none!important}
-.scene-paused .hero-arm-joint,.cinema-lite .hero-arm-joint{opacity:0}
-@media(prefers-reduced-motion:reduce){
-  .hero-rig g,.arena .hero-motion{animation:none!important;transform:none!important}
-  .hero-arm-joint{opacity:0!important}
+/* Critical DOWN: longer overhead hold, planted weight, deeper cut and a short
+   low follow-through. Both blade animations cross their target at progress .66. */
+@keyframes hero-critical-shoulder{
+  0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.2,.7,.25,1)}
+  32%,46%{transform:rotate(-120deg);animation-timing-function:cubic-bezier(.78,0,.95,.36)}
+  64%,74%{transform:rotate(48deg);animation-timing-function:cubic-bezier(.2,.7,.25,1)}
+  100%{transform:rotate(0deg)}
 }
-
+@keyframes hero-critical-wrist{
+  0%{transform:rotate(0deg)}
+  32%,46%{transform:rotate(82deg);animation-timing-function:cubic-bezier(.78,0,.95,.36)}
+  64%,74%{transform:rotate(51deg);animation-timing-function:ease-out}
+  100%{transform:rotate(0deg)}
+}
+@keyframes hero-critical-weight{
+  0%,100%{transform:none}
+  32%,46%{transform:translate(-3%,-1%) rotate(-5deg)}
+  64%,74%{transform:translate(8%,4%) rotate(7deg)}
+  84%{transform:translate(5%,2%) rotate(3deg)}
+}
+@keyframes hero-critical-trace{
+  0%,47%{opacity:0;transform:translate(-10%,-42%) rotate(-112deg) scale(.58,.8)}
+  54%{opacity:.6;transform:translate(-1%,-30%) rotate(-69deg) scale(.76,1.1)}
+  64%{opacity:.9;transform:translate(12%,20%) rotate(64deg) scale(.9,1.18)}
+  79%,100%{opacity:0;transform:translate(15%,35%) rotate(86deg) scale(.9,1.25)}
+}
+/* Inner-frame stagger composes with species attacks and outer victory motion.
+   Small creatures buckle under the downstroke; guardians absorb a short heavy jolt.
+   These are visual reactions only: no stun, clock change or damage multiplier. */
+.arena.enemy-critical-hit .painted-enemy{transform-origin:50% 89%;animation:enemy-critical-buckle 440ms cubic-bezier(.16,.6,.24,1) both}
+.arena.enemy-critical-hit:is([data-encounter=boss],[data-encounter=elite-boss],[data-encounter=mystic]) .painted-enemy{animation:enemy-critical-brace 340ms cubic-bezier(.16,.6,.24,1) both}
+@keyframes enemy-critical-buckle{
+  0%{transform:none}
+  22%{transform:translate(5%,5%) rotate(9deg) scale(1.07,.82)}
+  47%{transform:translate(7%,6%) rotate(12deg) scale(1.03,.86)}
+  72%{transform:translate(2%,-1%) rotate(-2deg) scale(.98,1.03)}
+  100%{transform:none}
+}
+@keyframes enemy-critical-brace{
+  0%{transform:none}
+  24%{transform:translate(2%,2%) rotate(3deg) scale(1.02,.95)}
+  54%{transform:translate(3%,2%) rotate(4deg) scale(1.01,.96)}
+  100%{transform:none}
+}
+/* Collapse: legs give way first, both knees meet the path, then the torso folds.
+   Sword and backpack stay attached to the upper-body rig throughout the fall. */
+.arena.hero-defeated .hero-position{animation:none!important}
+.arena.hero-defeated .hero-motion{animation:hero-collapse-weight 1200ms both!important}
+.arena.hero-defeated .hero-collapse-root{animation:hero-kneel-drop 1200ms both}
+.arena.hero-defeated .hero-leg-back{animation:hero-kneel-back-thigh 1200ms both}
+.arena.hero-defeated .hero-shin-back{animation:hero-kneel-back-shin 1200ms both}
+.arena.hero-defeated .hero-leg-front{animation:hero-kneel-front-thigh 1200ms both}
+.arena.hero-defeated .hero-shin-front{animation:hero-kneel-front-shin 1200ms both}
+.arena.hero-defeated .hero-upper-body{animation:hero-fall-torso 1200ms both}
+.arena.hero-defeated .hero-arm{animation:hero-fall-arm 1200ms both}
+.arena.hero-defeated .hero-sword-hand{animation:hero-fall-sword 1200ms both}
+.arena.hero-defeated .hero-coat-tail{animation:hero-fall-coat 1200ms both}
+.arena.hero-defeated .hero-head{animation:hero-fall-head 1200ms both;transform-origin:641px 152px}
+.arena.hero-defeated #travel-overlay{inset:32% 12px auto;padding:4px 8px;gap:4px;background:transparent}
+.arena.hero-defeated #travel-overlay .eyebrow{display:none}
+.arena.hero-defeated #travel-overlay h3{margin:0;font-size:clamp(16px,1.6vw,20px)}
+.arena.hero-defeated #travel-overlay p{margin:0;font-size:12px;line-height:1.5}
+.arena.hero-defeated #travel-overlay .bar{margin-top:4px}
+@keyframes hero-collapse-weight{0%,100%{transform:translateY(0)}68%{transform:translateY(1%)}82%{transform:translateY(0)}}
+@keyframes hero-kneel-drop{0%{transform:none}18%{transform:translate(0,32px)}44%,60%{transform:translate(0,365px)}82%,100%{transform:translate(12px,381px)}}
+@keyframes hero-kneel-back-thigh{0%{transform:none}18%{transform:rotate(-7deg)}44%,100%{transform:rotate(-42deg)}}
+@keyframes hero-kneel-back-shin{0%{transform:none}18%{transform:rotate(17deg)}44%,100%{transform:rotate(125deg)}}
+@keyframes hero-kneel-front-thigh{0%{transform:none}20%{transform:rotate(-5deg)}48%,100%{transform:rotate(-28deg)}}
+@keyframes hero-kneel-front-shin{0%{transform:none}20%{transform:rotate(13deg)}48%,100%{transform:rotate(151deg)}}
+@keyframes hero-fall-torso{0%{transform:none}18%{transform:rotate(7deg)}44%,53%{transform:rotate(18deg)}79%{transform:rotate(100deg)}88%{transform:rotate(94deg)}100%{transform:rotate(98deg)}}
+@keyframes hero-fall-arm{0%{transform:none}24%{transform:rotate(12deg)}48%{transform:rotate(24deg)}79%,100%{transform:rotate(-98deg)}}
+@keyframes hero-fall-sword{0%{transform:none}24%{transform:rotate(8deg)}48%{transform:rotate(-5deg)}79%,100%{transform:rotate(-150deg)}}
+@keyframes hero-fall-coat{0%{transform:none}44%,53%{transform:rotate(-10deg)}79%{transform:rotate(-76deg)}90%{transform:rotate(-68deg)}100%{transform:rotate(-72deg)}}
+@keyframes hero-fall-head{0%{transform:none}44%{transform:rotate(10deg)}79%,100%{transform:rotate(16deg)}}
+/* Pause freezes a collapse in place rather than resetting it to a standing pose. */
+.arena.scene-paused .hero-rig g,.arena.scene-paused .hero-motion,.arena.scene-paused .painted-enemy{animation-play-state:paused!important}
+/* Accessibility uses a quiet kneeling pose (also readable in effects-lite mode). */
+.arena.cinema-lite .hero-rig g,.arena.cinema-lite .hero-motion,.arena.cinema-lite .painted-enemy{animation:none!important;transform:none}
+.arena.cinema-lite .hero-arm-joint{opacity:0}
+.arena.cinema-lite.hero-defeated .hero-collapse-root{transform:translate(0,365px)}
+.arena.cinema-lite.hero-defeated .hero-leg-back{transform:rotate(-42deg)}
+.arena.cinema-lite.hero-defeated .hero-shin-back{transform:rotate(125deg)}
+.arena.cinema-lite.hero-defeated .hero-leg-front{transform:rotate(-28deg)}
+.arena.cinema-lite.hero-defeated .hero-shin-front{transform:rotate(151deg)}
+.arena.cinema-lite.hero-defeated .hero-upper-body{transform:rotate(18deg)}
+.arena.cinema-lite.hero-defeated .hero-coat-tail{transform:rotate(-10deg)}
+.arena.cinema-lite.hero-defeated .hero-arm{transform:rotate(24deg)}
+.arena.cinema-lite.hero-defeated .hero-sword-hand{transform:rotate(-5deg)}
+@media(prefers-reduced-motion:reduce){
+  .arena.hero-defeated .hero-motion{animation:none!important;transform:none}
+  .arena .hero-rig g,.arena .hero-motion,.arena .painted-enemy{animation:none!important;transform:none}
+  .hero-arm-joint{opacity:0!important}
+  .arena.hero-defeated .hero-collapse-root{transform:translate(0,365px)}
+  .arena.hero-defeated .hero-leg-back{transform:rotate(-42deg)}
+  .arena.hero-defeated .hero-shin-back{transform:rotate(125deg)}
+  .arena.hero-defeated .hero-leg-front{transform:rotate(-28deg)}
+  .arena.hero-defeated .hero-shin-front{transform:rotate(151deg)}
+  .arena.hero-defeated .hero-upper-body{transform:rotate(18deg)}
+  .arena.hero-defeated .hero-coat-tail{transform:rotate(-10deg)}
+  .arena.hero-defeated .hero-arm{transform:rotate(24deg)}
+  .arena.hero-defeated .hero-sword-hand{transform:rotate(-5deg)}
+}
 @media(max-width:800px){.hero-position{left:0%;width:44%;height:64%;bottom:16%}}
 @media(max-width:560px){.hero-position{left:-5%;width:61%;height:59%;bottom:17%}}
