@@ -49,3 +49,4 @@ jobs:
           .venv/bin/python tests/browser-adventure-guide.py
           .venv/bin/python tests/browser-jade.py
           .venv/bin/python tests/browser-passive-expansion.py
+          .venv/bin/python tests/browser-passive-patch.py

@@ -44,7 +44,7 @@ test('skill cues survive guard, dodge, lite, reduced motion and pause',()=>{
   assert.equal(bursts(h).length,0);
  }
  const h=ready('boss=true;bossId=0;bossStrikes=3');h.run('s.passives.guard=1');
- const before=h.run('s.heroHp'),expected=h.run('Math.max(1,Math.round(incomingDamage()*.65))');h.run('monsterHit(()=>0)');
+ const before=h.run('s.heroHp'),expected=h.run('Math.max(1,Math.round(incomingDamage()*.7))');h.run('monsterHit(()=>0)');
  assert.equal(before-h.run('s.heroHp'),expected);assert.match(h.nodes.get('last-impact').textContent,/왕관 박치기.*방어 성공/);
  h.run('bossStrikes=3;dodgeChance=()=>.2');const guarded=h.run('s.heroHp');h.run('monsterHit(()=>0)');
  assert.equal(h.run('s.heroHp'),guarded);assert.match(h.nodes.get('last-impact').textContent,/왕관 박치기.*회피.*0/);

@@ -16,7 +16,7 @@ const MosslightSaves = (() => {
    }
   };visit(data);
   for(const key of ['stage','highestStage'])if(data[key]!==undefined&&(!Number.isInteger(data[key])||data[key]<0||data[key]>1000))throw Error('스테이지 기록이 지원 범위를 벗어났습니다.');
-  for(const key of ['inventory','slots','passives','specialPassives','fieldNotes','trails','research','journey','potentialBuff'])if(data[key]!=null&&!record(data[key]))throw Error(key+' 기록이 올바르지 않습니다.');
+  for(const key of ['inventory','slots','passives','specialPassives','fieldNotes','trails','research','journey','potentialBuff','passiveBuffs'])if(data[key]!=null&&!record(data[key]))throw Error(key+' 기록이 올바르지 않습니다.');
   for(const key of ['gold','total','kills','attack','speed','crit','move','vitality','guard','lastSeen','nextGearId','deaths'])if(data[key]!==undefined&&(typeof data[key]!=='number'||data[key]<0))throw Error(key+' 수치가 올바르지 않습니다.');
   for(const key of ['bossWins','bossReadyAt','discovered','claimedMilestones','gear'])if(data[key]!==undefined&&!Array.isArray(data[key]))throw Error(key+' 목록이 올바르지 않습니다.');
   if(data.gear){

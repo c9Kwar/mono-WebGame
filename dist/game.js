@@ -136,7 +136,7 @@ let combatFxSerial=0,impactSerial=0,heroStrikeDuration=550,heroContactAt=0,heroS
 function quietCombatEffects(){return s.effectsLite||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||document.hidden}
 function clearCombatEffects(keepHeroStrike=false){
  for(const timer of combatFxTimers.values())clearTimeout(timer);combatFxTimers.clear();$('combat-fx').replaceChildren();
- for(const key of ['hero','contact','enemy','skill','victory','critical']){if(keepHeroStrike&&(key==='hero'||key==='contact'))continue;clearTimeout(strikeTimers[key]);strikeTimers[key]=null}
+ for(const key of ['hero','contact','echo','enemy','skill','victory','critical']){if(keepHeroStrike&&(key==='hero'||key==='contact'||key==='echo'))continue;clearTimeout(strikeTimers[key]);strikeTimers[key]=null}
  if(!keepHeroStrike){pendingHeroContact=null;heroContactAt=0;heroStrikeAnimation=null;$('arena').classList.remove('hero-striking','hero-critical')}
  for(const timer of impactTimers.values())clearTimeout(timer);impactTimers.clear();$('impact-layer').replaceChildren();$('arena').classList.remove('enemy-striking','heavy-impact','skill-charging','impact-flash','enemy-critical-hit');$('arena').setAttribute('data-cast-skill','');
 }
@@ -332,19 +332,21 @@ s.research={hunt:0,elite:0,boss:0};s.researchClears=0;
 try{const raw=JSON.parse(readSaveRaw())||{};for(const k of Object.keys(s.research))s.research[k]=Math.max(0,Math.min(({hunt:79,elite:2,boss:1})[k],Math.floor(Number(raw.research?.[k])||0)));s.researchClears=Math.max(0,Math.floor(Number(raw.researchClears)||0));}catch{}
 let researchSignature='',gearSort='newest',bagSort='default',pendingBulk=null;
 const PASSIVES={
- light:{name:'빛의 일격',rarity:'common',weight:50,desc:'전투 12초마다 공격력 180% 자동 타격'},
+ light:{name:'빛의 일격',rarity:'common',weight:50,desc:'전투 15초마다 공격력 160% 자동 타격'},
  breath:{name:'이끼 숨결',rarity:'common',weight:20,desc:'이동·전리품 정리 중 초당 최대 HP 1% 추가 회복'},
- guard:{name:'숲의 방벽',rarity:'rare',weight:8,desc:'피격 시 15% 확률로 해당 피해 35% 감소'},
+ guard:{name:'숲의 방벽',rarity:'rare',weight:8,desc:'피격 시 4% 확률로 5초간 받는 피해 30% 감소'},
  heal:{name:'응급 재생',rarity:'rare',weight:8,desc:'HP 40% 이하일 때 최대 HP 12% 자동 회복 · 재사용 20초'},
  bark:{name:'나무껍질 맹세',rarity:'rare',weight:4,desc:'방어력 10% 상시 증가'},
- haste:{name:'바람의 축복',rarity:'epic',weight:5,desc:'공격속도 6% 상시 증가'},
- hunter:{name:'수호자 사냥꾼',rarity:'epic',weight:3,desc:'보스에게 주는 모든 피해 8% 증가'},
- leech:{name:'생명의 이슬',rarity:'legendary',weight:1,desc:'일반 공격 피해의 2% 흡수 · 1회 회복 최대 HP의 2%'},
- wither:{name:'시든달의 낙인',rarity:'legendary',weight:.8,desc:'보스의 초당 체력 재생 25% 감소'},
- echo:{name:'새벽의 메아리',rarity:'mythic',weight:.2,desc:'일반 공격 후 5% 확률로 공격력 400% 추가 타격'}
+ haste:{name:'바람의 축복',rarity:'epic',weight:5,desc:'공격속도 8% 상시 증가'},
+ hunter:{name:'수호자 사냥꾼',rarity:'epic',weight:3,desc:'보스 피해 +6% · 엘리트·여우 피해 +10%'},
+ leech:{name:'생명의 이슬',rarity:'legendary',weight:1,desc:'드롭률 +10% · 골드 획득 +15%'},
+ wither:{name:'시든달의 낙인',rarity:'legendary',weight:.8,desc:'보스 재생 −20% · 치명타 피해 시 20% 확률로 3초간 공격력 +20%'},
+ echo:{name:'새벽의 메아리',rarity:'mythic',weight:.2,desc:'일반 공격 후 3% 확률로 10초간 메아리 · 공격력 +10%, 50% 확률로 두 번 공격'}
 };
 s.passives={};s.passiveClock={light:0,heal:20};s.draws=0;s.drawResult='';
-try{const raw=JSON.parse(readSaveRaw())||{};for(const key of Object.keys(PASSIVES))s.passives[key]=Math.max(0,Math.min(5,Math.floor(Number(raw.passives?.[key])||0)));for(const key of ['light','heal'])s.passiveClock[key]=Math.max(0,Math.min(key==='light'?12:20,Number.isFinite(raw.passiveClock?.[key])?raw.passiveClock[key]:(key==='heal'?20:0)));s.draws=Math.max(0,Math.floor(Number(raw.draws)||0));}catch{}
+try{const raw=JSON.parse(readSaveRaw())||{};for(const key of Object.keys(PASSIVES))s.passives[key]=Math.max(0,Math.min(5,Math.floor(Number(raw.passives?.[key])||0)));for(const key of ['light','heal'])s.passiveClock[key]=Math.max(0,Math.min(key==='light'?passiveLightInterval():20,Number.isFinite(raw.passiveClock?.[key])?raw.passiveClock[key]:(key==='heal'?20:0)));s.draws=Math.max(0,Math.floor(Number(raw.draws)||0));}catch{}
+s.passiveBuffs={guard:0,wither:0,echo:0};
+try{const raw=JSON.parse(readSaveRaw())||{},elapsed=s.paused?0:Math.max(0,(Date.now()-s.lastSeen)/1000);for(const [key,cap] of [['guard',5],['wither',3],['echo',passiveEchoDuration()]]){const value=raw.passiveBuffs?.[key];if(s.passives[key]&&Number.isFinite(value))s.passiveBuffs[key]=Math.max(0,Math.min(cap,value)-elapsed)}}catch{}
 
 const SPECIAL_PASSIVES={
  foxluck:{name:'여우의 직감',weight:60,effects:{drop:[.30,.40,.50],gold:[.20,.30,.40]}},
@@ -434,13 +436,13 @@ function fieldHealth(key=currentMob,stage=s.stage){return Math.round(45*Math.pow
 function fieldAttack(key=currentMob,stage=s.stage){return Math.round(18*Math.pow(1.2,stage-1)*MOBS[key].atk*(1.12+.006*(stage-1)))}
 function fieldDefense(key=currentMob,stage=s.stage){const species=key.replace(/^elite/,'').toLowerCase();return Math.round(({slime:2,mushroom:3,moth:1,snail:8,rabbit:4,treasure:6})[species]*Math.pow(1.12,stage-1)*(MOBS[key].elite?1.3:1))}
 function fieldReduction(key=currentMob){const armor=fieldDefense(key);return Math.min(.45,armor/(100+armor))}
-function outgoingDamage(amount){return Math.max(1,Math.round(amount*(boss?passiveBossDamage():1-fieldReduction())))}
+function outgoingDamage(amount){return Math.max(1,Math.round(amount*(boss?passiveBossDamage():(1-fieldReduction())*passiveFieldDamage())))}
 function mobGoldBoost(key=currentMob){return key==='treasure'?.4:MOBS[key]?.elite?.35:({slime:.1,mushroom:.15,snail:.2,moth:.25,rabbit:.25})[key]}
 function fieldGold(key=currentMob){return Math.floor(reward()*(MOBS[key]?.elite?4:key==='treasure'?20:1)*(1+mobGoldBoost(key))*goldMultiplier())}
 const reward=()=>Math.round(10*Math.pow(1.12,s.stage-1));
 const requiredKills=()=>Math.min(24,12+2*Math.floor((s.stage-1)/5));
 const bossHealth=(id,tier='normal',level=s.highestStage)=>Math.round(BOSS_BALANCE[id].hp*BOSS_TIERS[tier].hp);
-const goldMultiplier=()=>(1+gearStat('ring','gold')+potentialSum('gold')+potentialSum('pocket'))*(1+collectionBonus('gold'))*potentialProduct('goldMore')*(1+trailBonus())*(1+specialEffect('gold'));
+const goldMultiplier=()=>(1+gearStat('ring','gold')+potentialSum('gold')+potentialSum('pocket'))*(1+collectionBonus('gold'))*potentialProduct('goldMore')*(1+trailBonus())*(1+specialEffect('gold'))*(1+passiveValue('leech',.15,.02));
 const fmt=n=>n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(2)+'M':Math.floor(n).toLocaleString('ko-KR');
 const names=['이끼 숲의 입구','반딧불 오솔길','고대의 숲','끝없는 녹음'];
 const upgrades={vitality:{name:'체력 단련',base:36,rate:1.17,max:100},guard:{name:'방어 훈련',base:44,rate:1.17,max:100},move:{name:'탐험 보폭',base:80,rate:1.18,max:30},attack:{name:'검 연마',base:24,rate:1.19,max:500},speed:{name:'바람의 장화',base:65,rate:1.35,max:30},crit:{name:'별빛 부적',base:95,rate:1.30,max:30}};
@@ -462,14 +464,14 @@ function enemyAttack(){return Math.round((boss?bossBaseAttack(bossId,bossTier)*(
 const enemyInterval=()=>boss?BOSS_BALANCE[bossId].interval*(bossFrenzy()?.85:1)*(bossCharged()?1.35:1):MOBS[currentMob].interval;
 function mobTempoText(key){const m=MOBS[key];return m.tempo+' · 공격 간격 '+m.interval.toFixed(2)+'초'}
 const mitigation=()=>Math.min(.3,(equippedGear('chest')?.ward||0)+(equippedGear('legs')?.ward||0)+collectionBonus('reduction')+potentialSum('reduction'));
-function incomingDamage(){return Math.max(1,Math.round(Math.max(0,enemyAttack()-heroDefense()*(boss?1-bossPenetration(bossId,bossTier):1))*(1-mitigation())*(boss?1-bossMitigation():1)))}
+function incomingDamage(){return Math.max(1,Math.round(Math.max(0,enemyAttack()-heroDefense()*(boss?1-bossPenetration(bossId,bossTier):1))*(1-mitigation())*(boss?1-bossMitigation():1)*(s.passiveBuffs.guard>0?.7:1)))}
 function defeatHero(){
- clearCombatEffects();const wasBoss=boss,special=!wasBoss&&(MOBS[currentMob]?.elite||currentMob==='treasure');s.potentialBuff={left:0,power:0};s.blockLeft=0;boss=false;s.heroHp=0;s.deaths++;phase='defeated';phaseLeft=8;travelTotal=8;attackClock=0;enemyClock=0;lastLoot=[];
+ clearCombatEffects();const wasBoss=boss,special=!wasBoss&&(MOBS[currentMob]?.elite||currentMob==='treasure');s.potentialBuff={left:0,power:0};clearPassiveBuffs();s.blockLeft=0;boss=false;s.heroHp=0;s.deaths++;phase='defeated';phaseLeft=8;travelTotal=8;attackClock=0;enemyClock=0;lastLoot=[];
  if(!wasBoss&&!special){s.stage=Math.max(1,s.stage-1);s.kills=0;s.safetyDefeats=Math.min(3,s.safetyDefeats+1);recordFieldDefeat();if(s.autoSafety&&(s.safetyDefeats>=3||s.fieldDefeats.length>=3)){s.farmMode=true;log('안전 사냥 · 최고 기록을 넘지 못한 채 반복해서 쓰러져 현재 지역 반복 사냥을 켰습니다.')}}
  log('전투 불능 · 8초 후 회복'+(wasBoss?' / 원정 종료':special?' / 특수 조우 · 스테이지와 처치 진행 보존':' / 한 단계 후퇴'));
  notify(special?'강적에게 패배했어요. 전리품은 없지만 스테이지와 처치 진행은 유지됩니다.':s.autoSafety&&(s.safetyDefeats>=3||s.fieldDefeats.length>=3)?'반복 사망 보호 · 장비를 준비하고 이정표에서 돌파를 재개하세요.':'쓰러졌어요. 방어구와 생존 능력을 강화해 보세요.');save();renderLoot();
 }
-function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';animateStrike(true,false,heavy);castEnemySkill(skill,false);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}const blocked=passivePower('guard')>0&&rng()<.15; const hit=Math.max(1,Math.round(pendingDamage*(blocked?1-.35*passivePower('guard'):1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
+function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const shieldActive=s.passiveBuffs.guard>0,pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';animateStrike(true,false,heavy);castEnemySkill(skill,false);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}if(s.passives.guard&&rng()<.04){s.passiveBuffs.guard=5;passiveNotice('숲의 방벽 · 5초간 받는 피해 −30%')}const blocked=s.passiveBuffs.guard>0,hit=Math.max(1,Math.round(pendingDamage*(blocked&&!shieldActive?.7:1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
 const movementSpeed=()=>moveAtLevel(s.move);
 const regionPenalty=()=>[1,1.2,1.45,1.8][regionIndex()];
 const travelDistance=()=> (3+Math.min(12,(s.stage-1)*.18))*regionPenalty();
@@ -495,7 +497,7 @@ function upgrade(k,mode=1){if(!canMutate())return {ok:false,reason:'다른 탭�
 function upgradeValue(k,level){if(k==='vitality')return fmt(hpAtLevel(level));if(k==='guard')return fmt(defenseAtLevel(level));if(k==='attack')return fmt(attackAtLevel(level));if(k==='speed')return speedAtLevel(level).toFixed(2)+'/s';if(k==='crit')return pct(Math.min(.75,.05+level*.015+potentialSum('critical')));return moveAtLevel(level).toFixed(2)+'m/s'}
 function renderUpgrades(){const signature=JSON.stringify([s.gold,buyMode,...Object.keys(upgrades).map(k=>s[k]),s.slots,s.discovered.length,s.bossWins,s.highestStage,s.passives,s.specialActive,s.specialPassives]);if(signature===upgradeRenderSignature)return;upgradeRenderSignature=signature;for(const k of Object.keys(upgrades)){const q=upgradeQuote(k,buyMode),b=$(k+'-buy');$(k+'-level').textContent='Lv.'+s[k]+' / '+upgrades[k].max;b.disabled=!q.canAfford;b.textContent=q.capped?'최대 레벨':q.count>0?q.count+'회 강화\n◆ '+fmt(q.total)+' G':'골드 부족\n◆ '+fmt(q.nextCost)+' G';b.title=q.capped?'최대 레벨에 도달했습니다.':(q.count||1)+'회 총 비용: '+(q.count?q.total:q.nextCost).toLocaleString('ko-KR')+' 골드';b.setAttribute('aria-label',upgrades[k].name+' '+b.title);$(k+'-effect').textContent=upgradeValue(k,s[k])+(q.count?' → '+upgradeValue(k,q.target):'');} $('forge-gold').textContent='◆ '+fmt(s.gold)+' G';}
 function setBuyMode(mode){if(![1,10,100,'max'].includes(mode))return false;buyMode=mode;for(const id of ['1','10','100','max'])$('buy-mode-'+id).setAttribute('aria-pressed',String(String(mode)===id));renderUpgrades();return true}
-function damage(amount,critical=false){if(!Number.isFinite(amount)||amount<=0)return;if(phase!=='combat'||s.paused)return 0;amount=outgoingDamage(amount);const dealt=Math.min(hp,amount);hp-=amount;showImpact(amount,critical);if(hp<=0){const wasBoss=boss;const gearStart=s.nextGearId;const victoryName=wasBoss?BOSSES[bossId].name:MOBS[currentMob].name;const wonSpecial=wasBoss||currentMob==='treasure';const victorySeconds=wasBoss?Math.max(0,BOSS_TIERS[bossTier].time-bossLeft):0;let extraCombatGold=0;const defeatedId=wasBoss?'boss'+bossId:currentMob;if(wasBoss&&bossTier!=='normal'){s.bossVariantWins[bossTier]++;const variantId=defeatedId+'_'+bossTier;s.defeated[variantId]=(Number(s.defeated[variantId])||0)+1;}s.defeated[defeatedId]=(Number(s.defeated[defeatedId])||0)+1;const g=wasBoss?Math.floor(BOSS_GOLD[bossId]*(bossTier==='mystic'?12:bossTier==='elite'?3:1)*goldMultiplier()):fieldGold();s.gold+=g;s.total++;if(wasBoss){s.bossWins[bossId]++;log(BOSS_TIERS[bossTier].name+' '+BOSSES[bossId].name+' 격파! +'+fmt(g)+' G');lastLoot=rollLoot(true,bossId);if(s.bossWins[bossId]===1){const firstKey=['ring','scoutboots','mossblade','owlcoat','acornblade'][bossId];const firstGear=award(firstKey,1,Math.random,BOSSES[bossId].name,bossGearTier(bossId,bossTier));lastLoot.push({key:firstKey,count:1});log('첫 격파 보상! '+ITEMS[firstKey].name+' · '+optionText(firstGear));}boss=true;notify('보스 처치! 전리품을 인벤토리에서 확인하세요.')}else{lastLoot=rollLoot(false);s.kills=Math.min(requiredKills(),s.kills+1);if(s.total%3===1)log(MOBS[currentMob].name+' 처치 · +'+fmt(g)+' G');if(s.kills>=requiredKills())finishFieldStage();}progressTrail(wasBoss,defeatedId);progressResearch(wasBoss,defeatedId);if(wonSpecial)captureBattleReward({kind:wasBoss?'boss':'treasure',tier:wasBoss?bossTier:'normal',name:victoryName,gold:g+extraCombatGold,bossId,gearStart,firstClear:wasBoss&&s.bossWins[bossId]===1,seconds:victorySeconds});else startRecovery();renderLoot()}render();return dealt}
+function damage(amount,critical=false,echoHit=false){if(!Number.isFinite(amount)||amount<=0)return;if(phase!=='combat'||s.paused)return 0;amount=outgoingDamage(amount);const dealt=Math.min(hp,amount);hp-=amount;showImpact(amount,critical,false,false,false,echoHit);if(critical&&dealt>0&&passiveValue('wither',1,0)&&Math.random()<.2){s.passiveBuffs.wither=3;passiveNotice('시든달의 낙인 · 3초간 공격력 +'+pct(passiveValue('wither',.20,.025)))}if(hp<=0){const wasBoss=boss;const gearStart=s.nextGearId;const victoryName=wasBoss?BOSSES[bossId].name:MOBS[currentMob].name;const wonSpecial=wasBoss||currentMob==='treasure';const victorySeconds=wasBoss?Math.max(0,BOSS_TIERS[bossTier].time-bossLeft):0;let extraCombatGold=0;const defeatedId=wasBoss?'boss'+bossId:currentMob;if(wasBoss&&bossTier!=='normal'){s.bossVariantWins[bossTier]++;const variantId=defeatedId+'_'+bossTier;s.defeated[variantId]=(Number(s.defeated[variantId])||0)+1;}s.defeated[defeatedId]=(Number(s.defeated[defeatedId])||0)+1;const g=wasBoss?Math.floor(BOSS_GOLD[bossId]*(bossTier==='mystic'?12:bossTier==='elite'?3:1)*goldMultiplier()):fieldGold();s.gold+=g;s.total++;if(wasBoss){s.bossWins[bossId]++;log(BOSS_TIERS[bossTier].name+' '+BOSSES[bossId].name+' 격파! +'+fmt(g)+' G');lastLoot=rollLoot(true,bossId);if(s.bossWins[bossId]===1){const firstKey=['ring','scoutboots','mossblade','owlcoat','acornblade'][bossId];const firstGear=award(firstKey,1,Math.random,BOSSES[bossId].name,bossGearTier(bossId,bossTier));lastLoot.push({key:firstKey,count:1});log('첫 격파 보상! '+ITEMS[firstKey].name+' · '+optionText(firstGear));}boss=true;notify('보스 처치! 전리품을 인벤토리에서 확인하세요.')}else{lastLoot=rollLoot(false);s.kills=Math.min(requiredKills(),s.kills+1);if(s.total%3===1)log(MOBS[currentMob].name+' 처치 · +'+fmt(g)+' G');if(s.kills>=requiredKills())finishFieldStage();}progressTrail(wasBoss,defeatedId);progressResearch(wasBoss,defeatedId);if(wonSpecial)captureBattleReward({kind:wasBoss?'boss':'treasure',tier:wasBoss?bossTier:'normal',name:victoryName,gold:g+extraCombatGold,bossId,gearStart,firstClear:wasBoss&&s.bossWins[bossId]===1,seconds:victorySeconds});else startRecovery();renderLoot()}render();return dealt}
 function startBoss(id=0,rng=Math.random,normalOnly=false){if(!canMutate())return false;if(s.rewardPending||phase==='defeated'||s.heroHp<=0||boss||s.paused||(currentMob==='treasure'&&phase==='combat')||!Number.isInteger(id)||id<0||id>=BOSSES.length||!bossUnlocked(id)||bossRemaining(id)>0)return false;bossId=id;bossGate=false;bossTier=normalOnly===true?'normal':rollBossTier(rng);bossEncounterStage=s.highestStage;boss=true;bossLeft=BOSS_TIERS[bossTier].time;s.bossReadyAt[id]=Date.now()+bossCooldown(id,bossTier)*1000;spawn();$('boss-dialog').close();$('quick-boss-dialog').close();showView('battle');log(BOSS_TIERS[bossTier].name+' '+BOSSES[id].name+' 등장 · 제한 '+bossLeft+'초');notify(BOSS_TIERS[bossTier].name+' 보스 등장!');render();return true}
 function render(){if(tickRendering)return;renderAdventureGuide();renderCrafting();renderFieldNotes();renderResearch();renderFarmMode();renderQuickBoss();renderBossDock();renderExpedition();renderPassives();const region=Math.min(3,Math.floor((s.stage-1)/5));$('gold').textContent=fmt(s.gold);$('stage').textContent=s.stage===30&&s.chapterOneCleared?'STAGE 30 · 완주':'STAGE '+s.stage+'–'+Math.min(requiredKills(),s.kills+1);$('zone').textContent=names[region];$('enemy-name').textContent=boss?BOSS_TIERS[bossTier].name+' '+BOSSES[bossId].name+' · BOSS':MOBS[currentMob].name+(MOBS[currentMob].elite?' · ELITE':'');$('enemy-hp-label').textContent=fmt(Math.max(0,hp))+' / '+fmt(maxHp);$('enemy-hp').style.width=Math.max(0,hp/maxHp*100)+'%';$('progress-label').textContent=s.kills+' / '+requiredKills();$('progress-bar').style.width=s.kills/requiredKills()*100+'%';$('reward-label').textContent=boss?'남은 시간 '+Math.ceil(bossLeft)+'초':'처치 보상 +'+fmt(fieldGold())+' G';$('battle-status').textContent=s.paused?'Ⅱ 모험 쉬는 중':boss?'● 보스 전투 중':'● 자동 사냥 중';$('pause').textContent=s.paused?'▶ 사냥 재개':'Ⅱ 일시 정지';$('arena').classList.toggle('boss-arena',boss);$('boss').disabled=phase==='defeated'||boss||s.paused||(currentMob==='treasure'&&phase==='combat');$('boss').textContent=boss?'♜ 전투 중':'♜ 보스 원정';$('battle-hint').textContent=boss?BOSS_TIERS[bossTier].time+'초 안에 처치하세요. 패시브가 자동 발동합니다.':!bossUnlocked(0)?'STAGE 3 도달 시 꼬마 거북 해금 · 골드로 공격·체력·방어를 강화하세요.':s.chapterOneCleared?'챕터 1 완주 · 30단계까지 반복 사냥 / 밤톨 원정 도전 가능':'챕터 1 · 30단계까지 자동 진행 / 적 방어력에 따라 피해가 줄어듭니다.';$('atk').textContent=fmt(attack());$('speed').textContent=speed().toFixed(2)+'/s';$('crit').textContent=Math.round(crit()*100)+'%';$('hero-level').textContent='사냥 '+fmt(s.total)+'마리';$('title-text').textContent=s.stage<6?'작은 모험의 시작':'숲이 기억하는 모험가';renderUpgrades();renderHero();renderHeroStats();renderTravel();renderEncounter();renderBossPattern();$('boss-timer').hidden=!boss||phase!=='combat';$('boss-seconds').textContent=Math.max(0,bossLeft).toFixed(1);$('boss-time-fill').style.width=Math.max(0,bossLeft/BOSS_TIERS[bossTier].time*100)+'%';$('boss-timer').classList.toggle('urgent',bossLeft<=10);$('chapter-label').textContent='챕터 1 · 지역 '+(region+1)+' / 4';for(let i=0;i<4;i++){const el=$('journey-'+i);el.classList.toggle('active',i===region);el.querySelector('b').textContent=i===region?'탐험 중':i<region?'완료':'잠김'}}
 $('pause').onclick=()=>{s.paused=!s.paused;save();render()};$('boss').onclick=openQuickBoss;for(const k of Object.keys(upgrades))$(k+'-buy').onclick=()=>upgrade(k,buyMode);$('help').onclick=()=>$('help-dialog').showModal();$('close-help').onclick=()=>$('help-dialog').close();
@@ -599,7 +601,7 @@ if(!s.gearVersion){s.gear=[];s.slots={ring:null,weapon:null,boots:null};for(cons
 for(const g of s.gear){if(['owlcoat','acornblade'].includes(g.key)&&g.potentialVersion===2&&g.potentials?.length===2)g.potentialVersion=1;g.potentials=validPotentials(g)??rollPotentials(g.key)}
 for(const slot of Object.keys(SLOT_NAMES))if(!equippedGear(slot))s.slots[slot]=null;
 syncLegacySlots();
-const luck=()=>(1+gearStat('ring','luck')+potentialSum('drop'))*(1+collectionBonus('luck'))*potentialProduct('dropMore')*(1+specialEffect('drop'));
+const luck=()=>(1+gearStat('ring','luck')+potentialSum('drop'))*(1+collectionBonus('luck'))*potentialProduct('dropMore')*(1+specialEffect('drop'))*(1+passiveValue('leech',.10,.015));
 function award(key,count=1,rng=Math.random,source='모험 보상',tier=1){const fresh=!known(key);s.inventory[key]=(s.inventory[key]||0)+count;if(fresh)s.discovered.push(key);let last=null;if(ITEMS[key].slot)for(let i=0;i<count;i++)last=makeGear(key,rng,false,1,tier);recordFind(key,count,source,fresh);return last}
 function gearText(g){const item=ITEMS[g.key];const stats=item.slot==='ring'?[['luck','드롭률'],['gold','골드']]:item.slot==='weapon'?[['damage','공격력']]:item.slot==='chest'||item.slot==='legs'?[['hp','최대 HP'],['armor','방어력']]:[['movement','이동속도']];return 'T'+gearTier(g)+' · '+stats.map(([k,label])=>{const v=item[k]*gearTierMultiplier(g)*(1+g.roll/100*(g.exceptional?1.5:1));return label+' +'+(k==='hp'||k==='armor'?v.toFixed(1):pct(v))}).join(' · ')}
 function optionText(g){return g.roll===0?'기존 장비 · 기본 성능 유지':'추가 옵션 +'+g.roll+'%'+(g.exceptional?' × 1.5 = +'+(g.roll*1.5)+'% · 대성공':'')}
@@ -659,7 +661,7 @@ function renderCrafting(){
  if(craftTipKey&&!$('craft-tooltip').hidden){if($('recipe-card-'+craftTipKey).hidden)hideCraftTip();else showCraftTip(craftTipKey,$('recipe-info-'+craftTipKey))}
 }
 
-function renderHeroStats(){const fields={'stat-hp':fmt(Math.max(0,s.heroHp))+' / '+fmt(heroMaxHp()),'stat-defense':fmt(heroDefense()),'stat-reduction':Math.round(mitigation()*100)+'%','stat-move':movementSpeed().toFixed(2)+'m/s','stat-drop':'×'+luck().toFixed(3),'stat-gold':'×'+goldMultiplier().toFixed(3),'stat-crit-damage':'×2.00','stat-expedition':pct(expeditionReduction()),'stat-dodge':pct(dodgeChance()),'stat-boss-reduction':pct(bossMitigation()),'stat-regen':pct(Math.min(.01,potentialSum('regen')))+'/초','stat-leech':pct(Math.min(.06,potentialSum('leech'))+.02*passivePower('leech')),'stat-chain':pct(Math.min(.1,potentialSum('chain')))};for(const [id,value] of Object.entries(fields))$(id).textContent=value;}
+function renderHeroStats(){const fields={'stat-hp':fmt(Math.max(0,s.heroHp))+' / '+fmt(heroMaxHp()),'stat-defense':fmt(heroDefense()),'stat-reduction':Math.round(mitigation()*100)+'%','stat-move':movementSpeed().toFixed(2)+'m/s','stat-drop':'×'+luck().toFixed(3),'stat-gold':'×'+goldMultiplier().toFixed(3),'stat-crit-damage':'×2.00','stat-expedition':pct(expeditionReduction()),'stat-dodge':pct(dodgeChance()),'stat-boss-reduction':pct(bossMitigation()),'stat-regen':pct(Math.min(.01,potentialSum('regen')))+'/초','stat-leech':pct(Math.min(.06,potentialSum('leech'))),'stat-chain':pct(Math.min(.1,potentialSum('chain')))};for(const [id,value] of Object.entries(fields))$(id).textContent=value;}
 function renderHero(){s.heroHp=Math.min(s.heroHp,heroMaxHp());$('hero-hp-label').textContent=fmt(Math.max(0,s.heroHp))+' / '+fmt(heroMaxHp());$('hero-hp-fill').style.width=Math.max(0,s.heroHp/heroMaxHp()*100)+'%';$('hero-hp-box').classList.toggle('critical',s.heroHp/heroMaxHp()<.3);$('hero-danger').textContent=s.heroHp/heroMaxHp()<.3?'위험 · HP와 방어 장비를 강화하세요':'적 공격까지 '+Math.max(0,enemyInterval()-enemyClock).toFixed(1)+'초';$('hero-danger').hidden=phase!=='combat';$('hero-defense').textContent='방어 '+heroDefense()+' · 피해 감소 '+Math.round(mitigation()*100)+'%';$('enemy-attack-info').textContent=phase==='combat'?'적 공격 '+enemyAttack()+' · '+(!boss?MOBS[currentMob].tempo+' · 방어 '+fieldDefense()+' ('+pct(fieldReduction())+' 감소) · ':'')+enemyInterval().toFixed(2)+'초마다 / 다음 공격 '+Math.max(0,enemyInterval()-enemyClock).toFixed(1)+'초':'비전투 중';if(boss&&phase==='combat')$('enemy-attack-info').textContent+=' · '+bossDefenseText(bossId,bossTier);}
 function renderLoot(){
  refreshPotentialDialog();
@@ -740,13 +742,13 @@ if(resumed&&MOBS[resumed.currentMob]&&['combat','loot','travel','defeated','vict
 if(['victory','results'].includes(phase)&&(!s.rewardPending||!s.battleReward)){boss=false;phase='loot';phaseLeft=.8}s.rewardPending=['victory','results'].includes(phase)&&!!s.battleReward;if(phase==='results')showBattleReward();
 if(boss&&s.bossReadyAt[bossId]===0)s.bossReadyAt[bossId]=Date.now()+bossCooldown(bossId,bossTier)*1000;if(!boss&&s.kills>=requiredKills()){finishFieldStage();beginTravel();log('완료된 스테이지 기록을 복구했습니다.')}if(s.heroHp<=0&&phase!=='defeated')defeatHero();
 log('HP와 방어력을 확인하고 모험을 준비하세요.');render();renderLoot();save();
-function stepCombat(dt){if(!Number.isFinite(dt)||dt<=0||persistence.status==='conflict')return;if(document.hidden||s.paused||$('boss-dialog').open)return;if(stepBattleReward(dt)){render();return}advanceTrail(dt);advancePotential(dt);if(phase==='defeated'){phaseLeft-=dt;if(phaseLeft<=0){s.heroHp=heroMaxHp();beginTravel();log('회복 완료 · 다시 모험을 시작합니다.')}render();return}if(phase==='loot'||phase==='travel'){s.heroHp=Math.min(heroMaxHp(),s.heroHp+heroMaxHp()*travelRecoveryRate()*dt);phaseLeft-=dt;if(phaseLeft<=0){if(phase==='loot')beginTravel();else{spawn();renderLoot()}}render();return}if(boss){bossLeft-=dt;if(bossLeft<=0){boss=false;lastLoot=[];beginTravel();log('시간 초과 · 강화 후 다시 도전해 보세요.');notify('보스 도전이 끝났어요.');renderLoot();render();return}}regenerateBoss(dt);advancePassives(dt);if(phase!=='combat'){render();return}attackClock+=dt;enemyClock+=dt;
+function stepCombat(dt){if(!Number.isFinite(dt)||dt<=0||persistence.status==='conflict')return;if(document.hidden||s.paused||$('boss-dialog').open)return;if(stepBattleReward(dt)){render();return}advanceTrail(dt);advancePassiveBuffs(dt);advancePotential(dt);if(phase==='defeated'){phaseLeft-=dt;if(phaseLeft<=0){s.heroHp=heroMaxHp();beginTravel();log('회복 완료 · 다시 모험을 시작합니다.')}render();return}if(phase==='loot'||phase==='travel'){s.heroHp=Math.min(heroMaxHp(),s.heroHp+heroMaxHp()*travelRecoveryRate()*dt);phaseLeft-=dt;if(phaseLeft<=0){if(phase==='loot')beginTravel();else{spawn();renderLoot()}}render();return}if(boss){bossLeft-=dt;if(bossLeft<=0){boss=false;lastLoot=[];beginTravel();log('시간 초과 · 강화 후 다시 도전해 보세요.');notify('보스 도전이 끝났어요.');renderLoot();render();return}}regenerateBoss(dt);advancePassives(dt);if(phase!=='combat'){render();return}attackClock+=dt;enemyClock+=dt;
 while(phase==='combat'){
  const heroInterval=1/speed(),foeInterval=enemyInterval(),heroDue=attackClock-heroInterval,foeDue=enemyClock-foeInterval;
  if(heroDue<-1e-9&&foeDue<-1e-9)break;
  // Greater overdue time means an earlier attack. Exact ties favor the defender.
  if(foeDue>=-1e-9&&(heroDue<-1e-9||foeDue>=heroDue-1e-9)){enemyClock=Math.max(0,enemyClock-foeInterval);monsterHit();}
- else{attackClock=Math.max(0,attackClock-heroInterval);const c=Math.random()<crit();const dealt=damage(attack()*(c?2:1),c);potentialHitEffects(dealt);if(s.heroHp>0&&passivePower('leech'))s.heroHp=Math.min(heroMaxHp(),s.heroHp+Math.min(heroMaxHp()*.02,dealt*.02*passivePower('leech')));if(phase==='combat'&&passivePower('echo')&&Math.random()<.05){damage(attack()*4*passivePower('echo'),true);passiveNotice('새벽의 메아리 자동 발동')}}
+ else{attackClock=Math.max(0,attackClock-heroInterval);performBasicAttack()}
 }
 render()}
 setInterval(()=>{if(!$('view-boss').hidden)renderBossList();const now=Date.now(),dt=Math.max(0,Math.min((now-lastTick)/1000,.5));lastTick=now;tick(dt)},100);
@@ -841,11 +843,12 @@ function paintImpact(amount,critical=false,received=false,blocked=false,heavy=fa
  const arena=$('arena');arena.classList.remove('impact-flash');void arena.offsetWidth;arena.classList.add('impact-flash');
  if(critical&&!received){clearTimeout(strikeTimers.critical);arena.classList.remove('enemy-critical-hit');void arena.offsetWidth;arena.classList.add('enemy-critical-hit');strikeTimers.critical=setTimeout(()=>{arena.classList.remove('enemy-critical-hit');strikeTimers.critical=null},620)}
 }
-function showImpact(amount,critical=false,received=false,blocked=false,heavy=false){
+function showImpact(amount,critical=false,received=false,blocked=false,heavy=false,echoHit=false){
  $('encounter-intro').classList.remove('reveal');animateStrike(received,critical,heavy);
  $('last-impact').textContent=received?'받은 피해 '+fmt(amount)+(blocked?' · 방어 성공':''):'준 피해 '+fmt(amount)+(critical?' · 치명타':'');
  if(received){paintImpact(amount,critical,received,blocked,heavy);return}
  if(quietCombatEffects()||s.paused)return;
+ if(echoHit){const serial=encounterSerial;clearTimeout(strikeTimers.echo);atHeroPose('echo',.90,()=>{if(serial===encounterSerial&&['combat','loot','victory'].includes(phase))paintImpact(amount,critical)},Math.max(0,heroContactAt-Date.now())+100);return}
  if(pendingHeroContact){pendingHeroContact.amount+=amount;pendingHeroContact.critical||=critical;return}
  pendingHeroContact={amount,critical,serial:encounterSerial};
  atHeroPose('contact',.66,()=>{const hit=pendingHeroContact;pendingHeroContact=null;if(hit&&hit.serial===encounterSerial&&['combat','loot','victory'].includes(phase))paintImpact(hit.amount,hit.critical)},Math.max(0,heroContactAt-Date.now()));
@@ -859,9 +862,10 @@ document.addEventListener('scroll',()=>{hideGearTip();hideCraftTip();hideAchieve
 for(const category of ['all',...Object.keys(SLOT_NAMES)])$('gear-category-'+category).onclick=()=>{gearFilter=category;gearPage=0;hideGearTip();renderEquipment()};
 
 function passiveNotice(message){$('passive-event').textContent=message;}
-function advancePassives(dt){if(phase!=='combat'||s.paused||s.heroHp<=0)return;s.passiveClock.heal=Math.min(20,s.passiveClock.heal+dt);if(passivePower('heal')&&s.heroHp<=heroMaxHp()*.4&&s.passiveClock.heal>=20){s.passiveClock.heal=0;const recovery=heroMaxHp()*.12*passivePower('heal');s.heroHp=Math.min(heroMaxHp(),s.heroHp+recovery);passiveNotice('응급 재생 · HP +'+fmt(recovery))}if(passivePower('light')){s.passiveClock.light+=dt;if(s.passiveClock.light>=12){s.passiveClock.light-=12;damage(attack()*1.8*passivePower('light'));passiveNotice('빛의 일격 자동 발동')}}}
+function advancePassives(dt){if(phase!=='combat'||s.paused||s.heroHp<=0)return;s.passiveClock.heal=Math.min(20,s.passiveClock.heal+dt);if(passivePower('heal')&&s.heroHp<=heroMaxHp()*.4&&s.passiveClock.heal>=20){s.passiveClock.heal=0;const recovery=heroMaxHp()*.12*passivePower('heal');s.heroHp=Math.min(heroMaxHp(),s.heroHp+recovery);passiveNotice('응급 재생 · HP +'+fmt(recovery))}if(s.passives.light){s.passiveClock.light+=dt;const interval=passiveLightInterval();if(s.passiveClock.light>=interval){s.passiveClock.light-=interval;damage(attack()*passiveValue('light',1.60,.05));passiveNotice('빛의 일격 자동 발동')}}}
+
 function drawPassive(rng=Math.random){if(!canMutate())return false;if((s.inventory.skillstone||0)<3)return false;s.inventory.skillstone-=3;s.draws++;const key=pickPassive(PASSIVES,rng);const level=s.passives[key]||0;if(level>=5){s.inventory.skillstone++;s.drawResult=PASSIVES[key].name+' · 최대 레벨 중복 / 스킬석 1개 반환'}else if(level===0||rng()<passiveUpgradeChance(level)){s.passives[key]=level+1;s.drawResult=PASSIVES[key].name+' · '+(level?'강화 성공! Lv.'+(level+1):'신규 획득 Lv.1')}else{s.inventory.skillstone++;s.drawResult=PASSIVES[key].name+' · 강화 실패 / Lv.'+level+' 유지 · 스킬석 1개 반환'}log('패시브 뽑기 · '+s.drawResult);notify(s.drawResult);save();render();renderLoot();return key}
-function renderPassives(){renderSpecial();const signature=JSON.stringify([s.inventory.skillstone,s.draws,s.drawResult,s.passives]);if(signature===passiveRenderSignature)return;passiveRenderSignature=signature;const stones=s.inventory.skillstone||0;$('shop-stones').textContent=stones+'개';$('passive-draw').disabled=stones<3;$('shop-draw-count').textContent='누적 '+s.draws+'회';$('draw-result').textContent=s.drawResult||'스킬석을 모아 첫 패시브를 만나 보세요.';const owned=Object.keys(PASSIVES).filter(k=>s.passives[k]);$('passive-summary').textContent=owned.length?owned.map(k=>PASSIVES[k].name+' Lv.'+s.passives[k]).join(' · '):'보유 패시브 없음 · 상점에서 스킬석으로 획득';for(const [key,p] of Object.entries(PASSIVES)){const lv=s.passives[key]||0;$('passive-level-'+key).textContent=lv?'Lv.'+lv+' / 5 · '+(lv<5?'다음 강화 '+Math.round(passiveUpgradeChance(lv)*100)+'%':'최대 레벨'):'미보유';$('passive-effect-'+key).textContent=passiveEffectText(key);$('passive-card-'+key).classList.toggle('owned',lv>0)}}
+function renderPassives(){renderPassiveBuffs();renderSpecial();const signature=JSON.stringify([s.inventory.skillstone,s.draws,s.drawResult,s.passives]);if(signature===passiveRenderSignature)return;passiveRenderSignature=signature;const stones=s.inventory.skillstone||0;$('shop-stones').textContent=stones+'개';$('passive-draw').disabled=stones<3;$('shop-draw-count').textContent='누적 '+s.draws+'회';$('draw-result').textContent=s.drawResult||'스킬석을 모아 첫 패시브를 만나 보세요.';const owned=Object.keys(PASSIVES).filter(k=>s.passives[k]);$('passive-summary').textContent=owned.length?owned.map(k=>PASSIVES[k].name+' Lv.'+s.passives[k]).join(' · '):'보유 패시브 없음 · 상점에서 스킬석으로 획득';for(const [key,p] of Object.entries(PASSIVES)){const lv=s.passives[key]||0;$('passive-level-'+key).textContent=lv?'Lv.'+lv+' / 5 · '+(lv<5?'다음 강화 '+Math.round(passiveUpgradeChance(lv)*100)+'%':'최대 레벨'):'미보유';$('passive-effect-'+key).textContent=passiveEffectText(key);$('passive-card-'+key).classList.toggle('owned',lv>0)}}
 $('passive-draw').onclick=()=>drawPassive();$('open-passive-shop').onclick=()=>showView('shop');
 
 function passiveUpgradeChance(level){return [1,.8,.6,.4,.2,0][Math.max(0,Math.min(5,level))]}
@@ -920,8 +924,8 @@ function renderLoadoutPlan(){
 function gearPageItems(gears){gearPage=Math.min(Math.max(0,gearPage),Math.max(0,Math.ceil(gears.length/GEAR_PAGE_SIZE)-1));return gears.slice(gearPage*GEAR_PAGE_SIZE,(gearPage+1)*GEAR_PAGE_SIZE)}
 function changeGearPage(delta){gearPage+=delta;equipmentSignature='';renderEquipment()}
 
-function attackAtLevel(level){return Math.round((10*Math.pow(1.12,level)*(1+gearStat('weapon','damage'))*(1+collectionBonus('attack'))+potentialSum('atkFlat'))*(1+potentialSum('atkPct'))*(1+(s.potentialBuff.left>0?s.potentialBuff.power:0))*(1+specialEffect('attack')))}
-function speedAtLevel(level){return Math.min(3,(1+Math.min(30,level)*.03+potentialSum('speedFlat'))*(1+.06*passivePower('haste'))*(1+potentialSum('speedPct'))*(1+specialEffect('speed')))}
+function attackAtLevel(level){return Math.round((10*Math.pow(1.12,level)*(1+gearStat('weapon','damage'))*(1+collectionBonus('attack'))+potentialSum('atkFlat'))*(1+potentialSum('atkPct'))*(1+(s.potentialBuff.left>0?s.potentialBuff.power:0))*(1+specialEffect('attack'))*passiveAttackMultiplier())}
+function speedAtLevel(level){return Math.min(3,(1+Math.min(30,level)*.03+potentialSum('speedFlat'))*(1+passiveValue('haste',.08,.02))*(1+potentialSum('speedPct'))*(1+specialEffect('speed')))}
 function hpAtLevel(level){return Math.round((140*Math.pow(1.08,level)+gearStat('chest','hp')+gearStat('legs','hp')+potentialSum('hpFlat')+potentialSum('trinket'))*(1+potentialSum('hpPct'))*(1+trailBonus())*(1+specialEffect('hp')))}
 function defenseAtLevel(level){return Math.round((8+level*2+gearStat('chest','armor')+gearStat('legs','armor')+potentialSum('defFlat'))*(1+potentialSum('defPct'))*(1+.10*passivePower('bark')))}
 function moveAtLevel(level){return (1+Math.min(30,level)*.015+potentialSum('moveFlat'))*(1+gearStat('boots','movement'))*(1+collectionBonus('movement'))*(1+potentialSum('movePct'))}
@@ -1183,14 +1187,41 @@ $('route-go').onclick=()=>{if(requestRoute(Number($('route-stage').value),true))
 $('route-frontier').onclick=()=>{if(requestRoute(s.highestStage,false))$('route-dialog').close()};
 $('route-cancel').onclick=()=>{if(!canMutate())return;s.queuedRoute=null;save();render()};
 
-function passiveBossDamage(){return 1+.08*passivePower('hunter')}
-function passiveRegenReduction(){return Math.min(.45,.25*passivePower('wither'))}
+// Patch values use explicit level increments; unaffected passives keep passivePower().
+function passiveValue(key,base,perLevel){const lv=s.passives[key]||0;return lv?base+(lv-1)*perLevel:0}
+function passiveBossDamage(){return 1+passiveValue('hunter',.06,.02)}
+function passiveFieldDamage(){return 1+((MOBS[currentMob]?.elite||currentMob==='treasure')?passiveValue('hunter',.10,.03):0)}
+function passiveRegenReduction(){return passiveValue('wither',.20,.012)}
+function passiveLightInterval(){return 15-Math.max(0,(s.passives.light||1)-1)*.5}
+function passiveEchoDuration(){return 10+Math.max(0,(s.passives.echo||1)-1)}
+function passiveAttackMultiplier(){return 1+(s.passiveBuffs?.wither>0?passiveValue('wither',.20,.025):0)+(s.passiveBuffs?.echo>0?passiveValue('echo',.10,.05):0)}
+function clearPassiveBuffs(){for(const key of ['guard','wither','echo'])s.passiveBuffs[key]=0}
+function advancePassiveBuffs(dt){for(const key of ['guard','wither','echo'])s.passiveBuffs[key]=Math.max(0,s.passiveBuffs[key]-dt)}
+function performBasicAttack(rng=Math.random){
+ if(phase!=='combat'||s.paused||s.heroHp<=0)return 0;
+ const echoed=s.passiveBuffs.echo>0;
+ const strike=(echoHit=false)=>{const critical=rng()<crit(),dealt=damage(attack()*(critical?2:1),critical,echoHit);potentialHitEffects(dealt,rng);return dealt};
+ let dealt=strike();
+ if(phase==='combat'&&echoed&&rng()<.5){dealt+=strike(true);passiveNotice('새벽의 메아리 · 연속 타격')}
+ // Only the original attack event can activate/refresh echo; extra hits never recurse.
+ if(s.passives.echo&&rng()<.03){s.passiveBuffs.echo=passiveEchoDuration();passiveNotice('새벽의 메아리 · '+passiveEchoDuration()+'초간 연속 타격 준비')}
+ return dealt;
+}
+function renderPassiveBuffs(){
+ const names={guard:'방벽 · 피해 −30%',wither:'시든달 · 공격 +'+pct(passiveValue('wither',.20,.025)),echo:'메아리 · 공격 +'+pct(passiveValue('echo',.10,.05))+' / 연타 50%'};
+ const rows=Object.keys(names).filter(k=>s.passiveBuffs[k]>0);$('passive-buffs').hidden=!rows.length;$('passive-buffs').textContent=rows.map(k=>names[k]+' · '+s.passiveBuffs[k].toFixed(1)+'초').join(' / ');
+}
 function travelRecoveryRate(){return .05+.01*passivePower('breath')}
 function passiveEffectText(key){
- const lv=s.passives[key]||0,power=lv?passivePower(key):1,prefix=lv?'현재 효과 · ':'Lv.1 효과 · ';
+ const lv=s.passives[key]||0,power=lv?passivePower(key):1,prefix=lv?'현재 효과 · ':'Lv.1 효과 · ',step=Math.max(0,lv-1);
+ if(key==='light')return prefix+(15-step*.5)+'초마다 공격력 '+pct(1.60+step*.05)+' 자동 타격';
+ if(key==='guard')return prefix+'피격 시 4% 확률로 5초간 받는 피해 30% 감소 · 발동한 공격부터 적용';
+ if(key==='haste')return prefix+'공격 속도 +'+pct(.08+step*.02)+' 상시 증가';
+ if(key==='leech')return prefix+'드롭률 +'+pct(.10+step*.015)+' · 골드 획득 +'+pct(.15+step*.02);
+ if(key==='echo')return prefix+'일반 공격 후 3% 확률로 '+(10+step)+'초간 공격력 +'+pct(.10+step*.05)+' · 지속 중 일반 공격마다 50% 확률로 2회 타격 · 재발동 시 시간 갱신';
  if(key==='breath')return prefix+'이동·전리품 정리 중 초당 최대 HP '+pct(.01*power)+' 추가 회복 · 전투/회복 대기 제외';
  if(key==='bark')return prefix+'방어력 +'+pct(.10*power)+' · 장비·잠재 방어력에 곱연산';
- if(key==='hunter')return prefix+'보스에게 주는 모든 피해 +'+pct(.08*power)+' · 일반 적·엘리트·여우 제외';
- if(key==='wither')return prefix+'보스의 초당 체력 재생 −'+pct(.25*power)+' · 입장 즉시 상시 적용';
+ if(key==='hunter')return prefix+'보스 피해 +'+pct(.06+step*.02)+' · 엘리트·여우 피해 +'+pct(.10+step*.03);
+ if(key==='wither')return prefix+'보스 초당 재생 −'+pct(.20+step*.012)+' · 치명타 피해 시 20% 확률로 3초간 공격력 +'+pct(.20+step*.025)+' · 재발동 시 시간 갱신';
  return PASSIVES[key].desc+(lv>1?' · 효과량 ×'+power.toFixed(1):'');
 }
