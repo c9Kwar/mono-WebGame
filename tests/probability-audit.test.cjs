@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),{harness}=r
 const base={v:1,lastSeen:Date.now(),total:100,highestStage:25,stage:6};
 const plain=x=>JSON.parse(JSON.stringify(x));
 test('all 10000 normal and special passive buckets match advertised weights',()=>{
- const h=harness(base);for(const [pool,expected] of [['PASSIVES',{light:7000,guard:1000,heal:1000,haste:800,leech:180,echo:20}],['SPECIAL_PASSIVES',{foxluck:6000,foxward:3000,foxspirit:1000}]])assert.deepEqual(plain(h.run(`(()=>{const counts={};for(let i=0;i<10000;i++){const k=pickPassive(${pool},()=>i/10000);counts[k]=(counts[k]||0)+1}return counts})()`)),expected);
+ const h=harness(base);for(const [pool,expected] of [['PASSIVES',{light:5000,breath:2000,guard:800,heal:800,bark:400,haste:500,hunter:300,leech:100,wither:80,echo:20}],['SPECIAL_PASSIVES',{foxluck:6000,foxward:3000,foxspirit:1000}]])assert.deepEqual(plain(h.run(`(()=>{const counts={};for(let i=0;i<10000;i++){const k=pickPassive(${pool},()=>i/10000);counts[k]=(counts[k]||0)+1}return counts})()`)),expected);
 });
 test('boss tier exact boundaries do not gain an extra elite bucket',()=>{
  const h=harness(base);assert.equal(h.run('rollBossTier(()=>.101)'),'normal');

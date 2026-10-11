@@ -3,11 +3,11 @@ const base={v:1,lastSeen:Date.now(),total:100,highestStage:25,stage:6};
 let h=harness(base),r=h.run;
 // Exact grade sums and RNG boundaries, no drop-luck influence on draws.
 assert.deepEqual(JSON.parse(r('JSON.stringify(Object.values(PASSIVES).reduce((a,p)=>(a[p.rarity]=(a[p.rarity]||0)+p.weight,a),{}))')),{common:70,rare:20,epic:8,legendary:1.8,mythic:.2});
-for(const [roll,key] of [[0,'light'],[.699999,'light'],[.7,'guard'],[.799999,'guard'],[.8,'heal'],[.899999,'heal'],[.9,'haste'],[.979999,'haste'],[.98,'leech'],[.997999,'leech'],[.998,'echo'],[.999999,'echo']]){
+for(const [roll,key] of [[0,'light'],[.499999,'light'],[.5,'breath'],[.699999,'breath'],[.7,'guard'],[.78,'heal'],[.86,'bark'],[.90,'haste'],[.95,'hunter'],[.98,'leech'],[.99,'wither'],[.998,'echo'],[.999999,'echo']]){
  const a=harness(base);a.run('s.inventory.skillstone=3');assert.equal(a.run(`drawPassive(()=>${roll})`),key);assert.equal(a.run('s.inventory.skillstone'),0);assert.equal(a.run(`s.passives.${key}`),1);
 }
-r('s.inventory.skillstone=3;s.passives.light=1;drawPassive(()=>.69)');assert.equal(r('s.passives.light'),2);
-r('s.inventory.skillstone=3;s.passives.light=4;drawPassive(()=>.69)');assert.equal(r('s.passives.light'),4);assert.equal(r('s.inventory.skillstone'),1);
+r('s.inventory.skillstone=3;s.passives.light=1;drawPassive(()=>.49)');assert.equal(r('s.passives.light'),2);
+r('s.inventory.skillstone=3;s.passives.light=4;drawPassive(()=>.49)');assert.equal(r('s.passives.light'),4);assert.equal(r('s.inventory.skillstone'),1);
 // Special pool uses jade only, max 3, one active, bounded combat impact.
 assert.equal(r('drawSpecial(()=>0)'),false);
 for(const [roll,key] of [[0,'foxluck'],[.6,'foxward'],[.9,'foxspirit']]){r('s.inventory.jadeorb=1');assert.equal(r(`drawSpecial(()=>${roll})`),key);assert.equal(r('s.inventory.jadeorb'),0)}
