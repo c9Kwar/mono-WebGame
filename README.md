@@ -1,25 +1,24 @@
 # 모스라이트 · Mosslight
 
-숲을 탐험하며 장비와 패시브를 수집하는 방치형 RPG입니다.
+숲을 탐험하며 장비와 패시브를 수집하는 방치형 RPG.
 
 - 게임: https://mosslight-idle.snappyowlet.chatgpt.site
-- 소스 저장소: https://github.com/c9Kwar/mono-WebGame
+- 저장소: https://github.com/c9Kwar/mono-WebGame
 
 ## 구조
 
-- `dist/`: 별도 빌드 없이 실행하는 HTML, CSS, JavaScript와 게임 이미지
-- `art-source/`: 신규 이미지 원본
-- `tests/`: Node.js 기반 로직·자산·확률·밸런스 검증
-- `art-notes.md`: 이미지 제작 기록
+- `dist/`: 빌드 없이 실행하는 HTML, CSS, JavaScript 및 최적화된 WebP 이미지
+- `tests/`: 로직·자산·확률·밸런스 검증
+- `art-notes.md`: 이미지 제작 기록(기록에 나오는 PNG 원본은 기존 Sites 프로젝트에 보존, 이 저장소에는 실행용 WebP 포함)
 - `release-notes.md`: 업데이트 및 검증 기록
 
 ## 실행
 
-저장소 루트에서 `python3 -m http.server 8000 --directory dist`를 실행한 뒤 http://localhost:8000 에 접속합니다. 진행 상황은 접속 주소별 브라우저 localStorage에 저장됩니다.
+저장소 루트에서 `python3 -m http.server 8000 --directory dist`를 실행하고 http://localhost:8000 에 접속합니다. 진행 상황은 접속 주소별 브라우저 localStorage에 저장됩니다.
 
 ## 검증
 
-Node.js 22 이상에서 다음을 실행합니다.
+Node.js 22 이상에서 실행합니다.
 
 ```sh
 node --check dist/game.js
