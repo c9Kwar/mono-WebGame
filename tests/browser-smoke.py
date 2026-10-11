@@ -39,7 +39,7 @@ with sync_playwright() as p:
  assert page.evaluate('s.passives.light')==3
  assert page.evaluate('JSON.stringify(s.bossWins)')=='[4,2,1,0,0]'
  # Craft and protect a real equipment instance through actual UI controls.
- page.locator('#tab-inventory').click();page.locator('#pin-shellcoat').click();page.locator('#tab-battle').click();page.locator('#pinned-target-sources summary').click();assert '왕관등갑 설계도' in page.locator('#pinned-target-needs').inner_text();page.locator('#tab-inventory').click();page.locator('#craft-practiceblade').click()
+ page.locator('#tab-inventory').click();page.locator('#craft-ready-only').uncheck();page.locator('#pin-shellcoat').click();page.locator('#tab-battle').click();page.locator('#pinned-target-sources summary').click();assert '왕관등갑 설계도' in page.locator('#pinned-target-needs').inner_text();page.locator('#tab-inventory').click();page.locator('#craft-practiceblade').click()
  assert page.evaluate('s.inventory.practiceblade')==1
  page.locator('#tab-equipment').click();page.locator('.gear-lock').first.click()
  assert page.locator('.gear-salvage').first.is_disabled()

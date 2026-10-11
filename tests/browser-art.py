@@ -133,6 +133,7 @@ with sync_playwright() as playwright:
     item_names = page.evaluate('Object.values(ITEMS).map(item => item.name)')
     assert set(page.locator('#inventory-grid .item-slot strong').all_text_contents()) == set(item_names)
     assert page.locator('#inventory-grid .item-slot[aria-label]').count() == 60
+    page.locator('#craft-ready-only').uncheck()
     recipe_keys = page.evaluate('Object.keys(RECIPES)')
     assert len(recipe_keys) == 18
     for key in recipe_keys:

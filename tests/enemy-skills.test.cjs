@@ -25,11 +25,11 @@ test('five boss skills telegraph and land their existing charged damage exactly 
  }
 });
 
-test('each elite gives its powered attack a skill identity without extra damage or cadence',()=>{
+test('each elite skill observes its species damage and cadence without an extra hit',()=>{
  for(const mob of ['eliteSlime','eliteMushroom','eliteMoth','eliteSnail','eliteRabbit']){
   const h=ready(`boss=false;currentMob='${mob}';enemyClock=1.3`),before=h.run('s.heroHp'),expected=h.run('incomingDamage()'),skill=h.run('enemySkill().id');
-  assert.equal(h.run('enemyAttack()'),Math.round(18*1.2**5*2.8));
-  assert.equal(h.run('enemyInterval()'),2);
+  assert.equal(h.run('enemyAttack()'),h.run('Math.round(18*1.2**5*MOBS[currentMob].atk)'));
+  assert.equal(h.run('enemyInterval()'),h.run('MOBS[currentMob].interval'));
   assert.equal(h.nodes.get('boss-pattern').hidden,false);
   h.run('monsterHit(()=>.99)');assert.equal(before-h.run('s.heroHp'),expected);
   assert.ok(bursts(h).some(node=>node.className.includes('skill-'+skill)));

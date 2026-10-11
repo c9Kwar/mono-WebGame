@@ -104,3 +104,13 @@
 .arena.scene-paused.hero-defeated .hero-motion{animation-play-state:paused!important}
 @media(prefers-reduced-motion:reduce){.arena.hero-defeated .hero-motion{animation:none!important;transform:translateY(15%) rotate(35deg);opacity:.65}.expedition-strip #trail-progress{transition:none}}
 .arena.cinema-lite.hero-defeated .hero-motion{animation:none!important;transform:translateY(15%) rotate(35deg);opacity:.65}
+.craft-ready-filter{display:inline-flex;align-items:center;gap:7px;min-height:36px;font-size:13px;color:#d5e3c7;cursor:pointer}
+.craft-ready-filter input{width:17px;height:17px;accent-color:#486445}
+.craft-empty{padding:16px;border:1px dashed var(--line);font-size:13px;line-height:1.7}
+.recipe-card .recipe-readiness{margin:0;padding:2px 8px 7px;font-size:11px;color:#d5e3c7;line-height:1.5}
+.craft-tooltip .enough{font-weight:600}
+
+#craft-tooltip.pinned,#craft-tooltip.pinned *{pointer-events:auto!important}
+#craft-tooltip.pinned{max-height:calc(100vh - 28px);overflow:auto}
+#craft-tooltip.pinned>button{display:block;position:absolute;top:5px;right:5px;width:32px;height:32px;padding:0;color:#2d442f;background:#e9e0c4;border:1px solid #9b9270;font-size:20px}
+#craft-tooltip h3{padding-right:25px}
