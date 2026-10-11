@@ -1,0 +1,61 @@
+/* Nocturnal Herbarium — one illustrated world, restrained folio furniture. */
+:root{--bg:#111f22;--surface:#1b2b2c;--surface-2:#253737;--surface-3:#30433f;--line:#53615a;--text:#f0e8d5;--muted:#b8bfaf;--gold:#d9ba7a;--green:#b6c8a6;--danger:#eaa999;--tooltip-surface:#f0e6cf;--tooltip-ink:#243532;--tooltip-muted:#516157;--tooltip-line:#8c947b;--tooltip-positive:#28513d;--tooltip-warning:#923a29}
+body.herbarium-edition{background:radial-gradient(ellipse at 70% 0,#36524a35,transparent 55%),repeating-linear-gradient(90deg,#d5c49a03 0 1px,transparent 1px 5px),var(--bg)}
+.herbarium-edition h1,.herbarium-edition h2,.brand,.rail-note strong{font-family:Georgia,'Noto Serif KR','Batang',serif;font-weight:500;letter-spacing:.025em}
+.herbarium-edition h1{font-size:clamp(25px,2.8vw,38px);letter-spacing:-.03em;line-height:1.35}
+body>header{background:#152528f5;border-bottom:1px solid #9c8c6070;box-shadow:0 4px 25px #0002}
+.brand{letter-spacing:.14em;font-size:19px}.brand-icon{font-size:29px}.brand small{font-size:9px;letter-spacing:.18em;color:#b7bda8}
+.navigation-rail{background:linear-gradient(180deg,#172a2c,#142324);border-right:1px solid #8e89624a}
+.rail-title{border-color:#827b5355}.rail-title strong{color:#e5dcc4}.rail-title small{color:#a4b0a6}
+.workspace-tabs button{border-radius:2px;color:#bdc6b9;letter-spacing:.025em}.workspace-tabs button[aria-selected=true]{background:#daceac;color:#223a36;border-color:#daceac;box-shadow:inset 3px 0 #8c6938}
+.workspace-tabs button[aria-selected=true]::before{color:#385047}.workspace-tabs #tab-boss{color:#ead4a3;background:#4a4831;border-color:#978357}.workspace-tabs #tab-boss[aria-selected=true]{background:#d8bc83;color:#283831}
+.rail-note{border-color:#827b5355}.rail-note p{color:#a9b3a5}.view-heading{border-bottom:1px solid #9e947058;padding-bottom:18px;margin-bottom:22px}.view-heading .eyebrow{font-size:9px;letter-spacing:.18em}.edition-label{font:10px Georgia,serif!important;letter-spacing:.15em;color:#b4ad94!important}
+.panel{border-radius:3px;border-color:#6b705754;background:linear-gradient(120deg,#ffffff02,transparent 45%),var(--surface);box-shadow:0 6px 24px #08161820}
+button,select{border-radius:2px}.primary{background:#d8bf8b;color:#24342f;border-color:#ead4a8}.primary:hover:not(:disabled){background:#ead5ad;border-color:#f4e3c4}
+.section-title{border-bottom:1px solid #9c906240;padding-bottom:12px}.eyebrow{color:#d9bc86}.muted,.hint{color:var(--muted)}
+/* The picture is a framed scene, not a different wallpaper for every monster. */
+.arena-panel{border:1px solid #b3a17699;box-shadow:0 16px 45px #020a0d55}.arena-top{background:#e7ddc5;border-color:#aa9e7c;color:#293d38}.arena-top h2{color:#253b35;font:600 18px 'Batang',serif}.arena-top .eyebrow{color:#5a6955}.arena-top .badge{color:#4b5b47}.arena-top button{background:#d3c8ad;color:#294036;border-color:#9a9b7d}.arena-top button:hover:not(:disabled){background:#c4b990}
+.herbarium-edition .arena{height:clamp(340px,35vw,500px);background-color:#283d3b;background-image:url('herbarium/clearing.webp');background-position:center 72%;box-shadow:inset 0 0 0 8px #c4b28712}
+.arena-shade{background:linear-gradient(180deg,#10202599,transparent 30%,transparent 75%,#0e2028b3)!important}
+.hero-vitals{background:#162b2b;border-color:#777650;padding:10px 18px}.hero-vitals strong{color:#c2cfb3}.hero-vitals #hero-hp-label{color:#f2ead6;font-size:19px}.hero-vitals .bar{border-color:#828d6e;background:#0c211e;height:10px}.hero-vitals .bar>div{background:linear-gradient(90deg,#7d9f8d,#cfdaa8)}
+.hero-vitals.critical{background:#452e2e}.hero-vitals.critical .bar>div{background:#dc9585}.hero-vitals #hero-defense{color:#c1c8b5}
+.herbarium-edition .hero-position{left:15%;bottom:18%;width:26%;height:53%}
+.herbarium-edition .enemy-position{right:15%;bottom:18%;width:30%;height:37%}
+.herbarium-edition .arena[data-species=snail] .enemy-position{width:32%;height:29%}
+.herbarium-edition .arena[data-species=rabbit] .enemy-position{width:29%;height:38%}
+.herbarium-edition .arena[data-species=moth] .enemy-position{bottom:28%;width:36%;height:39%}
+.herbarium-edition .arena[data-encounter=elite] .enemy-position{height:44%}
+.herbarium-edition .arena[data-encounter=treasure] .enemy-position{width:39%;height:44%;right:11%}
+.herbarium-edition .arena[data-encounter=boss] .enemy-position,.herbarium-edition .arena[data-encounter=elite-boss] .enemy-position,.herbarium-edition .arena[data-encounter=mystic] .enemy-position{width:41%;height:53%;right:9%}
+.herbarium-edition .arena[data-species=owl] .enemy-position{width:35%;height:47%;bottom:22%}
+.herbarium-edition .arena[data-species=hedgehog] .enemy-position{width:36%;height:48%}
+.herbarium-edition .enemy-actor.small-actor{width:100%;height:100%}
+.hero-actor,.enemy-actor{filter:drop-shadow(0 7px 5px #0c171c55)!important;object-position:50% 100%}
+.fox-actor{transform:scaleX(-1)}
+.herbarium-edition .arena[data-encounter=elite] .enemy-actor{filter:drop-shadow(0 0 7px #a58eb080)!important}
+.herbarium-edition .arena[data-encounter=elite-boss] .enemy-actor{filter:drop-shadow(0 0 10px #bca6c178)!important}
+.herbarium-edition .arena[data-encounter=mystic] .enemy-actor{filter:drop-shadow(0 0 13px #ccded1a8)!important}
+.herbarium-edition .arena[data-encounter=treasure] .enemy-actor{filter:drop-shadow(0 0 11px #d9b87580)!important}
+.arena[data-encounter=normal] .enemy-sigil{opacity:0}.enemy-sigil{opacity:.2}.scene-rays{opacity:.13}.scene-mist{opacity:.35}.scene-mote{background:#e7d9b6;box-shadow:0 0 5px #e8d9bb55}
+.herbarium-edition .enemy-card{background:#182c2ae8;border:1px solid #c0b28a99;box-shadow:0 5px 20px #071a2026;border-radius:2px}.enemy-card strong{color:#f1e7ce}.enemy-card .bar>div{background:#bd8573}.enemy-card .bar{border-color:#866d59}
+.encounter-plaque{border-color:#b5a47b77;background:#142828d9}.boss-timer{background:#26332ade;border-color:#c4aa74;color:#e9d1a0}.battle-status{background:#1e302be0;border-color:#acb28c66;color:#e9e5c9}.movement-strip,.stage-track{background:#1c302e;border-color:#7f82604d}.stage-track .bar>div{background:#b9ab7c}
+.travel-overlay{background:#182d2abe;backdrop-filter:blur(2px)}.travel-overlay h3{color:#f2e6c9}.scene-load-status{background:#182d2ae8;color:#eadfc1}
+/* Expedition board: a folio plate rather than a cropped splash image. */
+.boss-dock{border-radius:3px;border:1px solid #a39064;background:#23332e;box-shadow:0 10px 30px #020a0d30}.dock-art{height:160px;background:#d7c9a8;position:relative;overflow:hidden;border-bottom:1px solid #ad9870}.dock-art img{width:100%;height:100%;object-fit:contain!important;object-position:50% 70%!important;padding:12px 35px 20px;filter:none;opacity:1}
+.dock-art::after{background:linear-gradient(transparent 65%,#273c3355)!important}.dock-art-label{background:#223830e8;color:#e8d9b7;font-size:8px;letter-spacing:.14em}.dock-body h2{font-size:24px}.dock-body p{color:#c4c9b8}.dock-boss-row{border-color:#8b84513a}.dock-boss-row small{font-family:Georgia,serif;color:#c0b081}.dock-boss-row strong{color:#d1cfb1}
+.boss-view-masthead{background:linear-gradient(90deg,#1d3030f2,#1d3030a8),url('herbarium/clearing.webp') center 50%/cover;border-color:#a59569;border-radius:3px}.boss-seal{color:#d8c491;border-color:#b4a071}
+.boss-card{background:#213330;border-color:#817b545e;border-radius:3px}.herbarium-edition .boss-card-art{background:radial-gradient(ellipse at 50% 60%,#3d544044,transparent 65%),#d9cfb4!important;padding:18px;object-fit:contain!important}.boss-card-index{color:#c6b380}.boss-card h3{font-family:'Batang',Georgia,serif;font-size:20px}
+.quick-boss-row img{object-fit:contain;background:#dacfb3;border-radius:2px;padding:4px}.quick-boss-row[aria-pressed=true]{border-color:#cdb77e;background:#344438}.quick-boss-row strong{color:#eee3ca}
+/* Specimen trays unify equipment, recipes and collection pages. */
+.loadout-panel,.armory-panel,.compact-crafting,.research-board,.special-shop{border-color:#8d89634d;background:#1c2f2b}.gear-tile,.item-slot,.recipe-card,.achievement-card,.collection-card,.passive-card{border-radius:2px;background:#263832;border-color:#60705b}
+.gear-icon,.item-symbol,.recipe-icon{background:radial-gradient(ellipse,#d7cba32a,transparent 73%);border-radius:2px}.premium-item-art{filter:drop-shadow(0 2px 2px #06191235)!important;object-fit:contain}
+.gear-tile.common,.item-slot.common,.recipe-card.common{border-color:#939e88}.gear-tile.rare,.item-slot.rare,.recipe-card.rare{border-color:#86acbb}.gear-tile.epic,.item-slot.epic,.recipe-card.epic{border-color:#b89dca}.gear-tile.legendary,.item-slot.legendary,.recipe-card.legendary{border-color:#d4b173;background:linear-gradient(125deg,#77623938,transparent 60%),#263832}.gear-tile.mythic,.item-slot.mythic,.recipe-card.mythic{border-color:#d0a3b4;background:linear-gradient(125deg,#8e637536,transparent 60%),#263832}
+.gear-tile.equipped{box-shadow:inset 0 0 0 1px #d0cfad}.gear-tile strong,.item-slot strong,.recipe-card strong{color:#f0e6ce}.gear-tile small,.item-slot small{color:#bfc8b3}.premium-item-art.common,.premium-item-art.rare{opacity:.88}
+.codex #codex-image{object-fit:contain!important;background:#d9ceb0;padding:22px;max-height:310px}.codex .panel{border-color:#96926c}.codex button[aria-pressed=true]{border-color:#cab17d;background:#344b40}
+.gear-tooltip{background:#f0e6cf!important;color:#243532!important;border:1px solid #8c947b!important;box-shadow:0 8px 24px #030b1155}.gear-tooltip p,.gear-tooltip strong,.gear-tooltip small{color:inherit}.gear-tooltip .potential-block{background:#e4dbc5}.gear-tooltip .potential-line{color:#3b4e43}.gear-tooltip .quality-2{color:#624574}.gear-tooltip .quality-3{color:#765421}.gear-tooltip .quality-4{color:#7d365a}
+dialog{background:#20312d;color:#f0e8d5;border:1px solid #b9a475;border-radius:3px;box-shadow:0 25px 90px #0009}dialog::backdrop{background:#091517bc;backdrop-filter:blur(4px)}.victory-header{background:linear-gradient(135deg,#4f4f3355,transparent);border-color:#aa936d}.victory-item{background:#293b33;border-radius:2px}.potential-base,.potential-block{background:#192b27;border-color:#758361}.potential-line{color:#e0e7ca}.potential-reforge{border-color:#9b8b5c}
+/* Decorative motion remains restrained; combat timing and save data are untouched. */
+@keyframes folio-float{0%,100%{translate:0 0}50%{translate:0 -5px}}
+@media(prefers-reduced-motion:no-preference){.herbarium-edition .arena[data-encounter=treasure]:not(.scene-paused):not(.cinema-lite) .enemy-motion,.herbarium-edition .arena[data-species=owl]:not(.scene-paused):not(.cinema-lite) .enemy-motion{animation:folio-float 4.5s ease-in-out infinite!important}}
+@media(max-width:1100px){.herbarium-edition .arena{height:420px}.herbarium-edition .hero-position{left:9%;width:30%}.herbarium-edition .enemy-position{right:12%}.dock-art{height:135px}}
+@media(max-width:700px){.herbarium-edition .arena{height:350px}.herbarium-edition .hero-position{left:5%;width:34%;height:48%;bottom:19%}.herbarium-edition .enemy-position{right:10%;width:36%;height:35%;bottom:19%}.herbarium-edition .arena[data-encounter=boss] .enemy-position,.herbarium-edition .arena[data-encounter=elite-boss] .enemy-position,.herbarium-edition .arena[data-encounter=mystic] .enemy-position{width:44%;height:46%;right:5%}.arena-top h2{font-size:16px}.view-heading{padding-bottom:13px;margin-bottom:16px}.brand{font-size:15px}.edition-label{display:none}.hero-vitals #hero-hp-label{font-size:18px}.dock-art{height:125px}.codex #codex-image{max-height:220px}}
