@@ -34,3 +34,4 @@ jobs:
           done
           curl --fail --silent http://127.0.0.1:8082/ > /dev/null
           .venv/bin/python tests/browser-smoke.py
+          .venv/bin/python tests/browser-preparation.py
