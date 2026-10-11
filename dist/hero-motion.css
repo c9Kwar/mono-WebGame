@@ -1,0 +1,52 @@
+/* The original knight art is clipped into a body, shoulder and wrist.
+   Shoulder and wrist rotations lift the blade overhead before the downstroke. */
+.hero-rig{display:block;overflow:visible}
+.hero-rig g{transform-box:view-box}
+.hero-arm{transform-origin:935px 610px}
+.hero-sword-hand{transform-origin:1000px 665px}
+.hero-arm-joint,.hero-arm-highlight{opacity:0}
+.hero-striking .hero-arm-joint,.hero-critical .hero-arm-joint,
+.hero-striking .hero-arm-highlight,.hero-critical .hero-arm-highlight{opacity:1}
+.hero-striking .hero-arm,.hero-critical .hero-arm{animation:hero-overhead-shoulder var(--hero-strike-duration,550ms) both}
+.hero-striking .hero-sword-hand,.hero-critical .hero-sword-hand{animation:hero-overhead-wrist var(--hero-strike-duration,550ms) both}
+.hero-striking .hero-motion,.hero-critical .hero-motion{animation:hero-overhead-weight var(--hero-strike-duration,550ms) both}
+/* Combat recoil remains on hero-position; the articulated cut lives inside it. */
+.hero-striking .hero-position,.hero-critical .hero-position{animation:none}
+.enemy-striking .hero-position{animation:contact-recoil .4s .13s ease-out}
+.hero-striking .sword-arc,.hero-critical .sword-arc{animation:hero-downward-trace var(--hero-strike-duration,550ms) both}
+.hero-striking .enemy-position,.hero-critical .enemy-position{animation:contact-recoil .25s calc(var(--hero-strike-duration,550ms)*.66) ease-out}
+.hero-critical .hero-rig{filter:drop-shadow(0 8px 4px #071b2266) drop-shadow(0 0 5px #f5ce77a0)}
+/* A normal killing blow finishes before the loot overlay covers the actors. */
+.hero-striking #travel-overlay,.hero-critical #travel-overlay{visibility:hidden}
+@keyframes hero-overhead-shoulder{
+  0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.25,.1,.25,1)}
+  34%,44%{transform:rotate(-112deg);animation-timing-function:cubic-bezier(.65,0,.9,.4)}
+  64%,72%{transform:rotate(34deg);animation-timing-function:ease-out}
+  100%{transform:rotate(0deg)}
+}
+@keyframes hero-overhead-wrist{
+  0%{transform:rotate(0deg);animation-timing-function:cubic-bezier(.25,.1,.25,1)}
+  34%,44%{transform:rotate(66deg);animation-timing-function:cubic-bezier(.65,0,.9,.4)}
+  64%,72%{transform:rotate(47deg);animation-timing-function:ease-out}
+  100%{transform:rotate(0deg)}
+}
+@keyframes hero-overhead-weight{
+  0%,100%{transform:none}
+  34%,44%{transform:translate(-2%,-2%) rotate(-3deg)}
+  64%,72%{transform:translate(6%,2%) rotate(4deg)}
+}
+@keyframes hero-downward-trace{
+  0%,43%{opacity:0;transform:translate(-12%,-36%) rotate(-92deg) scale(.65)}
+  49%{opacity:.85;transform:translate(-3%,-23%) rotate(-54deg) scale(.85)}
+  63%{opacity:1;transform:translate(8%,15%) rotate(45deg) scale(1.1)}
+  78%,100%{opacity:0;transform:translate(10%,30%) rotate(72deg) scale(1.2)}
+}
+/* Simplified effects retain the resting pose; pausing never leaves a raised blade. */
+.scene-paused .hero-rig g,.cinema-lite .hero-rig g,
+.scene-paused .hero-motion,.cinema-lite .hero-motion{animation:none!important;transform:none!important}
+.scene-paused .hero-arm-joint,.scene-paused .hero-arm-highlight,
+.cinema-lite .hero-arm-joint,.cinema-lite .hero-arm-highlight{opacity:0}
+@media(prefers-reduced-motion:reduce){
+  .hero-rig g,.arena .hero-motion{animation:none!important;transform:none!important}
+  .hero-arm-joint,.hero-arm-highlight{opacity:0!important}
+}

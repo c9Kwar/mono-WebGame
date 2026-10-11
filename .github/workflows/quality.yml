@@ -36,3 +36,4 @@ jobs:
           .venv/bin/python tests/browser-smoke.py
           .venv/bin/python tests/browser-preparation.py
           .venv/bin/python tests/browser-effects.py
+          .venv/bin/python tests/browser-skills.py

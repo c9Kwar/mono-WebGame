@@ -7,6 +7,6 @@
   "scripts": {
     "test": "node tests/run-all.cjs",
     "start": "python3 -m http.server 8082 --bind 127.0.0.1 --directory dist",
-    "test:browser": "python3 tests/browser-smoke.py && python3 tests/browser-preparation.py && python3 tests/browser-effects.py"
+    "test:browser": "python3 tests/browser-smoke.py && python3 tests/browser-preparation.py && python3 tests/browser-effects.py && python3 tests/browser-skills.py"
   }
 }

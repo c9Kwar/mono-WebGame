@@ -1,0 +1,14 @@
+/* Reuse the original encounter artwork as clipped actors, keeping the hero independent. */
+.field-actor{display:none;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 7px 5px #071b2255)}
+.arena[data-species=slime] .field-slime,.arena[data-species=mushroom] .field-mushroom,.arena[data-species=moth] .field-moth{display:block}
+.arena:is([data-species=slime],[data-species=mushroom],[data-species=moth]) #enemy-actor{display:none}
+.arena[data-species=slime] .enemy-position{right:14%;width:28%;height:33%}
+.arena[data-species=mushroom] .enemy-position{right:12%;width:31%;height:39%}
+.arena[data-species=moth] .enemy-position{right:5%;bottom:18%;width:44%;height:50%}
+.arena[data-species=moth] .enemy-motion{animation:fox-levitate 4s ease-in-out infinite}
+.arena[data-species=moth] .actor-shadow{bottom:-9%;opacity:.5}
+.arena[data-encounter=normal] .enemy-sigil{display:none}
+.arena[data-encounter=elite] .field-actor{filter:drop-shadow(0 0 10px #b18bdc88) saturate(1.08)}
+.arena[data-encounter=elite] .enemy-sigil{opacity:.22}
+.arena.cinema-lite .enemy-motion{animation:none}
+@media(prefers-reduced-motion:reduce){.arena[data-species=moth] .enemy-motion{animation:none}}

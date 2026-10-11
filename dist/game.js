@@ -28,15 +28,17 @@ function warmBattleImages(){
 }
 function renderBattleScene(){
  if(typeof Image==='undefined')return;
- const arena=$('arena'),special=boss||currentMob==='treasure'||MOBS[currentMob]?.sprite;
- const actor=currentMob==='treasure'&&!boss?'treasure-fox-sprite.webp':boss?bossSprite(bossId):MOBS[currentMob].image;
- const species=boss?(bossId===3?'owl':bossId===4?'hedgehog':'guardian'):currentMob.toLowerCase().includes('snail')?'snail':currentMob.toLowerCase().includes('rabbit')?'rabbit':currentMob;const actorClass=currentMob==='treasure'&&!boss?'fox-actor':boss?(bossId===0?'turtle-actor':'golem-actor'):'small-actor';
+ const arena=$('arena'),species=boss?(bossId===3?'owl':bossId===4?'hedgehog':'guardian'):currentMob.toLowerCase().replace(/^elite/,'');
+ // The three original landscapes are clipped into SVG actors; no baked-in hero remains.
+ const fieldArt={slime:'cute-slime.webp',mushroom:'cute-mushroom.webp',moth:'moth.webp'};
+ const actor=boss?bossSprite(bossId):currentMob==='treasure'?'treasure-fox-sprite.webp':fieldArt[species]||MOBS[currentMob].image;
+ const actorClass=currentMob==='treasure'&&!boss?'fox-actor':boss?(bossId===0?'turtle-actor':'golem-actor'):'small-actor';
  const name=boss?BOSSES[bossId].name:MOBS[currentMob].name,background=sceneImage();
- const key=[background,special?actor:'',name].join('|');
+ const key=[background,actor,name].join('|');
  if(key===battleSceneKey&&(!battleSceneRetryAt||Date.now()<battleSceneRetryAt))return;
  battleSceneKey=key;battleSceneRetryAt=0;const request=++battleSceneRequest;
  arena.setAttribute('aria-busy','true');$('scene-load-status').hidden=false;$('scene-load-status').textContent='숲의 풍경을 불러오는 중…';
- Promise.all([loadBattleImage(background),...(special?[loadBattleImage(actor),loadBattleImage('knight-sprite.webp')]:[])]).then(images=>{
+ Promise.all([loadBattleImage(background),loadBattleImage(actor),loadBattleImage('knight-sprite.webp')]).then(images=>{
   if(request!==battleSceneRequest)return;
   arena.setAttribute('aria-busy','false');
   if(images.some(img=>!img)){
@@ -44,30 +46,83 @@ function renderBattleScene(){
    battleSceneRetryAt=Date.now()+30000;$('scene-load-status').textContent='풍경 연결 중 · 자동으로 다시 불러옵니다';return;
   }
   arena.style.backgroundImage='url("'+background+'")';
-  if(special){$('enemy-actor').src=actor;$('enemy-actor').alt=name;$('enemy-actor').className='enemy-actor '+actorClass}
-  arena.classList.toggle('layered-scene',special);arena.setAttribute('data-species',species);$('scene-load-status').hidden=true;
+  if(!fieldArt[species]){$('enemy-actor').src=actor;$('enemy-actor').alt=name;$('enemy-actor').className='enemy-actor '+actorClass}
+  arena.classList.toggle('layered-scene',true);arena.setAttribute('data-species',species);$('scene-load-status').hidden=true;
   warmBattleImages();
  });
 }
 
 // Combat visuals are deterministic presentation; rewards are credited only in damage().
 let encounterSerial=0,cinemaSignature='',rewardPainted='',rewardReview=false;
-let combatFxSerial=0;const strikeTimers={};
+let combatFxSerial=0,impactSerial=0,heroStrikeDuration=550,heroContactAt=0,heroStrikeAnimation=null,pendingHeroContact=null;const strikeTimers={},combatFxTimers=new Map(),impactTimers=new Map();
 function quietCombatEffects(){return s.effectsLite||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||document.hidden}
-function clearCombatEffects(){ $('combat-fx').replaceChildren();for(const key of ['hero','enemy']){clearTimeout(strikeTimers[key]);strikeTimers[key]=null}$('arena').classList.remove('hero-striking','hero-critical','enemy-striking','heavy-impact')}
+function clearCombatEffects(keepHeroStrike=false){
+ for(const timer of combatFxTimers.values())clearTimeout(timer);combatFxTimers.clear();$('combat-fx').replaceChildren();
+ for(const key of ['hero','contact','enemy','skill','victory']){if(keepHeroStrike&&(key==='hero'||key==='contact'))continue;clearTimeout(strikeTimers[key]);strikeTimers[key]=null}
+ if(!keepHeroStrike){pendingHeroContact=null;heroContactAt=0;heroStrikeAnimation=null;$('arena').classList.remove('hero-striking','hero-critical')}
+ for(const timer of impactTimers.values())clearTimeout(timer);impactTimers.clear();$('impact-layer').replaceChildren();$('arena').classList.remove('enemy-striking','heavy-impact','skill-charging','impact-flash');$('arena').setAttribute('data-cast-skill','');
+}
+function appendCombatBurst(burst,duration=760){
+ const layer=$('combat-fx');layer.append(burst);
+ while(layer.children.length>5){const oldest=layer.children[0];clearTimeout(combatFxTimers.get(oldest));combatFxTimers.delete(oldest);oldest.remove()}
+ combatFxTimers.set(burst,setTimeout(()=>{burst.remove();combatFxTimers.delete(burst)},duration));return true;
+}
+// All skill particles share the combat layer's five-burst budget and use fixed geometry.
+function emitEncounterEffect(skill,event='cast'){
+ if(!skill||!['cast','arrive','victory'].includes(event)||quietCombatEffects()||s.paused)return false;
+ const burst=document.createElement('div');burst.className='combat-burst encounter-fx skill-'+skill.id+' skill-'+event;
+ for(const part of ['source','path','impact']){const node=document.createElement('i');node.className='skill-'+part;if(part==='source')node.textContent=skill.glyph;burst.append(node)}
+ for(let i=0;i<6;i++){const node=document.createElement('i');node.className='skill-fragment';const angle=(i*60-30)*Math.PI/180;node.style.cssText='--i:'+i+';--dx:'+Math.round(Math.cos(angle)*94)+'px;--dy:'+Math.round(Math.sin(angle)*68)+'px;--turn:'+(i*60)+'deg';burst.append(node)}
+ return appendCombatBurst(burst,event==='cast'?1050:1250);
+}
+function castEnemySkill(skill){
+ if(!skill)return false;
+ const shown=emitEncounterEffect(skill);
+ if(shown){clearTimeout(strikeTimers.skill);$('arena').setAttribute('data-cast-skill',skill.id);strikeTimers.skill=setTimeout(()=>$('arena').setAttribute('data-cast-skill',''),1050)}
+ return shown;
+}
 function emitCombatEffect(kind){
- if(quietCombatEffects()||s.paused)return false;const layer=$('combat-fx'),burst=document.createElement('div');
+ if(quietCombatEffects()||s.paused)return false;const burst=document.createElement('div');
  burst.className='combat-burst fx-'+kind;burst.style.cssText='--tilt:'+((combatFxSerial++%3-1)*12)+'deg';
  const ring=document.createElement('i');ring.className='fx-ring';burst.append(ring);
  for(let i=0;i<6;i++){const spark=document.createElement('i');spark.className='fx-spark';const angle=(i*60+combatFxSerial*17)*Math.PI/180;spark.style.cssText='--dx:'+Math.round(Math.cos(angle)*74)+'px;--dy:'+Math.round(Math.sin(angle)*52)+'px;--turn:'+(i*60)+'deg';burst.append(spark)}
- layer.append(burst);while(layer.children.length>5)layer.children[0].remove();setTimeout(()=>burst.remove(),760);return true;
+ return appendCombatBurst(burst);
 }
 function encounterKind(){return boss?(bossTier==='mystic'?'mystic':bossTier==='elite'?'elite-boss':'boss'):currentMob==='treasure'?'treasure':MOBS[currentMob]?.elite?'elite':'normal'}
-function sceneImage(){return boss||currentMob==='treasure'||MOBS[currentMob]?.sprite?'battle-clearing.webp':currentMob==='mushroom'&&regionIndex()===0?'cute-mushroom.webp':MOBS[currentMob].image}
-function renderEncounter(){const arena=$('arena'),kind=encounterKind(),special=boss||currentMob==='treasure'||MOBS[currentMob]?.sprite,victory=['victory','results'].includes(phase);const signature=[kind,bossId,currentMob,encounterSerial,victory].join('|');arena.classList.toggle('scene-paused',s.paused||document.hidden);arena.classList.toggle('scene-victory',victory);arena.classList.toggle('cinema-lite',s.effectsLite);$('fx-toggle').setAttribute('aria-pressed',String(!s.effectsLite));$('fx-toggle').textContent=s.effectsLite?'연출 간소화':'연출 풍부하게';if(quietCombatEffects())clearCombatEffects();if(signature!==cinemaSignature){clearCombatEffects();cinemaSignature=signature;arena.setAttribute('data-encounter',kind);$('encounter-rank').textContent=({normal:'FOREST ENCOUNTER',elite:'ELITE HUNT',boss:'BOSS EXPEDITION','elite-boss':'ELITE BOSS',mystic:'MYSTIC BOSS',treasure:'GOLDEN ENCOUNTER'})[kind];$('encounter-trait').textContent=({normal:'숲의 작은 만남',elite:'강인한 개체 · 전용 수집품',boss:'숲의 수호자 · 보스 전리품','elite-boss':'보스 HP ×8 · 공격 ×3 · 전리품 ×3',mystic:'보스 HP ×60 · 공격 ×12 · 전리품 ×12',treasure:'황금 보물여우 · 확정 희귀 재료'})[kind];$('encounter-intro').className='encounter-intro';if(kind!=='normal'&&!victory&&phase==='combat'){void $('encounter-intro').offsetWidth;$('encounter-intro').classList.add('reveal')}$('intro-rank').textContent=({elite:'ELITE',boss:'GUARDIAN','elite-boss':'ELITE GUARDIAN',mystic:'MYSTIC AWAKENING',treasure:'A GOLDEN MIRACLE'})[kind]||'';$('intro-name').textContent=boss?BOSS_TIERS[bossTier].name+' · '+BOSSES[bossId].name:MOBS[currentMob].name;const particles=$('scene-particles');particles.replaceChildren();for(let i=0;i<18;i++){const p=document.createElement('i');p.className='scene-mote';p.style.cssText='--i:'+i+';left:'+(8+(i*37)%85)+'%;top:'+(20+(i*23)%64)+'%;animation-delay:-'+(i*.43)+'s';particles.append(p)}}
-$('enemy-intent').hidden=phase!=='combat';$('enemy-intent-text').textContent=phase==='combat'?(boss&&bossCharged()?BOSS_BALANCE[bossId].skill+' ': '다음 공격 ')+Math.max(0,enemyInterval()-enemyClock).toFixed(1)+'초':'';$('enemy-intent-fill').style.width=Math.min(100,enemyClock/enemyInterval()*100)+'%';$('arena').classList.toggle('attack-approaching',phase==='combat'&&enemyInterval()-enemyClock<.45);$('reward-reopen').hidden=!s.battleReward;if(victory){$('battle-status').textContent='✦ 승리 · 전리품 확인';$('reward-label').textContent='보상이 가방에 저장되었습니다.'}
+function sceneImage(){return 'battle-clearing.webp'}
+function renderEncounter(){const arena=$('arena'),kind=encounterKind(),victory=['victory','results'].includes(phase);const signature=[kind,bossId,currentMob,encounterSerial,phase].join('|');arena.classList.toggle('scene-paused',s.paused||document.hidden);arena.classList.toggle('scene-victory',victory);arena.classList.toggle('cinema-lite',s.effectsLite);$('fx-toggle').setAttribute('aria-pressed',String(!s.effectsLite));$('fx-toggle').textContent=s.effectsLite?'연출 간소화':'연출 풍부하게';if(quietCombatEffects()||s.paused)clearCombatEffects();if(signature!==cinemaSignature){const finishingStrike=['loot','victory'].includes(phase)&&cinemaSignature===[kind,bossId,currentMob,encounterSerial,'combat'].join('|');clearCombatEffects(finishingStrike);cinemaSignature=signature;arena.setAttribute('data-encounter',kind);$('encounter-rank').textContent=({normal:'FOREST ENCOUNTER',elite:'ELITE HUNT',boss:'BOSS EXPEDITION','elite-boss':'ELITE BOSS',mystic:'MYSTIC BOSS',treasure:'GOLDEN ENCOUNTER'})[kind];$('encounter-trait').textContent=({normal:'숲의 작은 만남',elite:'강인한 개체 · 전용 수집품',boss:'숲의 수호자 · 보스 전리품','elite-boss':'보스 HP ×8 · 공격 ×3 · 전리품 ×3',mystic:'보스 HP ×60 · 공격 ×12 · 전리품 ×12',treasure:'황금 보물여우 · 확정 희귀 재료'})[kind];$('encounter-intro').className='encounter-intro';if(kind!=='normal'&&!victory&&phase==='combat'){void $('encounter-intro').offsetWidth;$('encounter-intro').classList.add('reveal')}$('intro-rank').textContent=({elite:'ELITE',boss:'GUARDIAN','elite-boss':'ELITE GUARDIAN',mystic:'MYSTIC AWAKENING',treasure:'A GOLDEN MIRACLE'})[kind]||'';$('intro-name').textContent=boss?BOSS_TIERS[bossTier].name+' · '+BOSSES[bossId].name:MOBS[currentMob].name;const particles=$('scene-particles');particles.replaceChildren();for(let i=0;i<18;i++){const p=document.createElement('i');p.className='scene-mote';p.style.cssText='--i:'+i+';left:'+(8+(i*37)%85)+'%;top:'+(20+(i*23)%64)+'%;animation-delay:-'+(i*.43)+'s';particles.append(p)}if(kind==='treasure'){if(phase==='combat')emitEncounterEffect(FOX_SKILL,'arrive');else if(phase==='victory')queueFoxVictory()}}
+$('enemy-intent').hidden=phase!=='combat';$('enemy-intent-text').textContent=phase==='combat'?(enemySkill()?.name||'다음 공격')+' '+Math.max(0,enemyInterval()-enemyClock).toFixed(1)+'초':'';$('enemy-intent-fill').style.width=Math.min(100,enemyClock/enemyInterval()*100)+'%';$('arena').classList.toggle('attack-approaching',phase==='combat'&&enemyInterval()-enemyClock<.45);$('reward-reopen').hidden=!s.battleReward;if(victory){$('battle-status').textContent='✦ 승리 · 전리품 확인';$('reward-label').textContent='보상이 가방에 저장되었습니다.'}
 }
-function animateStrike(received=false,critical=false,heavy=false){if(quietCombatEffects())return;const arena=$('arena'),key=received?'enemy':'hero',name=received?'enemy-striking':critical?'hero-critical':'hero-striking';clearTimeout(strikeTimers[key]);if(received)arena.classList.remove('enemy-striking','heavy-impact');else arena.classList.remove('hero-striking','hero-critical');void arena.offsetWidth;arena.classList.add(name);if(heavy)arena.classList.add('heavy-impact');strikeTimers[key]=setTimeout(()=>{arena.classList.remove(name);if(received)arena.classList.remove('heavy-impact')},received?650:550)}
+// CSS animations may start a frame after synchronous reward rendering. The live
+// shoulder timeline, not elapsed wall time, decides when the blade lands/finishes.
+function atHeroPose(key,progress,callback,delay){
+ const animation=heroStrikeAnimation;
+ function check(){
+  if(quietCombatEffects()||s.paused){clearCombatEffects();return}
+  if(animation&&animation.playState!=='idle'){
+   const current=animation.currentTime,remaining=current===null?32:heroStrikeDuration*progress-current;
+   if(remaining>0){strikeTimers[key]=setTimeout(check,Math.min(32,remaining));return}
+  }
+  strikeTimers[key]=null;callback();
+ }
+ strikeTimers[key]=setTimeout(check,Math.max(0,delay));
+}
+function animateStrike(received=false,critical=false,heavy=false){
+ if(quietCombatEffects()||s.paused)return;
+ const arena=$('arena'),key=received?'enemy':'hero';
+ // Extra strikes from passives share the active swing instead of restarting its windup.
+ if(!received&&strikeTimers.hero!=null){if(critical){arena.classList.remove('hero-striking');arena.classList.add('hero-critical')}return}
+ clearTimeout(strikeTimers[key]);
+ if(received)arena.classList.remove('enemy-striking','heavy-impact');else{arena.classList.remove('hero-striking','hero-critical');heroStrikeDuration=Math.min(550,850/speed());heroContactAt=Date.now()+heroStrikeDuration*.66;arena.style.setProperty?arena.style.setProperty('--hero-strike-duration',heroStrikeDuration+'ms'):arena.style['--hero-strike-duration']=heroStrikeDuration+'ms'}
+ void arena.offsetWidth;arena.classList.add(received?'enemy-striking':critical?'hero-critical':'hero-striking');if(heavy)arena.classList.add('heavy-impact');
+ if(received){strikeTimers.enemy=setTimeout(()=>{arena.classList.remove('enemy-striking','heavy-impact');strikeTimers.enemy=null},650);return}
+ // Query only the articulated shoulder; this also flushes the new animation style.
+ heroStrikeAnimation=arena.querySelector('.hero-arm')?.getAnimations?.().find(animation=>animation.animationName==='hero-overhead-shoulder')||null;
+ atHeroPose('hero',1,()=>{arena.classList.remove('hero-striking','hero-critical');heroStrikeAnimation=null},heroStrikeDuration);
+}
+function queueFoxVictory(){
+ const serial=encounterSerial;atHeroPose('victory',Math.min(1,.66+70/heroStrikeDuration),()=>{if(serial===encounterSerial&&phase==='victory')emitEncounterEffect(FOX_SKILL,'victory')},Math.max(0,heroContactAt-Date.now())+70);
+}
 function captureBattleReward({kind,tier,name,gold,bossId:firstId,gearStart,firstClear,seconds}){const newGear=s.gear.filter(g=>Number(g.id.slice(1))>=gearStart);const remaining=newGear.slice();const rows=[];for(const drop of lastLoot){if(ITEMS[drop.key].slot){for(let i=0;i<drop.count;i++){const at=remaining.findIndex(g=>g.key===drop.key),g=at>=0?remaining.splice(at,1)[0]:null;rows.push({key:drop.key,count:1,gear:g?JSON.parse(JSON.stringify(g)):null})}}else{const row=rows.find(x=>x.key===drop.key&&!x.gear);if(row)row.count+=drop.count;else rows.push({key:drop.key,count:drop.count,gear:null})}}
 if(kind==='boss'){const k=firstId+'_'+tier,r=s.fieldNotes.bosses[k]||{wins:0,best:null};r.wins++;r.best=r.best===null?seconds:Math.min(r.best,seconds);s.fieldNotes.bosses[k]=r}
 s.battleReward={id:String(Date.now())+'-'+s.total,kind,tier,name,gold,rows,firstClear,bossId:firstId,seconds,createdAt:Date.now()};s.rewardPending=true;rewardReview=false;rewardPainted='';phase='victory';phaseLeft=1.8;hp=0;attackClock=0;enemyClock=0;save();}
@@ -177,17 +232,37 @@ const BOSS_BALANCE=[
  {hp:260000,attack:380,interval:2.3,every:4,power:1.9,skill:'달빛 날갯짓'},
  {hp:620000,attack:600,interval:2.5,every:3,power:1.75,skill:'도토리 망치'}
 ];
+// Existing elite attacks already have their 2.8× strength; skills name and visualize
+// that strike without adding damage, random draws, status ailments or save fields.
+const BOSS_SKILL_VISUALS=[
+ {id:'crown',cue:'왕관의 금빛 파동',glyph:'♛'},
+ {id:'root',cue:'솟구치는 돌뿌리',glyph:'◆'},
+ {id:'charge',cue:'숲을 가르는 녹색 충격파',glyph:'✦'},
+ {id:'moon',cue:'초승달과 은빛 깃털',glyph:'☾'},
+ {id:'acorn',cue:'도토리 망치의 낙하',glyph:'♠'}
+];
+const ELITE_SKILLS={
+ eliteSlime:{id:'moss',name:'이끼 탄성 강타',cue:'응축한 이끼 파동',glyph:'◆'},
+ eliteMushroom:{id:'spore',name:'보랏빛 포자 폭발',cue:'퍼져 나가는 포자 고리',glyph:'✺'},
+ eliteMoth:{id:'wing',name:'반짝 날개 칼바람',cue:'교차하는 빛의 날개',glyph:'✧'},
+ eliteSnail:{id:'shell',name:'나선껍질 파동',cue:'겹쳐지는 나선 고리',glyph:'◎'},
+ eliteRabbit:{id:'leap',name:'새싹 도약차기',cue:'높이 뛰어 내려차기',glyph:'ϟ'}
+};
+const FOX_SKILL={id:'fox',name:'황금 꼬리 유성',cue:'황금빛 궤적과 옥빛 잔광',glyph:'✦'};
+function enemySkill(){return boss?(bossCharged()?{...BOSS_SKILL_VISUALS[bossId],name:BOSS_BALANCE[bossId].skill}:null):currentMob==='treasure'?FOX_SKILL:ELITE_SKILLS[currentMob]||null}
 let bossStrikes=0;
 function bossFrenzy(){return boss&&phase==='combat'&&hp>0&&hp/maxHp<=.35}
 function bossCharged(){return boss&&(bossStrikes+1)%BOSS_BALANCE[bossId].every===0}
 function bossBaseAttack(id,tier='normal'){return Math.round(BOSS_BALANCE[id].attack*BOSS_TIERS[tier].attack)}
 function bossPatternText(id){const b=BOSS_BALANCE[id];return b.every+'번째 공격마다 '+b.skill+' ×'+b.power+' · HP 35% 이하 공격 +15%, 공격 간격 −15%'}
 function renderBossPattern(){
- const active=boss&&phase==='combat',charged=active&&bossCharged(),frenzy=active&&bossFrenzy();
- $('boss-pattern').hidden=!active;$('arena').classList.toggle('boss-charging',charged);$('arena').classList.toggle('boss-frenzy',frenzy);
- if(!active)return;
- $('boss-pattern-name').textContent=(frenzy?'격앙 · ':'')+(charged?BOSS_BALANCE[bossId].skill+' 준비':'수호자의 공세');
- $('boss-pattern-detail').textContent=charged?'강타까지 '+Math.max(0,enemyInterval()-enemyClock).toFixed(1)+'초 · 예상 피해 '+fmt(incomingDamage()):'강타까지 '+(BOSS_BALANCE[bossId].every-bossStrikes%BOSS_BALANCE[bossId].every)+'회 · HP 35%부터 격앙';
+ const active=phase==='combat',skill=active?enemySkill():null,charged=active&&boss&&bossCharged(),frenzy=active&&bossFrenzy(),remaining=Math.max(0,enemyInterval()-enemyClock);
+ $('boss-pattern').hidden=!(active&&(boss||skill));$('arena').classList.toggle('boss-charging',charged);$('arena').classList.toggle('boss-frenzy',frenzy);
+ $('arena').setAttribute('data-skill',skill?.id||'');
+ $('arena').classList.toggle('skill-charging',!!skill&&(boss||remaining<=.8)&&!s.paused&&!quietCombatEffects());
+ if(!active||(!boss&&!skill))return;
+ $('boss-pattern-name').textContent=(frenzy?'격앙 · ':'')+(skill?skill.name+' 준비':'수호자의 공세');
+ $('boss-pattern-detail').textContent=skill?skill.cue+' · '+remaining.toFixed(1)+'초 · 예상 피해 '+fmt(incomingDamage()):'강타까지 '+(BOSS_BALANCE[bossId].every-bossStrikes%BOSS_BALANCE[bossId].every)+'회 · HP 35%부터 격앙';
 }
 
 const BOSS_TIERS={normal:{name:'일반',hp:1,attack:1,loot:1,cooldown:1,time:60},elite:{name:'엘리트',hp:8,attack:3,loot:3,cooldown:2,time:90},mystic:{name:'미스틱',hp:60,attack:12,loot:12,cooldown:4,time:120}};
@@ -222,7 +297,7 @@ const enemyInterval=()=>boss?BOSS_BALANCE[bossId].interval*(bossFrenzy()?.85:1)*
 const mitigation=()=>Math.min(.3,(equippedGear('chest')?.ward||0)+(equippedGear('legs')?.ward||0)+collectionBonus('reduction')+potentialSum('reduction'));
 function incomingDamage(){return Math.max(1,Math.round(Math.max(0,enemyAttack()-heroDefense())*(1-mitigation())*(boss?1-bossMitigation():1)))}
 function defeatHero(){const wasBoss=boss;s.potentialBuff={left:0,power:0};s.blockLeft=0;boss=false;s.heroHp=0;s.deaths++;phase='defeated';phaseLeft=8;travelTotal=8;attackClock=0;enemyClock=0;lastLoot=[];if(!wasBoss){s.stage=Math.max(1,s.stage-1);s.kills=0;s.safetyDefeats=Math.min(3,s.safetyDefeats+1);if(s.autoSafety&&s.safetyDefeats>=3){s.farmMode=true;log('안전 사냥 · 연속 사망으로 현재 지역 반복 사냥을 켰습니다. 장비를 준비한 뒤 자동 돌파를 다시 켜세요.')}}log('전투 불능 · 8초 후 회복'+(!wasBoss?' / 한 단계 후퇴':''));notify(s.autoSafety&&s.safetyDefeats>=3?'반복 사망으로 안전 사냥을 켰어요. 체력·방어를 준비한 뒤 돌파를 재개하세요.':'쓰러졌어요. 방어구와 생존 능력을 강화해 보세요.');save();renderLoot()}
-function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const pendingDamage=incomingDamage(),heavy=boss&&bossCharged();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';$('last-impact').textContent='잠재 회피 · 받은 피해 0';return true}const blocked=passivePower('guard')>0&&rng()<.15; const hit=Math.max(1,Math.round(pendingDamage*(blocked?1-.35*passivePower('guard'):1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
+function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';animateStrike(true,false,heavy);castEnemySkill(skill);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}const blocked=passivePower('guard')>0&&rng()<.15; const hit=Math.max(1,Math.round(pendingDamage*(blocked?1-.35*passivePower('guard'):1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
 const movementSpeed=()=>moveAtLevel(s.move);
 const regionPenalty=()=>[1,1.2,1.45,1.8][regionIndex()];
 const travelSeconds=()=>Math.max(.8,2*regionPenalty()/movementSpeed());
@@ -501,7 +576,23 @@ function renderExpedition(){
  $('trail-collection').replaceChildren();TRAILS.forEach((r,index)=>{const card=document.createElement('div');card.className='trail-route'+(index===t.route?' current':'');const title=document.createElement('strong');title.textContent=r.icon+' '+r.name;const line=document.createElement('p');line.textContent=r.relics.map((name,i)=>t.relics.includes(index*3+i)?'◆ '+name:'◇ ???').join(' · ');card.append(title,line);$('trail-collection').append(card)});
 }
 
-function showImpact(amount,critical=false,received=false,blocked=false,heavy=false){$('encounter-intro').classList.remove('reveal');animateStrike(received,critical,heavy);emitCombatEffect(blocked?'guard':received?(heavy?'heavy':'hurt'):critical?'critical':'slash');const layer=$('impact-layer');const n=document.createElement('span');n.className='impact-number'+(critical?' critical-hit':'')+(received?' received-hit':'');n.textContent=(blocked?'방어 ':critical?'치명타 ':'')+(received?'−':'')+fmt(amount);n.style.left=(received?24:48+Math.random()*15)+'%';n.style.top=(received?67:38+Math.random()*12)+'%';layer.append(n);while(layer.children.length>10)layer.children[0].remove();setTimeout(()=>n.remove(),1600);const arena=$('arena');arena.classList.remove('impact-flash');void arena.offsetWidth;arena.classList.add('impact-flash');$('last-impact').textContent=received?'받은 피해 '+fmt(amount)+(blocked?' · 방어 성공':''):'준 피해 '+fmt(amount)+(critical?' · 치명타':'');}
+function paintImpact(amount,critical=false,received=false,blocked=false,heavy=false){
+ if(quietCombatEffects()||s.paused)return;
+ emitCombatEffect(blocked?'guard':received?(heavy?'heavy':'hurt'):critical?'critical':'slash');
+ const layer=$('impact-layer'),n=document.createElement('span'),position=impactSerial++;
+ n.className='impact-number'+(critical?' critical-hit':'')+(received?' received-hit':'');n.textContent=(blocked?'방어 ':critical?'치명타 ':'')+(received?'−':'')+fmt(amount);
+ n.style.left=(received?24:48+(position*7)%15)+'%';n.style.top=(received?67:38+(position*5)%12)+'%';layer.append(n);while(layer.children.length>10){const oldest=layer.children[0];clearTimeout(impactTimers.get(oldest));impactTimers.delete(oldest);oldest.remove()}impactTimers.set(n,setTimeout(()=>{n.remove();impactTimers.delete(n)},1600));
+ const arena=$('arena');arena.classList.remove('impact-flash');void arena.offsetWidth;arena.classList.add('impact-flash');
+}
+function showImpact(amount,critical=false,received=false,blocked=false,heavy=false){
+ $('encounter-intro').classList.remove('reveal');animateStrike(received,critical,heavy);
+ $('last-impact').textContent=received?'받은 피해 '+fmt(amount)+(blocked?' · 방어 성공':''):'준 피해 '+fmt(amount)+(critical?' · 치명타':'');
+ if(received){paintImpact(amount,critical,received,blocked,heavy);return}
+ if(quietCombatEffects()||s.paused)return;
+ if(pendingHeroContact){pendingHeroContact.amount+=amount;pendingHeroContact.critical||=critical;return}
+ pendingHeroContact={amount,critical,serial:encounterSerial};
+ atHeroPose('contact',.66,()=>{const hit=pendingHeroContact;pendingHeroContact=null;if(hit&&hit.serial===encounterSerial&&['combat','loot','victory'].includes(phase))paintImpact(hit.amount,hit.critical)},Math.max(0,heroContactAt-Date.now()));
+}
 
 
 function positionItemTip(tip,anchor,preferredWidth){const pad=12,gap=10,rect=anchor.getBoundingClientRect(),width=Math.min(preferredWidth,window.innerWidth-pad*2);tip.style.width=width+'px';tip.style.maxHeight=Math.max(80,window.innerHeight-pad*2)+'px';tip.hidden=false;const height=tip.getBoundingClientRect().height;let left=rect.left,top=rect.top-height-gap;if(rect.right+gap+width<=window.innerWidth-pad){left=rect.right+gap;top=rect.top}else if(rect.left-gap-width>=pad){left=rect.left-gap-width;top=rect.top}else if(top<pad){top=rect.bottom+gap}tip.style.left=Math.max(pad,Math.min(window.innerWidth-width-pad,left))+'px';tip.style.top=Math.max(pad,Math.min(window.innerHeight-height-pad,top))+'px';}

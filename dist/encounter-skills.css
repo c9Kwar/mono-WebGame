@@ -1,0 +1,98 @@
+/* Named enemy skills keep the same combat numbers; this sheet paints their tells and impacts. */
+.encounter-fx{--skill:#d2ebc0;--skill-soft:#c1eaa455}
+.arena[data-skill=crown],.skill-crown{--skill:#ffda83;--skill-soft:#ffca6240}
+.arena[data-skill=root],.skill-root{--skill:#d9bb87;--skill-soft:#a8884c55}
+.arena[data-skill=charge],.skill-charge{--skill:#bbef9f;--skill-soft:#79c46855}
+.arena[data-skill=moon],.skill-moon{--skill:#d7ddff;--skill-soft:#abb5fc55}
+.arena[data-skill=acorn],.skill-acorn{--skill:#f6be76;--skill-soft:#e69b4655}
+.arena[data-skill=moss],.skill-moss{--skill:#b7ed83;--skill-soft:#9adb6355}
+.arena[data-skill=spore],.skill-spore{--skill:#e2b4ff;--skill-soft:#bd75ed55}
+.arena[data-skill=wing],.skill-wing{--skill:#a9e6ff;--skill-soft:#7bbfe555}
+.arena[data-skill=shell],.skill-shell{--skill:#a7eadb;--skill-soft:#72cbbb55}
+.arena[data-skill=leap],.skill-leap{--skill:#e2e9a4;--skill-soft:#ccda7d55}
+.arena[data-skill=fox],.skill-fox{--skill:#ffdf8e;--skill-soft:#ffe18e55}
+.arena[data-skill]:not([data-skill=""]) #boss-pattern{border-color:var(--skill)}
+.arena[data-skill]:not([data-skill=""]) #boss-pattern strong{color:var(--skill)}
+.arena[data-skill]:not([data-skill=""]) .enemy-intent i{background:var(--skill)}
+.skill-charging .charge-rune{opacity:.8;color:var(--skill);border-color:var(--skill);box-shadow:inset 0 0 26px var(--skill-soft),0 0 20px var(--skill-soft);animation:skill-telegraph .8s ease-in-out infinite}
+.skill-charging .enemy-sigil{border-color:var(--skill);filter:drop-shadow(0 0 10px var(--skill-soft))}
+.arena[data-skill=root] .charge-rune,.arena[data-skill=acorn] .charge-rune{border-style:dashed;border-width:3px}
+.arena[data-skill=spore] .charge-rune{border-style:dotted;border-width:4px}
+.arena[data-skill=moon] .charge-rune{border-left-color:transparent;border-right-color:transparent}
+.arena[data-skill=shell] .charge-rune{border-style:double;border-width:5px}
+.arena[data-skill=fox] .charge-rune{border-color:#ffda83 #9bf4c5;box-shadow:inset 0 0 28px #f3d78a44,0 0 20px #88eac04a}
+.encounter-fx{inset:0;width:100%;height:100%;transform:none;color:var(--skill);pointer-events:none}
+.encounter-fx i{position:absolute;display:block;font-style:normal;box-sizing:border-box}
+.skill-source{left:68%;top:56%;width:62px;height:62px;margin:-31px;font-size:46px;line-height:62px;text-align:center;text-shadow:0 0 22px var(--skill);animation:skill-emblem .8s ease-out both}
+.skill-path{left:24%;top:63%;width:44%;height:22px;border-top:4px solid var(--skill);border-radius:50%;background:linear-gradient(90deg,transparent,var(--skill-soft));box-shadow:0 -4px 18px var(--skill-soft);transform-origin:right center;animation:skill-travel .65s ease-out both}
+.skill-impact{left:24%;top:67%;width:76px;height:76px;margin:-38px;border:3px solid var(--skill);border-radius:50%;background:radial-gradient(ellipse,var(--skill-soft),transparent 70%);box-shadow:0 0 22px var(--skill-soft);animation:skill-contact .85s ease-out both}
+.skill-fragment{left:24%;top:67%;width:15px;height:5px;margin:-3px;background:var(--skill);box-shadow:0 0 9px var(--skill-soft);border-radius:50%;animation:skill-fragments .95s ease-out both}
+.skill-crown .skill-source{font-size:58px;top:49%}
+.skill-crown .skill-path{height:35px;border-top:0;border-bottom:6px double var(--skill)}
+.skill-crown .skill-impact{border-width:5px;clip-path:polygon(50% 0,62% 23%,86% 12%,79% 40%,100% 50%,79% 61%,85% 88%,61% 79%,50% 100%,40% 79%,13% 87%,22% 61%,0 50%,22% 40%,13% 13%,40% 23%);background:var(--skill-soft)}
+.skill-root .skill-path{height:40px;top:62%;border:0;border-radius:0;background:repeating-linear-gradient(78deg,transparent 0 24px,var(--skill) 25px 30px,transparent 31px 39px);transform-origin:center bottom;animation:root-rise .85s ease-out both}
+.skill-root .skill-impact{border-radius:12%;transform:rotate(45deg);animation:stone-contact .9s ease-out both}
+.skill-root .skill-fragment,.skill-acorn .skill-fragment{width:13px;height:16px;border-radius:2px;clip-path:polygon(15% 0,90% 20%,100% 70%,40% 100%,0 65%)}
+.skill-charge .skill-path{height:45px;top:60%;border-top:3px solid var(--skill);border-bottom:6px double var(--skill);background:linear-gradient(90deg,transparent,#95d98266,transparent)}
+.skill-charge .skill-impact{border-width:5px;animation:charge-contact .85s ease-out both}
+.skill-charge .skill-fragment{width:22px;height:10px;border-radius:100% 0 100% 0}
+.skill-moon .skill-path{height:60px;top:54%;border-top:9px solid var(--skill);border-radius:80% 80% 0 0;background:none;box-shadow:0 -7px 18px var(--skill-soft)}
+.skill-moon .skill-impact{border-width:0 0 5px 8px;transform:rotate(25deg);box-shadow:-9px 7px 20px var(--skill-soft)}
+.skill-moon .skill-fragment,.skill-wing .skill-fragment{width:24px;height:7px;border-radius:100% 0 100% 0}
+.skill-acorn .skill-source{left:24%;top:34%;font-size:0;width:47px;height:59px;margin-left:-24px;border-radius:48% 48% 43% 43%;background:linear-gradient(#795d3f 0 27%,#f1bc6e 28% 35%,#ba7d3d 36%);border:2px solid #e5b47b;box-shadow:0 0 22px var(--skill-soft);animation:acorn-fall .8s cubic-bezier(.3,.05,.7,1) both}
+.skill-acorn .skill-path{left:24%;top:39%;height:25%;width:3px;border:0;background:linear-gradient(transparent,var(--skill));animation:acorn-trail .8s ease-out both}
+.skill-acorn .skill-impact{border-width:4px;animation:charge-contact .85s ease-out both}
+.skill-moss .skill-source{border-radius:44% 56% 37% 63%;background:#b2dd7466;font-size:27px}
+.skill-moss .skill-path{height:34px;border-width:7px;border-style:dotted;background:none}
+.skill-moss .skill-impact{border-radius:39% 61% 65% 35%;border-width:8px;background:#b8dc7055}
+.skill-moss .skill-fragment,.skill-spore .skill-fragment{height:12px;width:12px;border-radius:50%}
+.skill-spore .skill-path{height:38px;top:61%;border:0;background:radial-gradient(circle,var(--skill) 0 3px,transparent 5px) 0 0/30px 24px;box-shadow:none}
+.skill-spore .skill-impact{border:7px dotted var(--skill);background:radial-gradient(circle,#bb76e866,transparent 68%)}
+.skill-wing .skill-path{height:38px;border-width:3px 0 5px;border-style:solid;border-color:var(--skill);background:none}
+.skill-wing .skill-impact{border-radius:0;border-width:0;background:linear-gradient(40deg,transparent 46%,var(--skill) 48% 52%,transparent 54%),linear-gradient(-40deg,transparent 46%,var(--skill) 48% 52%,transparent 54%);box-shadow:none}
+.skill-shell .skill-source{font-size:64px}
+.skill-shell .skill-path{border:6px double var(--skill);height:29px;background:none}
+.skill-shell .skill-impact{border:8px double var(--skill);outline:2px dotted var(--skill);outline-offset:10px;animation:shell-contact 1s ease-out both}
+.skill-leap .skill-source{font-size:55px;animation:leap-flight .85s ease-out both}
+.skill-leap .skill-path{top:42%;height:26%;border-width:3px;border-style:dashed;border-left:0;border-right:0;border-bottom:0;border-radius:70% 70% 0 0;background:none;box-shadow:none}
+.skill-leap .skill-impact{height:46px;border-width:5px;animation:charge-contact .85s ease-out both}
+.skill-leap .skill-fragment{height:14px;width:8px;border-radius:100% 0 100% 0}
+.skill-fox .skill-path{height:33px;border-top:5px solid #ffe2a0;border-bottom:3px solid #8fe8bc;background:linear-gradient(90deg,transparent,#ffdf8e77,#8fe8bc44);box-shadow:0 0 20px #ffdf8e55}
+.skill-fox .skill-impact{border-color:#ffe2a0 #8fe8bc;box-shadow:0 0 25px #ffdf8e55,inset 0 0 20px #8fe8bc44}
+.skill-fox .skill-fragment{height:11px;width:11px;border:2px solid #ffe7a8;background:#eebc5d;border-radius:50%}
+.skill-fox .skill-fragment:nth-child(even){border-color:#beffdf;background:#65c99e;border-radius:2px}
+.skill-fox.skill-arrive .skill-source,.skill-fox.skill-victory .skill-source{left:68%;top:55%;font-size:60px;animation:fox-star 1.2s ease-out both}
+.skill-fox.skill-arrive .skill-impact,.skill-fox.skill-victory .skill-impact{left:68%;top:64%;width:100px;height:60px;margin:-30px -50px;animation:fox-halo 1.2s ease-out both}
+.skill-fox.skill-arrive .skill-path,.skill-fox.skill-victory .skill-path{left:calc(68% - 95px);top:calc(56% - 95px);width:190px;height:190px;border:2px solid #ffe2a0;border-bottom-color:#8fe8bc;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ffe2a022 0deg 10deg,transparent 10deg 30deg);box-shadow:0 0 35px #ffe2a033;transform-origin:center;animation:fox-reveal 1.2s ease-out both}
+.skill-fox.skill-arrive .skill-fragment,.skill-fox.skill-victory .skill-fragment{left:68%;top:56%;animation:fox-treasure 1.2s ease-out both}
+.skill-fox.skill-victory .skill-fragment{height:16px;width:16px}
+.skill-fox.skill-victory .skill-source{font-size:80px}
+.arena[data-cast-skill=moon] .enemy-position{animation:moon-lift .65s ease-out}
+.arena[data-cast-skill=leap] .enemy-position{animation:rabbit-skill-leap .65s ease-out}
+.arena[data-cast-skill=root] .enemy-position,.arena[data-cast-skill=acorn] .enemy-position{animation:enemy-ground-pound .65s ease-out}
+.arena[data-cast-skill=shell] .enemy-position{animation:shell-wind .65s ease-out}
+@keyframes skill-telegraph{0%,100%{opacity:.4;filter:brightness(1)}50%{opacity:.85;filter:brightness(1.25)}}
+@keyframes skill-emblem{0%{opacity:0;transform:scale(.5)}18%{opacity:1;transform:scale(1.15)}55%,100%{opacity:0;transform:scale(1.3)}}
+@keyframes skill-travel{0%,12%{opacity:0;transform:scaleX(.05)}25%{opacity:1;transform:scaleX(.4)}55%{opacity:.9;transform:scaleX(1)}100%{opacity:0;transform:scaleX(1.1)}}
+@keyframes skill-contact{0%,24%{opacity:0;transform:scale(.2)}40%{opacity:1;transform:scale(.75)}100%{opacity:0;transform:scale(1.65)}}
+@keyframes skill-fragments{0%,27%{opacity:0;transform:translate(0,0) rotate(var(--turn)) scale(.5)}40%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.45)}}
+@keyframes root-rise{0%,12%{opacity:0;transform:scaleY(0)}35%{opacity:1;transform:scaleY(1.3)}65%{opacity:.8;transform:scaleY(1)}100%{opacity:0;transform:scaleY(.5)}}
+@keyframes stone-contact{0%,22%{opacity:0;transform:rotate(45deg) scale(.2)}42%{opacity:1;transform:rotate(45deg) scale(.9)}100%{opacity:0;transform:rotate(45deg) scale(1.8)}}
+@keyframes charge-contact{0%,24%{opacity:0;transform:scale(.2)}42%{opacity:1;transform:scale(1.1,.65)}100%{opacity:0;transform:scale(2.2,.9)}}
+@keyframes acorn-fall{0%{opacity:0;transform:translateY(-35px) rotate(-22deg)}15%{opacity:1;transform:translateY(-26px) rotate(-22deg)}40%{opacity:1;transform:translateY(90px) rotate(8deg)}75%,100%{opacity:0;transform:translateY(94px) rotate(15deg)}}
+@keyframes acorn-trail{0%,16%{opacity:0;transform:scaleY(0)}35%{opacity:.9;transform:scaleY(1)}75%,100%{opacity:0;transform:scaleY(1)}}
+@keyframes shell-contact{0%,20%{opacity:0;transform:scale(.2) rotate(0deg)}38%{opacity:1}100%{opacity:0;transform:scale(1.7) rotate(140deg)}}
+@keyframes leap-flight{0%{opacity:0;left:68%;top:56%;transform:rotate(-20deg)}18%{opacity:1;left:55%;top:37%}40%{opacity:1;left:24%;top:64%;transform:rotate(25deg)}75%,100%{opacity:0;left:24%;top:67%;transform:rotate(25deg)}}
+@keyframes fox-star{0%{opacity:0;transform:scale(.3) rotate(-35deg)}25%{opacity:1;transform:scale(1) rotate(0deg)}100%{opacity:0;transform:scale(1.3) rotate(30deg)}}
+@keyframes fox-halo{0%{opacity:0;transform:scale(.2)}28%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.4,1.4)}}
+@keyframes fox-reveal{0%{opacity:0;transform:scale(.4) rotate(-30deg)}25%{opacity:.85;transform:scale(.9) rotate(0deg)}100%{opacity:0;transform:scale(1.35) rotate(40deg)}}
+@keyframes fox-treasure{0%{opacity:0;transform:translate(0,0) rotate(0deg) scale(.5)}25%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.85)}}
+@keyframes moon-lift{0%,100%{transform:none}35%{transform:translateY(-18px) rotate(4deg)}60%{transform:translate(-12px,-6px) rotate(-4deg)}}
+@keyframes rabbit-skill-leap{0%,100%{transform:none}20%{transform:translate(5px,6px) scale(1.04,.94)}45%{transform:translate(-22px,-28px) rotate(-10deg)}65%{transform:translate(-26px,3px) rotate(4deg)}}
+@keyframes enemy-ground-pound{0%,100%{transform:none}30%{transform:translate(3px,-12px) rotate(4deg)}53%{transform:translate(-9px,7px) scale(1.04,.94)}}
+@keyframes shell-wind{0%,100%{transform:none}28%{transform:rotate(7deg) scale(.96)}55%{transform:translateX(-15px) rotate(-8deg)}}
+@media(max-width:560px){.skill-source{left:70%;top:60%}.skill-path{top:65%;width:46%}.skill-impact,.skill-fragment{top:69%}.skill-crown .skill-source{top:54%}.skill-fox.skill-arrive .skill-path,.skill-fox.skill-victory .skill-path{width:150px;height:150px;left:calc(68% - 75px);top:calc(56% - 75px)}}
+.scene-paused .encounter-fx,.cinema-lite .encounter-fx{display:none}
+.scene-paused .charge-rune,.cinema-lite .charge-rune{animation:none!important;opacity:0}
+.scene-paused[data-cast-skill] .enemy-position,.cinema-lite[data-cast-skill] .enemy-position{animation:none!important}
+@media(prefers-reduced-motion:reduce){.encounter-fx{display:none!important}.arena[data-cast-skill] .enemy-position,.arena .charge-rune{animation:none!important}.arena .charge-rune{opacity:0}}

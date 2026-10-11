@@ -30,6 +30,7 @@ npm start
 .venv/bin/python tests/browser-smoke.py
 .venv/bin/python tests/browser-preparation.py
 .venv/bin/python tests/browser-effects.py
+.venv/bin/python tests/browser-skills.py
 ```
 
 브라우저 테스트는 기본적으로 8082 포트 서버를 사용합니다. `GAME_URL`로 주소, `CHROMIUM_PATH`로 실행 파일을 지정할 수 있습니다. GitHub Actions에도 동일한 검사를 구성했습니다.
