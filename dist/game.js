@@ -446,7 +446,7 @@ function resolveTrail(rng=Math.random){
    const base=t.route*3,missing=[0,1,2].map(i=>base+i).filter(i=>!t.relics.includes(i));
    // First visit and each fifth survey protect long-term collection from bad luck.
    const guaranteed=t.visits[t.route]%5===0&&missing.length;
-   const relic=guaranteed?missing[0]:base+(rng()<.65?0:rng()<.8?1:2);
+   const relic=guaranteed?missing[0]:base+rollTrailRelic(rng);
    if(!t.relics.includes(relic)){t.relics.push(relic);trailNote('유물 발견 · '+route.relics[relic-base]+' / 수집 효과 상승');notify('✧ 새 탐사 유물! '+route.relics[relic-base])}
    else{award(route.material,2);trailNote('중복 유물 연구 · '+ITEMS[route.material].name+' ×2')}
    t.visits[t.route]++;
@@ -635,3 +635,6 @@ function blueprintProgressText(id){const key=BOSS_TABLES[id].find(([k])=>ITEMS[k
 $('auto-safety').onclick=()=>{s.autoSafety=!s.autoSafety;s.safetyDefeats=0;save();render()};
 
 function toggleGearLock(id){if(!canMutate())return false;const g=s.gear.find(x=>x.id===id);if(!g)return false;g.locked=!g.locked;save();renderEquipment();notify(g.locked?'장비 잠금 · 단일/일괄 분해에서 보호됩니다.':'장비 잠금 해제');return true;}
+
+// One 10000-slot draw reproduces the old independent 65% / (35%*80%) / (35%*20%) probabilities.
+function rollTrailRelic(rng=Math.random){const roll=Math.min(9999,Math.max(0,Math.floor(rng()*10000)));return roll<6500?0:roll<9300?1:2;}
