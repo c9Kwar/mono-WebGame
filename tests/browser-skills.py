@@ -205,7 +205,7 @@ with sync_playwright() as playwright:
             const oldBoots = s.slots.boots, oldGuard = s.passives.guard;
             if (defense === 'dodge') {
                 const boots = award('scoutboots', 1, () => .5);
-                boots.potentials = [{type:'dodge', value:.05, grade:3}];
+                boots.potentials = [{type:'dodge', value:.05, grade:3},{type:'movePct', value:.01, grade:0}];
                 s.slots.boots = boots.id;
             } else s.passives.guard = 1;
             render();

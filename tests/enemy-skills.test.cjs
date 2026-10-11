@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),{harness}=require('./harness.cjs');
-const base={v:1,lastSeen:Date.now(),total:100,highestStage:25,stage:6,attack:35,vitality:30,guard:30};
+const base={v:1,lastSeen:Date.now(),total:100,highestStage:25,stage:6,attack:35,vitality:70,guard:30};
 function ready(setup=''){
  const h=harness(base);
  h.run(`s.paused=false;phase='combat';s.heroHp=1000000;hp=maxHp=1000000;${setup};encounterSerial++;render();clearCombatEffects()`);

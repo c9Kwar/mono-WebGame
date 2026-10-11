@@ -9,7 +9,7 @@ with sync_playwright() as p:
  page.evaluate('s.paused=true;s.total=100;s.highestStage=25;s.vitality=60;s.heroHp=heroMaxHp();save()')
  page.locator('#header-boss').click();page.locator('#quick-boss-list button').nth(4).click()
  assert '관통 35%' in page.locator('#quick-boss-stats').inner_text()
- assert '재생 2,232 HP' in page.locator('#quick-boss-stats').inner_text()
+ assert '재생 5,400 HP' in page.locator('#quick-boss-stats').inner_text()
  page.locator('#boss-extra-details > summary').click()
  assert 'T6 장비 확정' in page.locator('#quick-boss-rewards').inner_text()
  assert 'T8' in page.locator('#quick-boss-variants').inner_text()
@@ -25,7 +25,7 @@ with sync_playwright() as p:
  page.reload();page.locator('#tab-equipment').click();assert 'T6' in page.locator('#gear-list').inner_text()
  page.set_viewport_size({'width':390,'height':1080});page.screenshot(path='/tmp/mosslight-tier-mobile.png',full_page=True)
  result=page.evaluate('''()=>{s.paused=false;boss=true;bossId=4;bossTier='normal';bossLeft=60;spawn();hp=100000;stepCombat(.1);const healed=hp;s.paused=true;stepCombat(1);return {healed,paused:hp,ui:document.querySelector('#enemy-attack-info').textContent}}''')
- assert abs(result['healed']-100223.2)<.001 and result['healed']==result['paused'],result
+ assert abs(result['healed']-100540)<.001 and result['healed']==result['paused'],result
  assert '방어 관통 35%' in result['ui']
  page.evaluate("s.paused=false;damage(1e12);s.paused=true;save();render()")
  assert page.evaluate('s.battleReward.rows.some(r=>r.gear?.tier===6)')

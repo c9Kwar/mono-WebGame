@@ -168,7 +168,7 @@ function emitCombatEffect(kind){
 }
 function encounterKind(){return boss?(bossTier==='mystic'?'mystic':bossTier==='elite'?'elite-boss':'boss'):currentMob==='treasure'?'treasure':MOBS[currentMob]?.elite?'elite':'normal'}
 function sceneImage(){return 'art/mosslight-clearing.png'}
-function renderEncounter(){const arena=$('arena'),kind=encounterKind(),victory=['victory','results'].includes(phase);const signature=[kind,bossId,currentMob,encounterSerial,phase].join('|');arena.classList.toggle('scene-paused',s.paused||document.hidden);arena.classList.toggle('scene-victory',victory);arena.classList.toggle('cinema-lite',s.effectsLite);$('fx-toggle').setAttribute('aria-pressed',String(!s.effectsLite));$('fx-toggle').textContent=s.effectsLite?'연출 간소화':'연출 풍부하게';if(quietCombatEffects()||s.paused)clearCombatEffects();if(signature!==cinemaSignature){const finishingStrike=['loot','victory'].includes(phase)&&cinemaSignature===[kind,bossId,currentMob,encounterSerial,'combat'].join('|');clearCombatEffects(finishingStrike);cinemaSignature=signature;arena.setAttribute('data-encounter',kind);$('encounter-rank').textContent=({normal:'FOREST ENCOUNTER',elite:'ELITE HUNT',boss:'BOSS EXPEDITION','elite-boss':'ELITE BOSS',mystic:'MYSTIC BOSS',treasure:'GOLDEN ENCOUNTER'})[kind];$('encounter-trait').textContent=({normal:'숲의 작은 만남',elite:'강인한 개체 · 전용 수집품',boss:'숲의 수호자 · 보스 전리품','elite-boss':'보스 HP ×8 · 공격 ×3 · 전리품 ×3',mystic:'보스 HP ×60 · 공격 ×12 · 전리품 ×12',treasure:'황금 보물여우 · 확정 희귀 재료'})[kind];$('encounter-intro').className='encounter-intro';if(kind!=='normal'&&!victory&&phase==='combat'){void $('encounter-intro').offsetWidth;$('encounter-intro').classList.add('reveal')}$('intro-rank').textContent=({elite:'ELITE',boss:'GUARDIAN','elite-boss':'ELITE GUARDIAN',mystic:'MYSTIC AWAKENING',treasure:'A GOLDEN MIRACLE'})[kind]||'';$('intro-name').textContent=boss?BOSS_TIERS[bossTier].name+' · '+BOSSES[bossId].name:MOBS[currentMob].name;const particles=$('scene-particles');particles.replaceChildren();for(let i=0;i<18;i++){const p=document.createElement('i');p.className='scene-mote';p.style.cssText='--i:'+i+';left:'+(8+(i*37)%85)+'%;top:'+(20+(i*23)%64)+'%;animation-delay:-'+(i*.43)+'s';particles.append(p)}if(kind==='treasure'){if(phase==='combat')emitEncounterEffect(FOX_SKILL,'arrive');else if(phase==='victory')queueFoxVictory()}}
+function renderEncounter(){const arena=$('arena'),kind=encounterKind(),victory=['victory','results'].includes(phase);const signature=[kind,bossId,currentMob,encounterSerial,phase].join('|');arena.classList.toggle('hero-defeated',phase==='defeated');arena.classList.toggle('scene-paused',s.paused||document.hidden);arena.classList.toggle('scene-victory',victory);arena.classList.toggle('cinema-lite',s.effectsLite);$('fx-toggle').setAttribute('aria-pressed',String(!s.effectsLite));$('fx-toggle').textContent=s.effectsLite?'연출 간소화':'연출 풍부하게';if(quietCombatEffects()||s.paused)clearCombatEffects();if(signature!==cinemaSignature){const finishingStrike=['loot','victory'].includes(phase)&&cinemaSignature===[kind,bossId,currentMob,encounterSerial,'combat'].join('|');clearCombatEffects(finishingStrike);cinemaSignature=signature;arena.setAttribute('data-encounter',kind);$('encounter-rank').textContent=({normal:'FOREST ENCOUNTER',elite:'ELITE HUNT',boss:'BOSS EXPEDITION','elite-boss':'ELITE BOSS',mystic:'MYSTIC BOSS',treasure:'GOLDEN ENCOUNTER'})[kind];$('encounter-trait').textContent=({normal:'숲의 작은 만남',elite:'강인한 개체 · 전용 수집품',boss:'숲의 수호자 · 보스 전리품','elite-boss':'보스 HP ×8 · 공격 ×3 · 전리품 ×3',mystic:'보스 HP ×60 · 공격 ×12 · 전리품 ×12',treasure:'황금 보물여우 · 확정 희귀 재료'})[kind];$('encounter-intro').className='encounter-intro';if(kind!=='normal'&&!victory&&phase==='combat'){void $('encounter-intro').offsetWidth;$('encounter-intro').classList.add('reveal')}$('intro-rank').textContent=({elite:'ELITE',boss:'GUARDIAN','elite-boss':'ELITE GUARDIAN',mystic:'MYSTIC AWAKENING',treasure:'A GOLDEN MIRACLE'})[kind]||'';$('intro-name').textContent=boss?BOSS_TIERS[bossTier].name+' · '+BOSSES[bossId].name:MOBS[currentMob].name;const particles=$('scene-particles');particles.replaceChildren();for(let i=0;i<18;i++){const p=document.createElement('i');p.className='scene-mote';p.style.cssText='--i:'+i+';left:'+(8+(i*37)%85)+'%;top:'+(20+(i*23)%64)+'%;animation-delay:-'+(i*.43)+'s';particles.append(p)}if(kind==='treasure'){if(phase==='combat')emitEncounterEffect(FOX_SKILL,'arrive');else if(phase==='victory')queueFoxVictory()}}
 $('enemy-intent').hidden=phase!=='combat';$('enemy-intent-text').textContent=phase==='combat'?(enemySkill()?.name||'다음 공격')+' '+Math.max(0,enemyInterval()-enemyClock).toFixed(1)+'초':'';$('enemy-intent-fill').style.width=Math.min(100,enemyClock/enemyInterval()*100)+'%';$('arena').classList.toggle('attack-approaching',phase==='combat'&&enemyInterval()-enemyClock<.45);$('reward-reopen').hidden=!s.battleReward;if(victory){$('battle-status').textContent='✦ 승리 · 전리품 확인';$('reward-label').textContent='보상이 가방에 저장되었습니다.'}
 }
 // CSS animations may start a frame after synchronous reward rendering. The live
@@ -212,17 +212,17 @@ function loadBattleReward(){try{const raw=JSON.parse(readSaveRaw())||{};s.reward
 
 // Potential lines are rolled once, persisted, and only equipped instances contribute.
 const POTENTIALS={
- atkFlat:{name:'공격력',unit:'flat',min:1,max:18},atkPct:{name:'공격력',min:.01,max:.15},
+ atkFlat:{name:'공격력',unit:'flat',min:6,max:90},atkPct:{name:'공격력',min:.02,max:.18},
  speedFlat:{name:'공격속도',unit:'speed',min:.01,max:.12},speedPct:{name:'공격속도',min:.01,max:.08},
  critical:{name:'치명타 확률',min:.005,max:.05},leech:{name:'피해 흡수',min:.002,max:.03},chain:{name:'연속 타격 확률',min:.005,max:.06},
- hpFlat:{name:'최대 HP',unit:'flat',min:8,max:120},hpPct:{name:'최대 HP',min:.01,max:.15},
- defFlat:{name:'방어력',unit:'flat',min:1,max:15},defPct:{name:'방어력',min:.01,max:.12},
+ hpFlat:{name:'최대 HP',unit:'flat',min:50,max:700},hpPct:{name:'최대 HP',min:.02,max:.18},
+ defFlat:{name:'방어력',unit:'flat',min:3,max:55},defPct:{name:'방어력',min:.01,max:.12},
  reduction:{name:'피해감소',min:.003,max:.04},bossReduction:{name:'보스 피해감소',min:.01,max:.10},
  regen:{name:'전투 중 HP 재생 / 초',min:.0005,max:.004},dodge:{name:'피격 시 회피 확률',min:.005,max:.06},rage:{name:'피격 후 4초 공격력',min:.10,max:.50},
  moveFlat:{name:'이동속도',unit:'move',min:.01,max:.12},movePct:{name:'이동속도',min:.01,max:.12},cooldown:{name:'보스 원정 대기시간 감소',min:.01,max:.20},
  drop:{name:'드롭률 (합산)',min:.01,max:.20},gold:{name:'골드 획득 (합산)',min:.01,max:.25},
- dropMore:{name:'드롭률 (별도 곱연산)',min:.01,max:.50},goldMore:{name:'골드 획득 (별도 곱연산)',min:.01,max:.50},
- trinket:{name:'소소한 체력',unit:'flat',min:1,max:6},pocket:{name:'잔돈 수집 · 골드',min:.001,max:.008}
+ dropMore:{name:'드롭률 증폭 (옵션끼리 합산)',min:.01,max:.50},goldMore:{name:'골드 증폭 (옵션끼리 합산)',min:.01,max:.50},
+ trinket:{name:'소소한 체력',unit:'flat',min:12,max:100},pocket:{name:'잔돈 수집 · 골드',min:.015,max:.06}
 };
 const POTENTIAL_POOLS={
  weapon:[['atkFlat',25],['atkPct',25],['speedFlat',15],['speedPct',15],['critical',5],['leech',3],['chain',.3],['trinket',6],['pocket',5.7]],
@@ -231,22 +231,38 @@ const POTENTIAL_POOLS={
  boots:[['moveFlat',30],['movePct',40],['dodge',5],['cooldown',10],['speedPct',1],['trinket',7],['pocket',7]],
  ring:[['drop',36],['gold',36],['dropMore',.5],['goldMore',.5],['trinket',14],['pocket',13]]
 };
+const POTENTIAL_COUNTS={common:0,rare:1,epic:2,legendary:3,mythic:4};
 const POTENTIAL_GRADES=['잔잔','선명','찬란','기적'];
 let potentialGearId=null;
-function rollPotentials(key,rng=Math.random){const rarity=ITEMS[key].rarity;let count=0;if(rarity==='epic')count=1;else if(rarity==='legendary')count=rng()<.75?2:3;else if(rarity==='mythic'){const r=rng();count=r<.7?3:r<.95?4:5}if(!count)return [];const pool=POTENTIAL_POOLS[ITEMS[key].slot].slice(),lines=[];for(let i=0;i<count;i++){let roll=rng()*pool.reduce((n,x)=>n+x[1],0),at=pool.length-1;for(let j=0;j<pool.length;j++){roll-=pool[j][1];if(roll<0){at=j;break}}const [[type]]=pool.splice(at,1),spec=POTENTIALS[type],q=rng(),grade=q<.65?0:q<.9?1:q<.99?2:3;const bounds=[[0,.2],[.2,.45],[.45,.75],[.75,1]][grade];const ratio=bounds[0]+(bounds[1]-bounds[0])*Math.pow(rng(),3);const value=spec.min+(spec.max-spec.min)*ratio;lines.push({type,grade,value:spec.unit==='flat'?Math.round(value):Math.round(value*10000)/10000})}return lines}
-function validPotentials(g){const expected={epic:[1,1],legendary:[2,3],mythic:[3,5]}[ITEMS[g.key].rarity];if(!expected)return [];if(!Array.isArray(g.potentials)||g.potentials.length<expected[0]||g.potentials.length>expected[1])return null;const allowed=new Set(POTENTIAL_POOLS[ITEMS[g.key].slot].map(x=>x[0])),seen=new Set();for(const p of g.potentials){const spec=POTENTIALS[p?.type];if(!spec||!allowed.has(p.type)||seen.has(p.type)||!Number.isInteger(p.grade)||p.grade<0||p.grade>3||!Number.isFinite(p.value)||p.value<spec.min-.0001||p.value>spec.max+.0001)return null;seen.add(p.type)}return g.potentials}
+function potentialScale(key,tier,type){const rarity=({common:0,rare:.55,epic:.8,legendary:1,mythic:1.2})[ITEMS[key].rarity];return rarity*(1+(gearTier({tier})-1)*(POTENTIALS[type].unit==='flat'?.45:.07))}
+function potentialGrade(roll){return roll<.8?0:roll<.97?1:roll<.998?2:3}
+function rollPotentials(key,rng=Math.random,tier=1){
+ const count=POTENTIAL_COUNTS[ITEMS[key].rarity],pool=POTENTIAL_POOLS[ITEMS[key].slot].slice(),lines=[];
+ for(let i=0;i<count;i++){let roll=rng()*pool.reduce((n,x)=>n+x[1],0),at=pool.length-1;for(let j=0;j<pool.length;j++){roll-=pool[j][1];if(roll<0){at=j;break}}
+  const [[type]]=pool.splice(at,1),spec=POTENTIALS[type],grade=potentialGrade(rng()),bounds=[[0,.25],[.25,.5],[.5,.8],[.8,1]][grade],ratio=bounds[0]+(bounds[1]-bounds[0])*Math.pow(rng(),2);
+  const value=(spec.min+(spec.max-spec.min)*ratio)*potentialScale(key,tier,type);lines.push({type,grade,value:spec.unit==='flat'?Math.max(1,Math.round(value)):Math.round(value*10000)/10000});
+ }return lines;
+}
+function validPotentials(g){
+ const rarity=ITEMS[g.key].rarity,count=POTENTIAL_COUNTS[rarity];if(!count)return [];
+ // Legacy rolls retain their actual values and line count until explicitly rerolled.
+ const range=g.potentialVersion===2?[count,count]:({rare:[0,1],epic:[1,2],legendary:[2,3],mythic:[3,5]})[rarity];
+ if(!Array.isArray(g.potentials)||g.potentials.length<range[0]||g.potentials.length>range[1])return null;
+ const allowed=new Set(POTENTIAL_POOLS[ITEMS[g.key].slot].map(x=>x[0])),seen=new Set();
+ for(const p of g.potentials){const spec=POTENTIALS[p?.type];if(!spec||!allowed.has(p.type)||seen.has(p.type)||!Number.isInteger(p.grade)||p.grade<0||p.grade>3||!Number.isFinite(p.value)||p.value<0||p.value>Math.max(spec.max,spec.max*potentialScale(g.key,gearTier(g),p.type))+.5001)return null;seen.add(p.type)}return g.potentials;
+}
 function potentialSum(type){let total=0;for(const id of Object.values(s.slots)){const g=s.gear.find(x=>x.id===id);if(g)for(const p of g.potentials||[])if(p.type===type)total+=p.value}return total}
-function potentialProduct(type){let value=1;for(const id of Object.values(s.slots)){const g=s.gear.find(x=>x.id===id);if(g)for(const p of g.potentials||[])if(p.type===type)value*=1+p.value}return value}
+function potentialProduct(type){return 1+potentialSum(type)}
 function expeditionReduction(){return Math.min(.4,potentialSum('cooldown'))}
 function dodgeChance(){return Math.min(.2,potentialSum('dodge'))}
 function bossMitigation(){return Math.min(.25,potentialSum('bossReduction')+.02*specialPower('foxward'))}
 function potentialLine(p){const spec=POTENTIALS[p.type];let value=spec.unit==='flat'?String(p.value):spec.unit==='speed'?p.value.toFixed(3)+'회/초':spec.unit==='move'?p.value.toFixed(3)+'m/s':pct(p.value);return '['+POTENTIAL_GRADES[p.grade]+'] '+spec.name+' +'+value+(p.type==='rage'?' (×'+(1+p.value).toFixed(2)+')':'')}
-function potentialRows(node,lines){node.replaceChildren();for(const line of lines||[]){const p=document.createElement('p');p.className='potential-line quality-'+line.grade;p.textContent=potentialLine(line);node.append(p)}if(!lines?.length){const p=document.createElement('p');p.textContent='영웅 등급부터 잠재 옵션이 생성됩니다.';node.append(p)}}
-function potentialCost(g){const rarity=ITEMS[g.key].rarity;return ({epic:{gold:800,items:{stone_epic:1,crystal:8}},legendary:{gold:2400,items:{stone_legendary:1,dust:3}},mythic:{gold:7000,items:{stone_mythic:1,core:3,dust:5}}})[rarity]||null}
+function potentialRows(node,lines){node.replaceChildren();for(const line of lines||[]){const p=document.createElement('p');p.className='potential-line quality-'+line.grade;p.textContent=potentialLine(line);node.append(p)}if(!lines?.length){const p=document.createElement('p');p.textContent='일반은 잠재 없음 · 이전 장비는 재설정하면 현재 줄 수가 적용됩니다.';node.append(p)}}
+function potentialCost(g){const rarity=ITEMS[g.key].rarity;return ({rare:{gold:180,items:{stone_rare:1,crystal:2}},epic:{gold:800,items:{stone_epic:1,crystal:8}},legendary:{gold:2400,items:{stone_legendary:1,dust:3}},mythic:{gold:7000,items:{stone_mythic:1,core:3,dust:5}}})[rarity]||null}
 function canReroll(g){const cost=g&&potentialCost(g);return !!cost&&s.gold>=cost.gold&&Object.entries(cost.items).every(([k,n])=>(s.inventory[k]||0)>=n)}
 function openPotential(id){const g=s.gear.find(x=>x.id===id);if(!g)return false;potentialGearId=id;hideGearTip();refreshPotentialDialog();$('potential-dialog').showModal();return true}
-function refreshPotentialDialog(){if(!potentialGearId)return;const g=s.gear.find(x=>x.id===potentialGearId);if(!g){potentialGearId=null;$('potential-dialog').close();return}$('potential-name').textContent=ITEMS[g.key].name+' · '+RARITIES[ITEMS[g.key].rarity];$('potential-base').textContent=gearText(g)+' / '+optionText(g)+(g.ward?' / 숲의 가호 +'+pct(g.ward):'');potentialRows($('potential-lines'),g.potentials);const cost=potentialCost(g);$('potential-cost').textContent=cost?'골드 '+fmt(s.gold)+' / '+fmt(cost.gold)+' G · '+Object.entries(cost.items).map(([k,n])=>ITEMS[k].name+' '+(s.inventory[k]||0)+' / '+n).join(' · '):'희귀 이하 장비는 잠재를 재설정할 수 없습니다.';$('potential-reroll').disabled=!canReroll(g);$('potential-reroll').textContent=cost?'비용 사용 · 전체 잠재 재설정':'잠재 없음';const pool=POTENTIAL_POOLS[ITEMS[g.key].slot];$('potential-pool').replaceChildren();for(const [key,w] of pool){const p=document.createElement('p'),spec=POTENTIALS[key];p.textContent=spec.name+' · 첫 줄 '+w+'% · '+(spec.unit==='flat'?spec.min+'~'+spec.max:spec.unit==='speed'?spec.min+'~'+spec.max+'회/초':spec.unit==='move'?spec.min+'~'+spec.max+'m/s':pct(spec.min)+'~'+pct(spec.max));$('potential-pool').append(p)}}
-function rerollPotential(id,rng=Math.random){if(!canMutate())return false;let g=s.gear.find(x=>x.id===id);if(!canReroll(g))return false;const cost=potentialCost(g),lines=rollPotentials(g.key,rng);s.gold-=cost.gold;for(const [k,n] of Object.entries(cost.items))s.inventory[k]-=n;if(g.quantity>1){g.quantity--;const oldId=g.id;g={...g,id:'g'+s.nextGearId++,quantity:1};s.gear.push(g);if(s.slots[ITEMS[g.key].slot]===oldId)s.slots[ITEMS[g.key].slot]=g.id}g.potentials=lines;potentialGearId=g.id;s.heroHp=Math.min(s.heroHp,heroMaxHp());upgradeRenderSignature='';syncLegacySlots();save();render();renderLoot();refreshPotentialDialog();notify('잠재 재설정 완료 · '+lines.length+'줄');return true}
+function refreshPotentialDialog(){if(!potentialGearId)return;const g=s.gear.find(x=>x.id===potentialGearId);if(!g){potentialGearId=null;$('potential-dialog').close();return}$('potential-name').textContent=ITEMS[g.key].name+' · '+RARITIES[ITEMS[g.key].rarity];$('potential-base').textContent=gearText(g)+' / '+optionText(g)+(g.ward?' / 숲의 가호 +'+pct(g.ward):'');potentialRows($('potential-lines'),g.potentials);renderGearComparison($('potential-comparison'),g);$('potential-rules').textContent='희귀 1 · 영웅 2 · 전설 3 · 신화 4줄 / 잔잔 80%, 선명 17%, 찬란 2.8%, 기적 0.2% · 등급·티어에 따라 수치 상승'+(g.potentialVersion===2?'':' · 이전 장비: 기존 옵션 보존, 재설정 시 새 규칙 적용');const cost=potentialCost(g);$('potential-cost').textContent=cost?'골드 '+fmt(s.gold)+' / '+fmt(cost.gold)+' G · '+Object.entries(cost.items).map(([k,n])=>ITEMS[k].name+' '+(s.inventory[k]||0)+' / '+n).join(' · '):'일반 장비는 잠재가 없습니다.';$('potential-reroll').disabled=!canReroll(g);$('potential-reroll').textContent=cost?'비용 사용 · 전체 잠재 재설정':'잠재 없음';const pool=POTENTIAL_POOLS[ITEMS[g.key].slot];$('potential-pool').replaceChildren();for(const [key,w] of pool){const p=document.createElement('p'),spec=POTENTIALS[key],scale=potentialScale(g.key,gearTier(g),key),format=v=>spec.unit==='flat'?Math.max(1,Math.round(v)):spec.unit==='speed'?v.toFixed(3)+'회/초':spec.unit==='move'?v.toFixed(3)+'m/s':pct(v);p.textContent=spec.name+' · 첫 줄 '+w+'% · '+format(spec.min*scale)+'~'+format(spec.max*scale);$('potential-pool').append(p)}}
+function rerollPotential(id,rng=Math.random){if(!canMutate())return false;let g=s.gear.find(x=>x.id===id);if(!canReroll(g))return false;const cost=potentialCost(g),lines=rollPotentials(g.key,rng,gearTier(g));s.gold-=cost.gold;for(const [k,n] of Object.entries(cost.items))s.inventory[k]-=n;if(g.quantity>1){g.quantity--;const oldId=g.id;g={...g,id:'g'+s.nextGearId++,quantity:1};s.gear.push(g);if(s.slots[ITEMS[g.key].slot]===oldId)s.slots[ITEMS[g.key].slot]=g.id}g.potentials=lines;g.potentialVersion=2;potentialGearId=g.id;s.heroHp=Math.min(s.heroHp,heroMaxHp());upgradeRenderSignature='';syncLegacySlots();save();render();renderLoot();refreshPotentialDialog();notify('잠재 재설정 완료 · '+lines.length+'줄');return true}
 function potentialProtected(g){return (g.potentials||[]).some(p=>p.grade>=2||['critical','leech','chain','reduction','bossReduction','regen','dodge','rage','dropMore','goldMore','cooldown'].includes(p.type))}
 const LOADOUT_ROLES={
  balanced:{name:'균형 준비',icon:'◈',desc:'기본 능력과 잠재를 고르게 비교합니다.',focus:'처음이라면 균형 준비부터 시작하세요.'},
@@ -305,10 +321,10 @@ function renderSpecial(){const signature=JSON.stringify([s.inventory.jadeorb,s.s
 const passivePower=key=>s.passives[key]?1+(s.passives[key]-1)*.2:0;
 const BOSS_BALANCE=[
  {hp:7200,attack:46,penetration:.15,regen:.001,interval:2.4,every:4,power:1.65,skill:'왕관 박치기'},
- {hp:32400,attack:121,penetration:.20,regen:.0015,interval:2.2,every:4,power:1.8,skill:'돌뿌리 내려찍기'},
- {hp:132000,attack:264,penetration:.25,regen:.002,interval:2,every:3,power:1.65,skill:'숲울림 돌진'},
- {hp:312000,attack:418,penetration:.30,regen:.0025,interval:2.3,every:4,power:1.9,skill:'달빛 날갯짓'},
- {hp:744000,attack:660,penetration:.35,regen:.003,interval:2.5,every:3,power:1.75,skill:'도토리 망치'}
+ {hp:54000,attack:180,penetration:.20,regen:.0015,interval:2.2,every:4,power:1.8,skill:'돌뿌리 내려찍기'},
+ {hp:360000,attack:440,penetration:.25,regen:.002,interval:2,every:3,power:1.65,skill:'숲울림 돌진'},
+ {hp:780000,attack:650,penetration:.30,regen:.0025,interval:2.3,every:4,power:1.9,skill:'달빛 날갯짓'},
+ {hp:1800000,attack:1000,penetration:.35,regen:.003,interval:2.5,every:3,power:1.75,skill:'도토리 망치'}
 ];
 // Existing elite attacks already have their 2.8× strength; skills name and visualize
 // that strike without adding damage, random draws, status ailments or save fields.
@@ -379,11 +395,12 @@ function enemyAttack(){return Math.round((boss?bossBaseAttack(bossId,bossTier)*(
 const enemyInterval=()=>boss?BOSS_BALANCE[bossId].interval*(bossFrenzy()?.85:1)*(bossCharged()?1.35:1):MOBS[currentMob]?.elite?2:currentMob==='treasure'?1.5:2.6;
 const mitigation=()=>Math.min(.3,(equippedGear('chest')?.ward||0)+(equippedGear('legs')?.ward||0)+collectionBonus('reduction')+potentialSum('reduction'));
 function incomingDamage(){return Math.max(1,Math.round(Math.max(0,enemyAttack()-heroDefense()*(boss?1-bossPenetration(bossId,bossTier):1))*(1-mitigation())*(boss?1-bossMitigation():1)))}
-function defeatHero(){const wasBoss=boss;s.potentialBuff={left:0,power:0};s.blockLeft=0;boss=false;s.heroHp=0;s.deaths++;phase='defeated';phaseLeft=8;travelTotal=8;attackClock=0;enemyClock=0;lastLoot=[];if(!wasBoss){s.stage=Math.max(1,s.stage-1);s.kills=0;s.safetyDefeats=Math.min(3,s.safetyDefeats+1);if(s.autoSafety&&s.safetyDefeats>=3){s.farmMode=true;log('안전 사냥 · 연속 사망으로 현재 지역 반복 사냥을 켰습니다. 장비를 준비한 뒤 자동 돌파를 다시 켜세요.')}}log('전투 불능 · 8초 후 회복'+(!wasBoss?' / 한 단계 후퇴':''));notify(s.autoSafety&&s.safetyDefeats>=3?'반복 사망으로 안전 사냥을 켰어요. 체력·방어를 준비한 뒤 돌파를 재개하세요.':'쓰러졌어요. 방어구와 생존 능력을 강화해 보세요.');save();renderLoot()}
+function defeatHero(){clearCombatEffects();const wasBoss=boss;s.potentialBuff={left:0,power:0};s.blockLeft=0;boss=false;s.heroHp=0;s.deaths++;phase='defeated';phaseLeft=8;travelTotal=8;attackClock=0;enemyClock=0;lastLoot=[];if(!wasBoss){s.stage=Math.max(1,s.stage-1);s.kills=0;s.safetyDefeats=Math.min(3,s.safetyDefeats+1);if(s.autoSafety&&s.safetyDefeats>=3){s.farmMode=true;log('안전 사냥 · 연속 사망으로 현재 지역 반복 사냥을 켰습니다. 장비를 준비한 뒤 자동 돌파를 다시 켜세요.')}}log('전투 불능 · 8초 후 회복'+(!wasBoss?' / 한 단계 후퇴':''));notify(s.autoSafety&&s.safetyDefeats>=3?'반복 사망으로 안전 사냥을 켰어요. 체력·방어를 준비한 뒤 돌파를 재개하세요.':'쓰러졌어요. 방어구와 생존 능력을 강화해 보세요.');save();renderLoot()}
 function monsterHit(rng=Math.random){if(phase!=='combat'||s.paused||s.heroHp<=0)return false;const pendingDamage=incomingDamage(),heavy=boss&&bossCharged(),skill=enemySkill();if(boss)bossStrikes++;if(rng()<dodgeChance()){passiveNotice('잠재 · 공격 회피!');$('hero-damage').textContent='회피';animateStrike(true,false,heavy);castEnemySkill(skill);$('last-impact').textContent=(skill?skill.name+' · ':'')+'잠재 회피 · 받은 피해 0';render();return true}const blocked=passivePower('guard')>0&&rng()<.15; const hit=Math.max(1,Math.round(pendingDamage*(blocked?1-.35*passivePower('guard'):1)));s.blockLeft=0;showImpact(hit,false,true,blocked,heavy);castEnemySkill(skill);if(skill)$('last-impact').textContent=skill.name+' · 받은 피해 '+fmt(hit)+(blocked?' · 방어 성공':'');s.heroHp=Math.max(0,s.heroHp-hit);if(s.heroHp>0&&potentialSum('rage')>0){s.potentialBuff={left:4,power:Math.min(.5,potentialSum('rage'))};passiveNotice('잠재 · 4초간 공격력 ×'+(1+s.potentialBuff.power).toFixed(2))}const fx=$('hero-damage');fx.textContent='−'+fmt(hit);fx.classList.remove('hit');void fx.offsetWidth;fx.classList.add('hit');if(s.heroHp<=0)defeatHero();render();return true}
 const movementSpeed=()=>moveAtLevel(s.move);
 const regionPenalty=()=>[1,1.2,1.45,1.8][regionIndex()];
-const travelSeconds=()=>Math.max(.8,2*regionPenalty()/movementSpeed());
+const travelDistance=()=> (3+Math.min(12,(s.stage-1)*.18))*regionPenalty();
+const travelSeconds=()=>Math.max(1.2,travelDistance()/Math.pow(Math.max(1,movementSpeed()),.85));
 const rareChance=()=>Math.min(.1,.0001*luck()*(s.equipped?1.5:1));
 function chooseMob(rng=Math.random){if(rng()<rareChance())return 'treasure';if(s.stage>=3&&rng()<.04){const elites=s.stage>=6?(s.stage>=11?['eliteSlime','eliteMushroom','eliteMoth','eliteSnail','eliteRabbit']:['eliteSlime','eliteMushroom','eliteMoth','eliteSnail']):['eliteSlime','eliteMushroom'];return elites[Math.min(elites.length-1,Math.floor(rng()*elites.length))]}const pool=regionIndex()===0?['slime','mushroom','snail']:regionIndex()===1?['slime','mushroom','moth','snail','rabbit']:['mushroom','moth','snail','rabbit'];return pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))]}
 function spawn(){encounterSerial++;if(boss)bossStrikes=0;phase='combat';phaseLeft=0;if(!boss)currentMob=chooseMob();const id=boss?'boss'+bossId:currentMob;s.encounters[id]=(Number(s.encounters[id])||0)+1;maxHp=boss?bossHealth(bossId,bossTier,bossEncounterStage):Math.round(health()*MOBS[currentMob].hp);hp=maxHp;attackClock=0;enemyClock=0;if(currentMob==='treasure'&&!boss){log('희귀 조우! 황금 보물여우가 나타났어요.');notify('✦ 황금 보물여우 등장! 보물을 놓치지 마세요.')}if(!boss&&MOBS[currentMob].elite){log('엘리트 조우 · '+MOBS[currentMob].name);notify('◆ 엘리트 등장! 강한 공격에 대비하세요.')}save();renderCodex()}
@@ -409,7 +426,7 @@ const ITEMS={
  scoutboots:{name:'반딧불 길잡이 신발',icon:'🥾',rarity:'epic',slot:'boots',movement:.24,desc:'신발 · 이동속도 +24%. 조사 증표로 제작하는 영웅 장비.'},
 
  stone_common:{name:'일반 강화석',icon:'◇',rarity:'common',desc:'일반 장비 분해 재료. 추후 장비 강화에 사용하며 현재는 보관합니다.'},
- stone_rare:{name:'희귀 강화석',icon:'◇',rarity:'rare',desc:'희귀 장비 분해 재료. 조사 증표와 함께 영웅 장비 제작에 사용합니다.'},
+ stone_rare:{name:'희귀 강화석',icon:'◇',rarity:'rare',desc:'희귀 잠재 재설정과 조사 증표를 이용한 영웅 장비 제작에 사용합니다.'},
  stone_epic:{name:'영웅 강화석',icon:'◇',rarity:'epic',desc:'영웅 장비 분해 재료. 같은 등급 장비의 잠재 옵션 재설정에 사용합니다.'},
  stone_legendary:{name:'전설 강화석',icon:'◇',rarity:'legendary',desc:'전설 장비 분해 재료. 같은 등급 장비의 잠재 옵션 재설정에 사용합니다.'},
  stone_mythic:{name:'신화 강화석',icon:'◇',rarity:'mythic',desc:'신화 장비 분해 재료. 같은 등급 장비의 잠재 옵션 재설정에 사용합니다.'},
@@ -429,7 +446,7 @@ const ITEMS={
  ring:{name:'수호자의 반지',icon:'◎',rarity:'epic',slot:'ring',gold:.35,luck:.75,desc:'반지 · 기본 드롭률 +75%, 골드 획득량 +35%. 보스와 보물여우가 드롭합니다.'},
  crown:{name:'태초의 인장 반지',icon:'♛',rarity:'mythic',slot:'ring',gold:.6,luck:1.5,desc:'반지 · 기본 드롭률 +150%, 골드 획득량 +60%. 보스와 보물여우가 드롭합니다.'},
  spore:{name:'보랏빛 포자',icon:'♧',rarity:'common',desc:'걷는 버섯의 작은 포자. 몬스터 도감 수집 재료입니다.'},wing:{name:'달빛 날개가루',icon:'✧',rarity:'rare',desc:'달빛 나방이 남긴 빛나는 수집 재료입니다.'},amber:{name:'황금 여우의 호박석',icon:'◆',rarity:'legendary',desc:'보물여우만 남기는 확정 전리품. 극히 드문 만남을 증명하는 수집품입니다.'},
- boots:{name:'숲길 탐험화',icon:'🥾',rarity:'rare',slot:'boots',movement:.15,desc:'신발 · 기본 이동속도 +15%. 재료로 제작하거나 몬스터에게 얻습니다.'},windboots:{name:'수호자의 바람 장화',icon:'🥾',rarity:'legendary',slot:'boots',movement:.4,desc:'신발 · 기본 이동속도 +40%. 보스가 드롭하는 상위 장비입니다.'},royalblade:{name:'태초의 파수검',icon:'⚔',rarity:'mythic',slot:'weapon',damage:.8,desc:'무기 · 기본 공격력 +80%. 숲길 대장 몽글이와 미스틱 보스에게서 얻습니다.'},
+ boots:{name:'숲길 탐험화',icon:'🥾',rarity:'rare',slot:'boots',movement:.15,desc:'신발 · 기본 이동속도 +15%. 모은 재료로 제작하는 기본 탐험 장비입니다.'},windboots:{name:'수호자의 바람 장화',icon:'🥾',rarity:'legendary',slot:'boots',movement:.4,desc:'신발 · 기본 이동속도 +40%. 보스가 드롭하는 상위 장비입니다.'},royalblade:{name:'태초의 파수검',icon:'⚔',rarity:'mythic',slot:'weapon',damage:.8,desc:'무기 · 기본 공격력 +80%. 숲길 대장 몽글이와 미스틱 보스에게서 얻습니다.'},
  tunic:{name:'새싹 모험복',icon:'♜',rarity:'rare',slot:'chest',hp:100,armor:5,desc:'상의 · 기본 최대 HP +100, 방어력 +5. 추가 옵션이 두 능력치에 적용됩니다.'},trousers:{name:'숲길 경갑',icon:'Ⅱ',rarity:'rare',slot:'legs',hp:30,armor:20,desc:'하의 · 기본 최대 HP +30, 방어력 +20.'},guardiancoat:{name:'수호자의 흉갑',icon:'♜',rarity:'legendary',slot:'chest',hp:350,armor:20,desc:'상의 · 기본 최대 HP +350, 방어력 +20. 보스와 보물여우의 전리품.'},guardianlegs:{name:'수호자의 각반',icon:'Ⅱ',rarity:'legendary',slot:'legs',hp:100,armor:60,desc:'하의 · 기본 최대 HP +100, 방어력 +60. 보스와 보물여우의 전리품.'},
  sunblade:{name:'여명의 검',icon:'⚔',rarity:'legendary',slot:'weapon',damage:.35,weapon:true,desc:'보스·보물여우 무기 · 장착 시 공격력 +35%. 장신구와 함께 사용 가능.'}
 };
@@ -455,6 +472,7 @@ const BOSS_GEAR_POOLS=[
  ['owlcoat','windboots','charm'],
  ['acornblade','guardiancoat','guardianlegs']
 ];
+for(const [key,mob] of Object.entries(MOBS))if(!mob.elite&&key!=='treasure')mob.drops=mob.drops.filter(([key])=>!ITEMS[key].slot);
 MOBS.treasure.drops.push(["jadeorb",.05],["bp_foxring",.03]);
 for(const m of Object.values(MOBS))m.drops.push(['skillstone',m.elite?.025:m.name==='황금 보물여우'?.1:.005]);for(const table of BOSS_TABLES)table.push(['skillstone',.06]);
 for(const k of Object.keys(s.inventory))if(ITEMS[k]&&s.inventory[k]>0&&!s.discovered.includes(k))s.discovered.push(k);
@@ -465,12 +483,12 @@ let selectedItem='moss',inventoryFilter='owned';
 const SLOT_NAMES={weapon:'무기',chest:'상의',legs:'하의',boots:'신발',ring:'반지'};
 let gearFilter='all',gearPage=0,selectedGearId=null,equipmentSignature='',gearTipTimer=null;
 const GEAR_PAGE_SIZE=24;
-// Rarity controls identity and potentials; tier scales base equipment stats only.
+// Tier scales base equipment stats and new potential rolls; saved potential values stay explicit.
 function gearTier(g){return Number.isInteger(g?.tier)?Math.max(1,Math.min(8,g.tier)):1}
 function gearTierMultiplier(g){return 1+(gearTier(g)-1)*.20}
 function fieldGearTier(stage=s.stage){return Math.max(1,Math.min(5,1+Math.floor((stage-1)/5)))}
 function bossGearTier(id,tier='normal'){return id+2+({normal:0,elite:1,mystic:2})[tier]}
-function makeGear(key,rng=Math.random,legacy=false,quantity=1,tier=1){const g={tier:legacy?1:gearTier({tier}),id:'g'+s.nextGearId++,key,locked:false,roll:legacy?0:Math.min(30,1+Math.floor(rng()*30)),exceptional:legacy?false:rng()<.05,quantity,ward:!legacy&&['chest','legs'].includes(ITEMS[key].slot)&&rng()<.1?(1+Math.min(2,Math.floor(rng()*3)))/100:0};g.potentials=rollPotentials(key,rng);s.gear.push(g);return g}
+function makeGear(key,rng=Math.random,legacy=false,quantity=1,tier=1){const g={tier:legacy?1:gearTier({tier}),id:'g'+s.nextGearId++,key,locked:false,roll:legacy?0:Math.min(30,1+Math.floor(rng()*30)),exceptional:legacy?false:rng()<.05,quantity,ward:!legacy&&['chest','legs'].includes(ITEMS[key].slot)&&rng()<.1?(1+Math.min(2,Math.floor(rng()*3)))/100:0};g.potentialVersion=2;g.potentials=rollPotentials(key,rng,gearTier(g));s.gear.push(g);return g}
 function equippedGear(slot){return s.gear.find(g=>g.id===s.slots[slot]&&ITEMS[g.key]?.slot===slot)||null}
 function gearStat(slot,stat){const g=equippedGear(slot);return g?(ITEMS[g.key][stat]||0)*gearTierMultiplier(g)*(1+g.roll/100*(g.exceptional?1.5:1)):0}
 function syncLegacySlots(){s.equipped=equippedGear('ring')?.key||null;s.weapon=equippedGear('weapon')?.key||null}
@@ -498,7 +516,13 @@ const CRAFT_LABELS={"shellcoat":"왕관등갑","runelegs":"잠든 룬각반","gr
 function canCraft(key){return Object.hasOwn(RECIPES,key)&&(!ITEMS['bp_'+key]||known('bp_'+key))&&s.gold>=CRAFT_GOLD[key]&&Object.entries(RECIPES[key]).every(([k,v])=>(s.inventory[k]||0)>=v)}
 function craft(key){if(!canMutate())return false;hideCraftTip();const recipe=RECIPES[key];if(!canCraft(key))return false;s.gold-=CRAFT_GOLD[key];for(const [k,v] of Object.entries(recipe))s.inventory[k]-=v;const gear=award(key,1,Math.random,'장비 제작',fieldGearTier(s.highestStage));selectedItem=key;selectedGearId=gear?.id||null;log(ITEMS[key].name+' 제작 · '+optionText(gear));notify('제작 완료! '+CRAFT_GOLD[key]+' G를 사용했어요.');save();render();renderLoot();return true}
 function hideGearTip(){clearTimeout(gearTipTimer);gearPopoverId=null;$('gear-tooltip').hidden=true}
-function showGearTip(g,anchor){clearTimeout(gearTipTimer);if(!g)return;gearPopoverId=g.id;const item=ITEMS[g.key],tip=$('gear-tooltip');tip.setAttribute('data-rarity',item.rarity);$('tip-name').textContent=item.name;$('tip-rarity').textContent=RARITIES[item.rarity]+' · '+SLOT_NAMES[item.slot]+(g.exceptional?' · 대성공':'');$('tip-stats').textContent=gearText(g);$('tip-option').textContent=optionText(g);$('tip-rare').hidden=!g.ward;$('tip-rare').textContent=g.ward?'◆ 숲의 가호 · 피해감소 +'+pct(g.ward):'';const equipped=equippedGear(item.slot);$('tip-comparison').textContent=equipped?(equipped.id===g.id?'현재 장착 중':'현재 장비: '+gearText(equipped)+(equipped.ward?' · 숲의 가호 +'+pct(equipped.ward):'')):'이 슬롯에 장착한 장비가 없습니다.';potentialRows($('tip-potentials'),g.potentials);positionItemTip(tip,anchor,330)}
+function renderGearComparison(node,g){
+ node.replaceChildren();const current=equippedGear(ITEMS[g.key].slot),intro=document.createElement('p');intro.textContent=current?'현재 장착: '+ITEMS[current.key].name+' · '+gearText(current):'현재 장착 없음 · 빈 슬롯과 비교';node.append(intro);
+ const types=[...new Set([...(current?.potentials||[]),...(g.potentials||[])].map(p=>p.type))];
+ for(const type of types){const spec=POTENTIALS[type],old=(current?.potentials||[]).filter(p=>p.type===type),next=(g.potentials||[]).filter(p=>p.type===type),from=old.reduce((n,p)=>n+p.value,0),to=next.reduce((n,p)=>n+p.value,0),delta=to-from,format=v=>spec.unit==='flat'?String(Math.round(v)):spec.unit==='speed'?v.toFixed(3)+'회/초':spec.unit==='move'?v.toFixed(3)+'m/s':pct(v),row=document.createElement('p');row.className='comparison-row '+(delta>0?'gain':delta<0?'loss':'same');row.textContent=spec.name+' · 현재 '+format(from)+' → 선택 '+format(to)+' ('+(delta>=0?'+':'−')+format(Math.abs(delta))+') · '+(old.length?old.map(p=>POTENTIAL_GRADES[p.grade]).join('/'):'없음')+' → '+(next.length?next.map(p=>POTENTIAL_GRADES[p.grade]).join('/'):'없음');node.append(row)}
+ if(!types.length){const row=document.createElement('p');row.textContent='비교할 잠재 옵션 없음';node.append(row)}
+}
+function showGearTip(g,anchor){clearTimeout(gearTipTimer);if(!g)return;gearPopoverId=g.id;const item=ITEMS[g.key],tip=$('gear-tooltip');tip.setAttribute('data-rarity',item.rarity);$('tip-name').textContent=item.name;$('tip-rarity').textContent=RARITIES[item.rarity]+' · '+SLOT_NAMES[item.slot]+(g.exceptional?' · 대성공':'');$('tip-stats').textContent=gearText(g);$('tip-option').textContent=optionText(g);$('tip-rare').hidden=!g.ward;$('tip-rare').textContent=g.ward?'◆ 숲의 가호 · 피해감소 +'+pct(g.ward):'';const equipped=equippedGear(item.slot);$('tip-comparison').textContent=equipped?(equipped.id===g.id?'현재 장착 중':'현재 장비: '+gearText(equipped)+(equipped.ward?' · 숲의 가호 +'+pct(equipped.ward):'')):'이 슬롯에 장착한 장비가 없습니다.';potentialRows($('tip-potentials'),g.potentials);renderGearComparison($('tip-potential-comparison'),g);positionItemTip(tip,anchor,330)}
 function gearButton(g,slotView=false){const item=ITEMS[g.key],b=document.createElement('button');b.className='gear-tile '+item.rarity+(s.slots[item.slot]===g.id?' equipped':'')+(g.exceptional?' exceptional':'')+(g.ward?' warded':'');b.setAttribute('aria-describedby','gear-tooltip');b.setAttribute('aria-label',item.name+' T'+gearTier(g)+' 옵션 확인');const icon=document.createElement('span');icon.className='gear-icon';paintItemIcon(icon,item);const name=document.createElement('strong');name.textContent=item.name;const tag=document.createElement('small');tag.textContent='T'+gearTier(g)+' · '+(slotView?SLOT_NAMES[item.slot]:RARITIES[item.rarity])+(s.slots[item.slot]===g.id?' · 장착':'')+(g.quantity>1?' ×'+g.quantity:'')+(g.exceptional?' ✦':'')+(g.ward?' ◆ 가호':'');b.append(icon,name,tag);b.onmouseenter=()=>showGearTip(g,b);b.onmouseleave=hideGearTip;b.onfocus=()=>showGearTip(g,b);b.onblur=()=>hideGearTip();b.onclick=()=>{selectedGearId=g.id;openPotential(g.id)};return b}
 function renderEquipment(){
  for(const key of ['all',...Object.keys(SLOT_NAMES)]){$('gear-category-'+key).setAttribute('aria-pressed',String(gearFilter===key));$('gear-count-'+key).textContent=s.gear.filter(g=>key==='all'||ITEMS[g.key].slot===key).reduce((n,g)=>n+g.quantity,0)}$('gear-list-title').textContent=gearFilter==='all'?'전체 장비':SLOT_NAMES[gearFilter];const signature=JSON.stringify([s.gear,s.slots,gearFilter,gearSort,gearPage,s.loadoutRole]);$('gear-effects').textContent='HP '+fmt(heroMaxHp())+' · 방어 '+fmt(heroDefense())+' · 공격력 '+fmt(attack())+' · 이동 '+movementSpeed().toFixed(2)+'m/s · 드롭 ×'+luck().toFixed(2);if(signature===equipmentSignature)return;equipmentSignature=signature;renderLoadoutPlan();hideGearTip();const slots=$('equipment-slots');slots.replaceChildren();for(const slot of Object.keys(SLOT_NAMES)){const g=equippedGear(slot);if(g)slots.append(gearButton(g,true));else{const empty=document.createElement('div');empty.className='empty-gear-slot';const title=document.createElement('strong');title.textContent=SLOT_NAMES[slot];const hint=document.createElement('small');hint.textContent='미장착';empty.append(title,hint);slots.append(empty)}}
@@ -528,7 +552,7 @@ $('equip-item').onclick=()=>equip(selectedItem);$('craft-leaf').onclick=()=>craf
 function renderTravel(){
  const travelling=['loot','travel','defeated'].includes(phase);$('adventure-status').textContent='STAGE '+s.stage+' · '+(s.paused?'쉬는 중':boss?'보스 전투':phase==='defeated'?'회복 중':phase==='travel'?'숲길 이동':phase==='loot'?'전리품 정리':'자동 사냥');$('arena').classList.toggle('travelling',travelling);$('arena').classList.toggle('elite-boss',boss&&bossTier==='elite');$('arena').classList.toggle('mystic-boss',boss&&bossTier==='mystic');$('arena').classList.toggle('elite-encounter',!!MOBS[currentMob].elite&&!boss&&!travelling);$('arena').classList.toggle('rare-encounter',currentMob==='treasure'&&!boss&&!travelling);renderBattleScene();$('travel-overlay').hidden=!travelling;
  $('travel-title').textContent=phase==='defeated'?'전투 불능 · 야영지에서 회복 중':phase==='loot'?'전리품을 챙기는 중':'다음 적을 향해 이동 중';$('travel-description').textContent=phase==='defeated'?Math.max(0,phaseLeft).toFixed(1)+'초 후 HP를 회복해 다시 출발합니다.':phase==='loot'?(lastLoot.length?lastLoot.map(x=>ITEMS[x.key].name+' ×'+x.count).join(' · '):'골드를 챙기고 잠시 숨을 고릅니다.'):(s.paused?'일시 정지됨':phaseLeft.toFixed(1)+'초 후 도착');$('travel-fill').style.width=(phase==='travel'||phase==='defeated'?Math.max(0,1-phaseLeft/travelTotal)*100:Math.max(0,1-phaseLeft/.8)*100)+'%';
- $('movement-summary').textContent='이동속도 '+movementSpeed().toFixed(2)+'m/s · 다음 이동 '+travelSeconds().toFixed(1)+'초';$('terrain-summary').textContent=['평탄한 숲길 · 페널티 없음','젖은 오솔길 · 이동시간 +20%','뒤엉킨 뿌리 · 이동시간 +45%','깊은 늪지 · 이동시간 +80%'][regionIndex()];
+ $('movement-summary').textContent='이동속도 '+movementSpeed().toFixed(2)+'m/s · 거리 '+travelDistance().toFixed(1)+'m · 다음 이동 '+travelSeconds().toFixed(1)+'초';$('terrain-summary').textContent=['평탄한 숲길 · 페널티 없음','젖은 오솔길 · 이동시간 +20%','뒤엉킨 뿌리 · 이동시간 +45%','깊은 늪지 · 이동시간 +80%'][regionIndex()];
  $('auto-safety').setAttribute('aria-pressed',String(s.autoSafety));$('auto-safety').textContent=s.autoSafety?'연속 사망 보호 켜짐':'연속 사망 보호 꺼짐';if(travelling){$('battle-status').textContent=s.paused?'Ⅱ 모험 쉬는 중':phase==='defeated'?'✚ 회복 중':phase==='loot'?'✦ 전리품 정리 중':'› 숲길 이동 중';$('enemy-name').textContent='전투 종료';$('enemy-hp-label').textContent='';}
 }
 function renderCodex(){
@@ -545,7 +569,7 @@ const COLLECTION_SETS=[
  {name:'전설을 그리는 손',keys:['bp_shellcoat','bp_runelegs','bp_groveblade','bp_moonboots'],bonuses:{attack:.01},hint:'보스 4종의 전용 전설 설계도를 발견하세요.'},
  {name:'튼튼한 숲의 친구들',keys:['dew','cap'],bonuses:{attack:.08},hint:'스테이지 3부터 엘리트 슬라임과 버섯에게 도전하세요.'},
  {name:'반짝이는 숲의 조각',keys:['dew','cap','moonshard'],bonuses:{luck:.08,movement:.05},hint:'세 종류 엘리트의 전용 재료를 모으세요.'},
- {name:'작은 숲의 수호 증표',keys:['dew','cap','moonshard','medal'],bonuses:{reduction:.02},hint:'엘리트의 희귀 훈장까지 모으면 영구 피해감소 +2%.'},
+ {name:'작은 숲의 수호 증표',keys:['dew','cap','moonshard','medal'],bonuses:{reduction:.02},hint:'엘리트의 희귀 훈장까지 모으면 영구 피해감소 +3%.'},
  {name:'첫 탐험 준비 완료',keys:['practiceblade','tunic','trousers','boots'],bonuses:{gold:.05},hint:'첫 무기와 방어구를 제작해 보세요.'},
  {name:'숲의 첫 선물',keys:['moss','crystal','spore'],bonuses:{attack:.05},hint:'슬라임과 버섯을 사냥해 보세요.'},
  {name:'달빛을 담은 병',keys:['dust','wing','seed'],bonuses:{luck:.05},hint:'달빛 나방과 희귀한 만남을 찾아보세요.'},
@@ -553,16 +577,17 @@ const COLLECTION_SETS=[
  {name:'모험가의 준비',keys:['sunblade','boots','windboots'],bonuses:{attack:.1,movement:.05},hint:'무기와 두 종류의 신발을 발견하세요.'},
  {name:'태초의 보물함',keys:['amber','crown','royalblade'],bonuses:{attack:.15,luck:.1},hint:'보물여우와 최상위 보스에게 도전하세요.'}
 ];
+for(const set of COLLECTION_SETS)for(const key of Object.keys(set.bonuses))set.bonuses[key]=Math.max(.03,set.bonuses[key]);
 const bonusLabels={attack:'공격력',gold:'골드 획득',luck:'드롭률',movement:'이동속도',reduction:'피해감소'};
 function discoveredCount(){return Object.keys(ITEMS).filter(known).length}
-function collectionBonus(stat){let value=0;if(stat==='attack')value=discoveryAttack()+bossTrophyBonus()+Math.floor((s.highestStage-1)/5)*.02;if(stat==='gold')value=Math.floor((s.highestStage-1)/5)*.01;for(const set of COLLECTION_SETS)if(set.keys.every(known))value+=set.bonuses[stat]||0;return value}
+function collectionBonus(stat){let value=0;if(stat==='attack')value=discoveryAttack()+bossTrophyBonus()+Math.floor((s.highestStage-1)/5)*.03;if(stat==='gold')value=Math.floor((s.highestStage-1)/5)*.01;for(const set of COLLECTION_SETS)if(set.keys.every(known))value+=set.bonuses[stat]||0;return value}
 function milestoneTargets(){const targets=[6,11,16,21,31,51];const next=61+10*Math.max(0,Math.floor((s.highestStage-51)/10));for(let n=61;n<=next;n+=10)targets.push(n);return targets}
 function milestoneReward(n){return {gold:n*80,core:Math.max(1,Math.floor(n/10))}}
 function rollMilestoneGear(rng=Math.random){const roll=rng();const pool=roll<.01?['sunblade','windboots','guardiancoat','guardianlegs']:roll<.10?['charm','mossblade','scoutcoat','scoutlegs','scoutboots']:roll<.65?['leaf','practiceblade','tunic','trousers','boots']:null;return pool?pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))]:null}
 function claimMilestone(n,rng=Math.random){if(!canMutate())return false;if(!Number.isInteger(n)||!milestoneTargets().includes(n)||s.highestStage<n||s.claimedMilestones.includes(n))return false;const prize=milestoneReward(n);s.claimedMilestones.push(n);s.gold+=prize.gold;award('core',prize.core);const key=rollMilestoneGear(rng);if(key)award(key,1,rng);else award('crystal',5);const result=key?ITEMS[key].name:'숲의 결정 5개';log('STAGE '+n+' 돌파 보상 · '+result);notify('돌파 보상 · '+fmt(prize.gold)+' G / '+result);save();render();renderLoot();return true}
 function bonusDescription(bonuses){return Object.entries(bonuses).map(([k,v])=>bonusLabels[k]+' +'+pct(v)).join(' · ')}
 let achievementSignature='',achievementTipTimer=null;
-function achievementSources(stat){const rows=[];if(stat==='attack'){rows.push(['발견 보너스 · 기존 1% / 확장 0.2%',discoveryAttack()],['보스 트로피',bossTrophyBonus()],['최고 스테이지',Math.floor((s.highestStage-1)/5)*.02])}if(stat==='gold')rows.push(['최고 스테이지',Math.floor((s.highestStage-1)/5)*.01]);for(const set of COLLECTION_SETS)if(set.keys.every(known)&&set.bonuses[stat])rows.push([set.name,set.bonuses[stat]]);return rows}
+function achievementSources(stat){const rows=[];if(stat==='attack'){rows.push(['발견 보너스 · 기존 1% / 확장 0.2%',discoveryAttack()],['보스 트로피',bossTrophyBonus()],['최고 스테이지',Math.floor((s.highestStage-1)/5)*.03])}if(stat==='gold')rows.push(['최고 스테이지',Math.floor((s.highestStage-1)/5)*.01]);for(const set of COLLECTION_SETS)if(set.keys.every(known)&&set.bonuses[stat])rows.push([set.name,set.bonuses[stat]]);return rows}
 function hideAchievementTip(){clearTimeout(achievementTipTimer);$('achievement-tooltip').hidden=true}
 function showAchievementTip(anchor,title,lines){clearTimeout(achievementTipTimer);$('achievement-tip-title').textContent=title;const body=$('achievement-tip-body');body.replaceChildren();for(const line of lines){const row=document.createElement('p');row.textContent=line;body.append(row)}positionItemTip($('achievement-tooltip'),anchor,310)}
 function achievementHover(button,title,lines){button.setAttribute('aria-describedby','achievement-tooltip');const show=()=>showAchievementTip(button,title,typeof lines==='function'?lines():lines);button.onmouseenter=show;button.onmouseleave=hideAchievementTip;button.onfocus=show;button.onblur=hideAchievementTip;button.onclick=show;return button}
@@ -571,7 +596,7 @@ function renderCollection(){
  const count=discoveredCount(),completed=COLLECTION_SETS.filter(x=>x.keys.every(known)).length;const targets=milestoneTargets(),ready=targets.filter(n=>n<=s.highestStage&&!s.claimedMilestones.includes(n)),next=targets.find(n=>n>s.highestStage);
  $('collection-count').textContent=count+' / '+Object.keys(ITEMS).length+'종 발견';$('collection-progress').style.width=count/Object.keys(ITEMS).length*100+'%';$('collection-highest').textContent='STAGE '+s.highestStage;$('collection-rank').textContent=s.highestStage>=51?'태초의 개척자':s.highestStage>=21?'깊은 숲의 탐험가':s.highestStage>=11?'숲길의 길잡이':'새싹 수집가';
  $('collection-summary').textContent='발견 보너스 공격력 +'+pct(discoveryAttack())+' · 세트 '+completed+'/'+COLLECTION_SETS.length+' · 보스 트로피 '+s.bossWins.filter(n=>n>0).length+'/'+BOSSES.length;
- $('milestone-summary').textContent='최고 기록 5단계마다 공격력 +2%p · 골드 +1%p. 현재 기록 보너스: 공격력 +'+pct(Math.floor((s.highestStage-1)/5)*.02)+' / 골드 +'+pct(Math.floor((s.highestStage-1)/5)*.01);
+ $('milestone-summary').textContent='최고 기록 5단계마다 공격력 +3%p · 골드 +1%p. 현재 기록 보너스: 공격력 +'+pct(Math.floor((s.highestStage-1)/5)*.03)+' / 골드 +'+pct(Math.floor((s.highestStage-1)/5)*.01);
  $('goal-label').textContent=ready.length?'받을 수 있는 돌파 보상 '+ready.length+'개':'다음 목표 STAGE '+next;$('goal-detail').textContent='최고 '+s.highestStage+' · 발견 '+count+'/'+Object.keys(ITEMS).length;$('tab-collection').textContent='수집·목표'+(ready.length?' ('+ready.length+')':'');
  const signature=JSON.stringify([s.discovered,s.bossWins,s.highestStage,s.claimedMilestones]);if(signature===achievementSignature)return;achievementSignature=signature;hideAchievementTip();
  const effects=$('collection-bonuses');effects.replaceChildren();const icons={attack:'⚔',luck:'✦',gold:'◆',movement:'»',reduction:'◇'};for(const stat of ['attack','luck','gold','movement','reduction']){const card=document.createElement('button');card.className='achievement-effect';const label=document.createElement('span');label.textContent=icons[stat]+' '+bonusLabels[stat];const value=document.createElement('strong');value.textContent='+'+pct(collectionBonus(stat));const hint=document.createElement('small');hint.textContent='영구 적용 · 출처 보기';card.append(label,value,hint);achievementHover(card,bonusLabels[stat]+' · 획득 효과',()=>{const sources=achievementSources(stat);return [...(sources.length?sources.map(([name,value])=>name+' +'+pct(value)):['아직 획득한 보너스가 없습니다.']),'합계 +'+pct(collectionBonus(stat)),stat==='reduction'?'피해감소는 장비와 합산 · 최대 30%. 방어력 차감 후 적용됩니다.':'업적 효과끼리는 합산하고, 장비 효과와 곱해집니다.']});effects.append(card)}
@@ -624,19 +649,20 @@ $('craft-practiceblade').onclick=()=>craft('practiceblade');
 function loadTrails(){
  let raw={};try{raw=JSON.parse(readSaveRaw())||{}}catch{}
  const old=raw.trails||{},num=(v,max)=>Number.isFinite(v)?Math.max(0,Math.min(max,Math.floor(v))):0;
- s.trails={route:num(old.route,2),step:num(old.step,2),points:num(old.points,90),seconds:num(old.seconds,300),laps:num(old.laps,1e9),relics:Array.isArray(old.relics)?[...new Set(old.relics.filter(v=>Number.isInteger(v)&&v>=0&&v<9))]:[],visits:[0,1,2].map(i=>num(old.visits?.[i],1e9)),history:Array.isArray(old.history)?old.history.filter(v=>typeof v==='string').slice(0,4):[]};
+ s.trails={version:2,route:num(old.route,2),step:num(old.step,2),points:num(old.points,old.version===2?150:90)*(old.version===2?1:150/90),seconds:num(old.seconds,old.version===2?1500:300)*(old.version===2?1:5),laps:num(old.laps,1e9),relics:Array.isArray(old.relics)?[...new Set(old.relics.filter(v=>Number.isInteger(v)&&v>=0&&v<9))]:[],visits:[0,1,2].map(i=>num(old.visits?.[i],1e9)),history:Array.isArray(old.history)?old.history.filter(v=>typeof v==='string').slice(0,4):[]};
  // Retire the combat override; carry unfinished legacy progress into exploration.
- if(!raw.trails&&['queued','active','ready'].includes(raw.expedition)){s.trails.points=raw.expedition==='ready'?90:Math.min(60,(Number(raw.expeditionWins)||0)*20);s.trails.seconds=raw.expedition==='ready'?300:0}
+ if(!raw.trails&&['queued','active','ready'].includes(raw.expedition)){s.trails.points=raw.expedition==='ready'?150:Math.min(100,(Number(raw.expeditionWins)||0)*33);s.trails.seconds=raw.expedition==='ready'?1500:0}
  s.expedition='idle';s.expeditionWins=0;
 }
-function trailBonus(){return (s.trails?.relics.length||0)*.003}
+function trailBonus(){return (s.trails?.relics.length||0)*.01+Math.min(.06,(s.trails?.laps||0)*.002)}
+function trailPace(){return 1+Math.min(.15,Math.max(0,(Math.sqrt(movementSpeed())-1)*.12))}
 function trailNote(text){s.trails.history.unshift(text);s.trails.history=s.trails.history.slice(0,4);log('자동 탐사 · '+text)}
-function progressTrail(wasBoss,id){if(s.total<10)return;const t=s.trails;t.points=Math.min(90,t.points+(wasBoss?10:id==='treasure'?8:MOBS[id]?.elite?4:1));resolveTrail()}
-function advanceTrail(dt){if(s.total<10||s.heroHp<=0||['defeated','victory','results'].includes(phase))return;s.trails.seconds=Math.min(300,s.trails.seconds+Math.max(0,Math.min(1,dt)));resolveTrail()}
+function progressTrail(wasBoss,id){if(s.total<10)return;const t=s.trails;t.points=Math.min(150,t.points+(wasBoss?10:id==='treasure'?8:MOBS[id]?.elite?4:1));resolveTrail()}
+function advanceTrail(dt){if(s.total<10||s.heroHp<=0||['defeated','victory','results'].includes(phase))return;s.trails.seconds=Math.min(1500,s.trails.seconds+Math.max(0,Math.min(1,dt))*trailPace());resolveTrail()}
 function resolveTrail(rng=Math.random){
  const t=s.trails;if(s.total<10)return;
  const route=TRAILS[t.route];
- while(t.step<3&&t.points>=[20,50,90][t.step]&&t.seconds>=[60,180,300][t.step]){
+ while(t.step<3&&t.points>=[30,90,150][t.step]&&t.seconds>=[300,900,1500][t.step]){
   const step=t.step++;
   if(step===0){award(route.material,1);trailNote(route.name+' · 흔적 발견 / '+ITEMS[route.material].name+' ×1')}
   else if(step===1){
@@ -648,9 +674,9 @@ function resolveTrail(rng=Math.random){
    else{award(route.material,2);trailNote('중복 유물 연구 · '+ITEMS[route.material].name+' ×2')}
    t.visits[t.route]++;
   }else{
-   const gold=40+Math.min(20,s.highestStage)*4;s.gold+=gold;award(route.material,2);
-   if(rng()<.1){award('skillstone',1);trailNote('보급 도착 · '+gold+' G / 재료 ×2 / 스킬석 ×1')}
-   else trailNote('보급 도착 · '+gold+' G / '+ITEMS[route.material].name+' ×2');
+   const gold=Math.max(250,Math.round(reward()*40));s.gold+=gold;award(route.material,6);award('skillstone',1);award('seal',2);
+   if(rng()<.1){award('skillstone',1);trailNote('보급 도착 · '+gold+' G / 재료 ×6 / 스킬석 ×2 / 조사 증표 ×2')}
+   else trailNote('보급 도착 · '+gold+' G / '+ITEMS[route.material].name+' ×6 / 스킬석 ×1 / 조사 증표 ×2');
    t.laps++;t.route=(t.route+1)%3;t.points=0;t.seconds=0;t.step=0;notify('탐사 완료 · 보상 자동 지급 / 다음 숲길로 출발');save();renderLoot();return;
   }
   save();renderLoot();
@@ -661,11 +687,11 @@ function startExpedition(){return false}
 function claimExpedition(){return false}
 function renderExpedition(){
  const t=s.trails,route=TRAILS[t.route],unlocked=s.total>=10;
- $('expedition-title').textContent=route.icon+' 숲길 자동 탐사 · '+route.name;
- $('expedition-info').textContent=!unlocked?'몬스터 '+(10-s.total)+'마리 처치 후 자동 출발':s.paused?'사냥을 재개하면 탐사가 이어집니다.':['흔적 발견','유물 조사','보급 도착'][t.step]+'까지 · 흔적 '+t.points+' / '+[20,50,90][t.step]+' · 탐사 '+Math.floor(t.seconds)+' / '+[60,180,300][t.step]+'초';
+ const running=unlocked&&!s.paused&&!document.hidden&&s.heroHp>0&&!['defeated','victory','results'].includes(phase);$('trail-state').textContent=running?'● 탐사 진행 중':'○ 대기 중';$('trail-state').setAttribute('data-running',String(running));$('trail-shortcut').textContent='자동 탐사 '+Math.floor(Math.min(t.points/150,t.seconds/1500)*100)+'% · '+(running?'진행':'대기')+' ›';$('expedition-title').textContent=route.icon+' 숲길 자동 탐사 · '+route.name;
+ $('expedition-info').textContent=!unlocked?'몬스터 '+(10-s.total)+'마리 처치 후 자동 출발':s.paused?'일시정지 · 사냥 재개 시 탐사 진행':phase==='defeated'?'회복 대기 · 탐사 진행 보존':['victory','results'].includes(phase)?'전리품 확인 대기 · 확인 후 탐사 재개':['흔적 발견','유물 조사','보급 도착'][t.step]+'까지 · 흔적 '+t.points+' / '+[30,90,150][t.step]+' · 탐사 '+Math.floor(t.seconds)+' / '+[300,900,1500][t.step]+'초 · 다음 목표까지 '+Math.ceil(Math.max(0,[300,900,1500][t.step]-t.seconds)/trailPace())+'초'+(t.points<[30,90,150][t.step]?' / 사냥 흔적 수집 중':' / 흔적 충족');
  $('expedition-record').textContent='완주 '+t.laps+'회 · 유물 '+t.relics.length+'/9 · 최대 HP·골드 각각 +'+(trailBonus()*100).toFixed(1)+'%'+(s.expeditionClears?' · 이전 원정 '+s.expeditionClears+'회':'');
- $('trail-progress').style.width=(Math.min(t.points/90,t.seconds/300)*100)+'%';
- $('trail-next').textContent='자동 순환 → '+TRAILS[(t.route+1)%3].name+' · 보상 자동 수령';
+ $('trail-progress').style.width=(Math.min(t.points/150,t.seconds/1500)*100)+'%';
+ $('trail-next').textContent='자동 순환 → '+TRAILS[(t.route+1)%3].name+' · 기본 25분 / 이동 보정 ×'+trailPace().toFixed(2)+' · 완주 시 HP·골드 +0.2%p (훈련 최대 6%)';
  $('trail-log').textContent=t.history.join('\n')||'숲을 사냥하며 흔적을 모으세요. 쓰러져도 탐사 기록은 유지됩니다.';
  const signature=t.relics.join(',')+'|'+t.route;if(signature===trailSignature)return;trailSignature=signature;
  $('trail-collection').replaceChildren();TRAILS.forEach((r,index)=>{const card=document.createElement('div');card.className='trail-route'+(index===t.route?' current':'');const title=document.createElement('strong');title.textContent=r.icon+' '+r.name;const line=document.createElement('p');line.textContent=r.relics.map((name,i)=>t.relics.includes(index*3+i)?'◆ '+name:'◇ ???').join(' · ');card.append(title,line);$('trail-collection').append(card)});
@@ -923,3 +949,10 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)clearCombat
 // Static crafting mounts use the same illustrations as the saved inventory.
 for(const key of Object.keys(RECIPES))paintItemIcon($('recipe-info-'+key).querySelector('span'),ITEMS[key]);
 paintAtlas($('painted-dock'),$('dock-portrait'),creatureArt('boss0'),BOSSES[0].name);
+
+// Explicit reset replaces only this game's save and keeps the prior record as a backup.
+function resetProgress(){if($('reset-input').value!=='초기화')return false;try{saveImportReloading=true;persistence.replace(JSON.stringify(fresh()));window.location.reload();return true}catch(e){saveImportReloading=false;$('reset-error').textContent='초기화하지 않았습니다 · '+e.message;return false}}
+$('save-reset').onclick=()=>{$('reset-input').value='';$('reset-confirm').disabled=true;$('reset-error').textContent='';$('reset-dialog').showModal()};
+$('reset-input').oninput=()=>{$('reset-confirm').disabled=$('reset-input').value!=='초기화'};
+$('reset-confirm').onclick=resetProgress;$('reset-cancel').onclick=()=>$('reset-dialog').close();
+$('trail-shortcut').onclick=()=>{document.querySelector('.trail-details').open=true;document.querySelector('.expedition-strip').scrollIntoView({behavior:'smooth',block:'center'})};

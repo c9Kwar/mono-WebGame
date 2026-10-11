@@ -77,3 +77,30 @@
 .boss-entry-actions{position:sticky;bottom:-12px;z-index:2;background:#22372a;border-top:1px solid #748461;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 0}
 .boss-entry-actions #quick-boss-reason{grid-column:1/-1;margin:0;font-size:12px}
 .boss-entry-actions button{margin:0!important;min-height:40px;padding:8px!important;font-size:12px!important}
+/* One horizontal category bar at every viewport: never wrap labels into a narrow side rail. */
+#view-equipment .armory-workbench{display:block;min-width:0}
+#view-equipment .gear-category-tree{display:flex;flex-flow:row wrap;align-items:center;gap:6px;padding:8px;min-width:0;width:100%;height:auto;border-right:0;border-bottom:1px solid #657658}
+#view-equipment .gear-category-tree>strong{display:none}
+#view-equipment .gear-category-tree button{display:inline-flex;flex:0 0 auto;width:auto;min-width:90px;height:36px;min-height:36px;gap:8px;padding:6px 10px;white-space:nowrap;align-items:center;justify-content:space-between;overflow:hidden}
+#view-equipment .gear-category-tree button span,#view-equipment .gear-category-tree button small{position:static;display:inline-block;float:none;white-space:nowrap;width:auto;flex:none;transform:none;line-height:1.4}
+#view-equipment .gear-category-tree button small{font-variant-numeric:tabular-nums;font-size:11px}
+#view-equipment .armory-panel{min-width:0;width:100%}
+#potential-comparison,#tip-potential-comparison{font-size:12px;line-height:1.6}
+.comparison-row{padding:6px 0;border-bottom:1px solid #7a896444;overflow-wrap:anywhere}
+.comparison-row.gain{color:#b5deb0}.comparison-row.loss{color:#efa9a0}.comparison-row.same{color:#ccd3bd}
+#potential-rules{font-size:12px;line-height:1.7;color:#cabd94}
+#gear-tooltip{max-height:80vh;overflow:auto}
+.expedition-strip{display:flex;flex-wrap:wrap;gap:10px;padding:16px!important;border:1px solid #99aa79!important;background:#2b4230!important}
+.expedition-strip>div:first-child{flex:1 1 240px;min-width:0}.expedition-strip #expedition-title{font-size:16px;color:#e3dfb6}.expedition-strip #expedition-info{font-size:13px;line-height:1.6}.expedition-strip #expedition-record{font-size:12px}
+.expedition-strip .trail-bottom{width:100%;flex:1 1 100%;display:block}.expedition-strip .bar{height:12px;margin:8px 0;background:#14261a}.expedition-strip #trail-progress{height:100%;background:#b0bf7c;min-width:0;transition:width .3s linear}
+#trail-state{align-self:flex-start;font-size:12px;white-space:nowrap;color:#d3c092}#trail-state[data-running=true]{color:#c9e7a4}
+.trail-shortcut{font-size:12px;min-height:32px;padding:5px 8px;color:#d9e8b8;background:#2e4934;border:1px solid #7b9267}
+#reset-dialog{width:min(460px,calc(100vw - 28px));padding:20px}#reset-dialog p{font-size:13px;line-height:1.7}#reset-input{display:block;width:100%;padding:10px;margin:12px 0;background:#15281e;color:#f1e8ca;border:1px solid #b8a876}#reset-error{color:#efb4a0}
+#save-reset{color:#e2b6a2}
+.arena.hero-defeated .hero-motion{transform-origin:48% 85%;animation:hero-collapse .75s ease-in forwards!important}
+.arena.hero-defeated .hero-position{animation:none!important}.arena.hero-defeated .hero-arm,.arena.hero-defeated .hero-sword-hand{animation:none!important}
+@keyframes hero-collapse{0%{transform:translateY(0) rotate(0);opacity:1}35%{transform:translateY(7%) rotate(12deg)}100%{transform:translateY(23%) rotate(68deg);opacity:.65}}
+.arena.hero-defeated #travel-overlay{background:transparent}
+.arena.scene-paused.hero-defeated .hero-motion{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.arena.hero-defeated .hero-motion{animation:none!important;transform:translateY(15%) rotate(35deg);opacity:.65}.expedition-strip #trail-progress{transition:none}}
+.arena.cinema-lite.hero-defeated .hero-motion{animation:none!important;transform:translateY(15%) rotate(35deg);opacity:.65}
