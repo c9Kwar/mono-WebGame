@@ -273,7 +273,7 @@ const RARITIES={common:'일반',rare:'희귀',epic:'영웅',legendary:'전설',m
 let selectedItem='moss',inventoryFilter='owned';
 const SLOT_NAMES={weapon:'무기',chest:'상의',legs:'하의',boots:'신발',ring:'반지'};
 let gearFilter='all',selectedGearId=null,equipmentSignature='',gearTipTimer=null;
-function makeGear(key,rng=Math.random,legacy=false,quantity=1){const g={id:'g'+s.nextGearId++,key,roll:legacy?0:Math.min(30,1+Math.floor(rng()*30)),exceptional:legacy?false:rng()<.05,quantity,ward:!legacy&&['chest','legs'].includes(ITEMS[key].slot)&&rng()<.1?(1+Math.min(2,Math.floor(rng()*3)))/100:0};g.potentials=rollPotentials(key,rng);s.gear.push(g);return g}
+function makeGear(key,rng=Math.random,legacy=false,quantity=1){const g={id:'g'+s.nextGearId++,key,locked:false,roll:legacy?0:Math.min(30,1+Math.floor(rng()*30)),exceptional:legacy?false:rng()<.05,quantity,ward:!legacy&&['chest','legs'].includes(ITEMS[key].slot)&&rng()<.1?(1+Math.min(2,Math.floor(rng()*3)))/100:0};g.potentials=rollPotentials(key,rng);s.gear.push(g);return g}
 function equippedGear(slot){return s.gear.find(g=>g.id===s.slots[slot]&&ITEMS[g.key]?.slot===slot)||null}
 function gearStat(slot,stat){const g=equippedGear(slot);return g?(ITEMS[g.key][stat]||0)*(1+g.roll/100*(g.exceptional?1.5:1)):0}
 function syncLegacySlots(){s.equipped=equippedGear('ring')?.key||null;s.weapon=equippedGear('weapon')?.key||null}
@@ -631,7 +631,7 @@ function loadGrowthProtection(){
  s.autoSafety=raw.autoSafety!==false;s.safetyDefeats=Number.isInteger(raw.safetyDefeats)?Math.max(0,Math.min(3,raw.safetyDefeats)):0;
  s.blueprintMisses={};for(const table of BOSS_TABLES)for(const [key] of table)if(ITEMS[key].blueprint)s.blueprintMisses[key]=Number.isInteger(raw.blueprintMisses?.[key])?Math.max(0,Math.min(59,raw.blueprintMisses[key])):0;
 }
-function blueprintProgressText(id){const key=BOSS_TABLES[id].find(([k])=>ITEMS[k].blueprint)?.[0];return !key?'':known(key)?'✓ 전용 설계도 영구 해금 완료':'보스 연구 · '+(s.blueprintMisses[key]||0)+'/60회 미획득 · 앞으로 최대 '+(60-(s.blueprintMisses[key]||0))+'회 격파 내 전용 설계도 확정 (변이 포함)';}
+function blueprintProgressText(id){const key=BOSS_TABLES[id].find(([k])=>ITEMS[k].blueprint)?.[0];return !key?'':known(key)?'✓ 전용 설계도 영구 해금 완료':'보스 연구 · '+(s.blueprintMisses[key]||0)+'/60회 미획득 · 앞으로 최대 '+(60-(s.blueprintMisses[key]||0))+'회 격파 내 전용 설계도 확정 (변이 포함 · 업데이트 이후 기록)';}
 $('auto-safety').onclick=()=>{s.autoSafety=!s.autoSafety;s.safetyDefeats=0;save();render()};
 
 function toggleGearLock(id){if(!canMutate())return false;const g=s.gear.find(x=>x.id===id);if(!g)return false;g.locked=!g.locked;save();renderEquipment();notify(g.locked?'장비 잠금 · 단일/일괄 분해에서 보호됩니다.':'장비 잠금 해제');return true;}
