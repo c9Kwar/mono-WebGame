@@ -15,3 +15,5 @@ test('negative/nonfinite time and damage cannot alter combat state',()=>{
 });
 test('injected RNG controls guard chance as well as dodge',()=>{const h=harness(base);h.run('s.passives.guard=1;s.heroHp=heroMaxHp();Math.random=()=>.99');const before=h.run('s.heroHp'),expected=h.run('Math.max(1,Math.round(incomingDamage()*.65))');h.run('monsterHit(()=>0)');assert.equal(before-h.run('s.heroHp'),expected);});
 test('nullable historical best time cannot crash boss detail',()=>{const h=harness({...base,fieldNotes:{bosses:{'0_normal':{wins:1,best:null}}}});assert.doesNotThrow(()=>h.run('openQuickBoss();selectQuickBoss(0)'));assert.ok(h.nodes.get('quick-boss-history').textContent.includes('시간 기록 없음'));});
+
+test('legacy boss victories retain unlocks even without newer progress counters',()=>{const h=harness({v:1,lastSeen:Date.now(),stage:1,bossWins:[4,2,1]});for(let id=0;id<3;id++)assert.equal(h.run(`bossUnlocked(${id})`),true);assert.equal(h.run('bossUnlocked(3)'),false);});
