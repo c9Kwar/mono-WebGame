@@ -10,3 +10,5 @@
 .dock-schedule summary{color:#42533e}
 .farm-controls{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:6px}.farm-controls button{width:auto;min-height:34px}.farm-controls small{flex:1 1 200px}
 @media(max-width:800px){.boss-dock .dock-body{padding:10px 12px}.boss-dock .dock-body h2{font-size:17px;margin:4px 0}.boss-dock #dock-boss-summary,.boss-dock .dock-footnote{display:none}.boss-dock .dock-schedule{margin:4px 0}.boss-dock .boss-primary{min-height:36px}.farm-controls small{flex-basis:100%}}
+
+.special-active-summary{font-size:13px;line-height:1.7;color:#e0d3a6;border-left:2px solid #baa56f;padding:8px 12px;background:#233c30}.special-options small{line-height:1.8;overflow-wrap:anywhere}.special-options button{white-space:normal;min-height:40px}

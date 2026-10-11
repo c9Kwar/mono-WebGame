@@ -11,9 +11,9 @@ r('s.inventory.skillstone=3;s.passives.light=4;drawPassive(()=>.69)');assert.equ
 // Special pool uses jade only, max 3, one active, bounded combat impact.
 assert.equal(r('drawSpecial(()=>0)'),false);
 for(const [roll,key] of [[0,'foxluck'],[.6,'foxward'],[.9,'foxspirit']]){r('s.inventory.jadeorb=1');assert.equal(r(`drawSpecial(()=>${roll})`),key);assert.equal(r('s.inventory.jadeorb'),0)}
-assert.equal(r('s.specialActive'),'foxluck');r('s.specialPassives={foxluck:3,foxward:3,foxspirit:3};s.specialActive="foxluck"');assert.equal(r('specialPower("foxluck")'),1.3);assert.equal(r('specialPower("foxspirit")'),0);
-r('s.specialActive="foxward"');assert(Math.abs(r('bossMitigation()')-.026)<1e-8);r('s.specialActive="foxspirit"');assert.equal(r('bossMitigation()'),0);
-r('s.inventory.jadeorb=1;var stonesBefore=s.inventory.skillstone||0;drawSpecial(()=>.99)');assert.equal(r('s.specialPassives.foxspirit'),3);assert.equal(r('s.inventory.skillstone'),r('stonesBefore+1'));
+assert.equal(r('s.specialActive'),'foxluck');r('s.specialPassives={foxluck:3,foxward:3,foxspirit:3};s.specialActive="foxluck"');assert.equal(r('specialEffect("drop")'),.5);assert.equal(r('specialEffect("attack")'),0);
+r('s.specialActive="foxward"');assert(Math.abs(r('bossMitigation()')-.20)<1e-8);r('s.specialActive="foxspirit"');assert.equal(r('bossMitigation()'),0);
+r('s.inventory.jadeorb=1;var stonesBefore=s.inventory.skillstone||0;drawSpecial(()=>.99)');assert.equal(r('s.specialPassives.foxspirit'),3);assert.equal(r('s.inventory.skillstone||0'),r('stonesBefore'));assert.equal(r('s.inventory.jadeorb'),1);
 // Currency and blueprint sources cannot leak to normal mobs or other boss tables.
 assert.equal(r('Object.values(MOBS).filter(m=>m.drops.some(x=>x[0]==="jadeorb")).length'),1);assert.equal(r('BOSS_TABLES.flat().some(x=>x[0]==="jadeorb")'),false);
 for(const [index,key] of ['shellcoat','runelegs','groveblade','moonboots','acorncoat'].entries()){
