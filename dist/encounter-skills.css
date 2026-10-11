@@ -1,16 +1,16 @@
 /* Named enemy skills keep the same combat numbers; this sheet paints their tells and impacts. */
 .encounter-fx{--skill:#d2ebc0;--skill-soft:#c1eaa455}
-.arena[data-skill=crown],.skill-crown{--skill:#ffda83;--skill-soft:#ffca6240}
+.arena[data-skill=crown],.skill-crown{--skill:#cfb779;--skill-soft:#ffca6240}
 .arena[data-skill=root],.skill-root{--skill:#d9bb87;--skill-soft:#a8884c55}
-.arena[data-skill=charge],.skill-charge{--skill:#bbef9f;--skill-soft:#79c46855}
-.arena[data-skill=moon],.skill-moon{--skill:#d7ddff;--skill-soft:#abb5fc55}
-.arena[data-skill=acorn],.skill-acorn{--skill:#f6be76;--skill-soft:#e69b4655}
-.arena[data-skill=moss],.skill-moss{--skill:#b7ed83;--skill-soft:#9adb6355}
-.arena[data-skill=spore],.skill-spore{--skill:#e2b4ff;--skill-soft:#bd75ed55}
-.arena[data-skill=wing],.skill-wing{--skill:#a9e6ff;--skill-soft:#7bbfe555}
-.arena[data-skill=shell],.skill-shell{--skill:#a7eadb;--skill-soft:#72cbbb55}
+.arena[data-skill=charge],.skill-charge{--skill:#a4b18a;--skill-soft:#79c46855}
+.arena[data-skill=moon],.skill-moon{--skill:#c0c3d3;--skill-soft:#abb5fc55}
+.arena[data-skill=acorn],.skill-acorn{--skill:#c3a06e;--skill-soft:#e69b4655}
+.arena[data-skill=moss],.skill-moss{--skill:#a5b58d;--skill-soft:#9adb6355}
+.arena[data-skill=spore],.skill-spore{--skill:#b99ab9;--skill-soft:#bd75ed55}
+.arena[data-skill=wing],.skill-wing{--skill:#abbeb9;--skill-soft:#7bbfe555}
+.arena[data-skill=shell],.skill-shell{--skill:#a0b9a7;--skill-soft:#72cbbb55}
 .arena[data-skill=leap],.skill-leap{--skill:#e2e9a4;--skill-soft:#ccda7d55}
-.arena[data-skill=fox],.skill-fox{--skill:#ffdf8e;--skill-soft:#ffe18e55}
+.arena[data-skill=fox],.skill-fox{--skill:#d5bc86;--skill-soft:#ffe18e55}
 .arena[data-skill]:not([data-skill=""]) #boss-pattern{border-color:var(--skill)}
 .arena[data-skill]:not([data-skill=""]) #boss-pattern strong{color:var(--skill)}
 .arena[data-skill]:not([data-skill=""]) .enemy-intent i{background:var(--skill)}
@@ -20,7 +20,7 @@
 .arena[data-skill=spore] .charge-rune{border-style:dotted;border-width:4px}
 .arena[data-skill=moon] .charge-rune{border-left-color:transparent;border-right-color:transparent}
 .arena[data-skill=shell] .charge-rune{border-style:double;border-width:5px}
-.arena[data-skill=fox] .charge-rune{border-color:#ffda83 #9bf4c5;box-shadow:inset 0 0 28px #f3d78a44,0 0 20px #88eac04a}
+.arena[data-skill=fox] .charge-rune{border-color:#cfb779 #9bf4c5;box-shadow:inset 0 0 28px #f3d78a44,0 0 20px #88eac04a}
 .encounter-fx{inset:0;width:100%;height:100%;transform:none;color:var(--skill);pointer-events:none}
 .encounter-fx i{position:absolute;display:block;font-style:normal;box-sizing:border-box}
 .skill-source{left:68%;top:56%;width:62px;height:62px;margin:-31px;font-size:46px;line-height:62px;text-align:center;text-shadow:0 0 22px var(--skill);animation:skill-emblem .8s ease-out both}
@@ -57,8 +57,8 @@
 .skill-leap .skill-path{top:42%;height:26%;border-width:3px;border-style:dashed;border-left:0;border-right:0;border-bottom:0;border-radius:70% 70% 0 0;background:none;box-shadow:none}
 .skill-leap .skill-impact{height:46px;border-width:5px;animation:charge-contact .85s ease-out both}
 .skill-leap .skill-fragment{height:14px;width:8px;border-radius:100% 0 100% 0}
-.skill-fox .skill-path{height:33px;border-top:5px solid #ffe2a0;border-bottom:3px solid #8fe8bc;background:linear-gradient(90deg,transparent,#ffdf8e77,#8fe8bc44);box-shadow:0 0 20px #ffdf8e55}
-.skill-fox .skill-impact{border-color:#ffe2a0 #8fe8bc;box-shadow:0 0 25px #ffdf8e55,inset 0 0 20px #8fe8bc44}
+.skill-fox .skill-path{height:33px;border-top:5px solid #ffe2a0;border-bottom:3px solid #8fe8bc;background:linear-gradient(90deg,transparent,#d5bc8677,#8fe8bc44);box-shadow:0 0 20px #d5bc8655}
+.skill-fox .skill-impact{border-color:#ffe2a0 #8fe8bc;box-shadow:0 0 25px #d5bc8655,inset 0 0 20px #8fe8bc44}
 .skill-fox .skill-fragment{height:11px;width:11px;border:2px solid #ffe7a8;background:#eebc5d;border-radius:50%}
 .skill-fox .skill-fragment:nth-child(even){border-color:#beffdf;background:#65c99e;border-radius:2px}
 .skill-fox.skill-arrive .skill-source,.skill-fox.skill-victory .skill-source{left:68%;top:55%;font-size:60px;animation:fox-star 1.2s ease-out both}
@@ -96,3 +96,15 @@
 .scene-paused .charge-rune,.cinema-lite .charge-rune{animation:none!important;opacity:0}
 .scene-paused[data-cast-skill] .enemy-position,.cinema-lite[data-cast-skill] .enemy-position{animation:none!important}
 @media(prefers-reduced-motion:reduce){.encounter-fx{display:none!important}.arena[data-cast-skill] .enemy-position,.arena .charge-rune{animation:none!important}.arena .charge-rune{opacity:0}}
+
+/* The expedition palette follows the oil-painted field rather than neon spell UI. */
+.skill-charging .charge-rune{box-shadow:none;border-radius:46% 54% 48% 52%;opacity:.6}
+.skill-charging .enemy-sigil{filter:none}
+.encounter-fx .skill-source{font-size:0;text-shadow:none}
+.encounter-fx .skill-source:not(.skill-acorn .skill-source){background:radial-gradient(ellipse,var(--skill-soft),transparent 68%);border-radius:40% 60% 54% 46%}
+.encounter-fx .skill-path,.encounter-fx .skill-impact,.encounter-fx .skill-fragment{box-shadow:none;text-shadow:none}
+.encounter-fx .skill-path{mask-image:linear-gradient(100deg,transparent,#000d 25%,#000 60%,transparent)}
+.encounter-fx .skill-impact{border-radius:43% 57% 38% 62%;mask-image:radial-gradient(ellipse,#000 38%,#000b 63%,transparent 76%)}
+.skill-fox.skill-arrive .skill-source,.skill-fox.skill-victory .skill-source{font-size:0}
+.skill-shell .skill-impact{outline:none;border-width:4px}
+.skill-moon .skill-path{border-top-width:5px}

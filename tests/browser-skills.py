@@ -244,7 +244,7 @@ with sync_playwright() as playwright:
     assert page.locator('.skill-fox.skill-arrive').count() == 1
     page.evaluate('monsterHit(() => 1); damage(1)')
     assert page.locator('.skill-fox.skill-cast').count() == 1
-    page.evaluate('damage(maxHp + 1)')
+    page.evaluate('damage(maxHp*2 + 1)')
     assert page.evaluate('phase') == 'victory'
     assert page.locator('#arena').evaluate("el => el.classList.contains('hero-striking')")
     page.wait_for_function("document.querySelector('.skill-fox.skill-victory') !== null", timeout=1500)

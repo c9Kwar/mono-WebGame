@@ -44,3 +44,4 @@ jobs:
           .venv/bin/python tests/browser-craft-tempo.py
           .venv/bin/python tests/browser-hero-polish.py
           .venv/bin/python tests/browser-field-attacks.py
+          .venv/bin/python tests/browser-chapter-economy.py

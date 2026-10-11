@@ -18,7 +18,7 @@ test('all 27 equipment pieces have their own painting and every material has an 
  assert.equal(h.run("itemArt(ITEMS.bp_shellcoat).key"),'blueprint');
  assert.notEqual(h.run('itemArt(ITEMS.acornblade).index'),h.run('itemArt(ITEMS.royalblade).index'));
  const mallet=read(h,'itemArt(ITEMS.acornblade)');
- assert.equal(h.run('ITEMS.acornblade.name'),'밤톨 연습 망치');
+ assert.equal(h.run('ITEMS.acornblade.name'),'밤톨 원정 망치');
  assert.equal(mallet.src,h.run('CREATURE_ATLAS.src'));
  assert.equal(mallet.index,2,'A different source preserves the stable equipment identity');
  assert.notDeepEqual(mallet.crop,read(h,"creatureArt('boss4').crop"),'The item crops only the mallet, not its wielder');

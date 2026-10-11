@@ -1,10 +1,10 @@
 /* Five different actions, drawn in matte sap, plum spores and worn ivory.
    Physical attacks move the creature; only the slime spits projectiles. */
-.arena[data-skill=field-acid],.skill-field-acid{--skill:#bbce8a;--field-dark:#526c48;--field-light:#e0e6bd}
+.arena[data-skill=field-acid],.skill-field-acid{--skill:#bbce8a;--field-dark:#526c48;--field-light:#bfcaa2}
 .arena[data-skill=field-spore],.skill-field-spore{--skill:#baa1bd;--field-dark:#6c566f;--field-light:#e5d2d9}
-.arena[data-skill=field-mucus],.skill-field-mucus{--skill:#9ab6a5;--field-dark:#426c60;--field-light:#dcead2}
-.arena[data-skill=field-wing],.skill-field-wing{--skill:#d9cba6;--field-dark:#8c987d;--field-light:#f0e6ca}
-.arena[data-skill=field-claw],.skill-field-claw{--skill:#cbbb91;--field-dark:#6b7958;--field-light:#f4e5c1}
+.arena[data-skill=field-mucus],.skill-field-mucus{--skill:#9ab6a5;--field-dark:#426c60;--field-light:#c1d0b8}
+.arena[data-skill=field-wing],.skill-field-wing{--skill:#d9cba6;--field-dark:#8c987d;--field-light:#d6ceb7}
+.arena[data-skill=field-claw],.skill-field-claw{--skill:#cbbb91;--field-dark:#6b7958;--field-light:#d9c7a5}
 .arena[data-skill^=field-] .charge-rune,.arena[data-skill^=field-] .enemy-wave{display:none}
 .arena[data-skill^=field-].skill-charging:not([data-cast-skill^=field-]) .enemy-motion{animation:field-gather .55s ease-out both}
 .arena[data-skill=field-mucus].skill-charging:not([data-cast-skill^=field-]) .enemy-motion{animation:field-snail-gather .55s ease-out both}
@@ -31,7 +31,7 @@
 .field-fleck{left:var(--target-x);top:var(--target-y);width:10px;height:14px;background:var(--field-light);border-radius:70% 30% 60% 40%;animation:field-contact-fleck 1.25s both}
 /* Slime: four weighty acid drops, followed by a wide, dripping stain. */
 .field-mote{left:0;top:0;width:calc((25px + var(--i)*3px)*var(--field-size));height:calc((17px + var(--i)*2px)*var(--field-size));background:var(--skill);border-radius:65% 35% 50% 50%;offset-rotate:auto;animation:field-flight .7s var(--delay) cubic-bezier(.2,.45,.65,1) both;box-shadow:inset 3px 3px 0 var(--field-light),inset -3px -2px 0 var(--field-dark)}
-.skill-field-acid .field-contact{background:radial-gradient(ellipse at 32% 23%,#e0e6bd 0 5%,transparent 9%),linear-gradient(140deg,#bfd196d9,#829766b8 55%,#526c4860);box-shadow:18px 9px 0 -10px #b7c58b,-17px 13px 0 -11px #889c72,8px 26px 0 -17px #d5dbb4}
+.skill-field-acid .field-contact{background:radial-gradient(ellipse at 32% 23%,#bfcaa2 0 5%,transparent 9%),linear-gradient(140deg,#bfd196d9,#829766b8 55%,#526c4860);box-shadow:18px 9px 0 -10px #b7c58b,-17px 13px 0 -11px #889c72,8px 26px 0 -17px #d5dbb4}
 /* Mushroom: an expanding continuous cloud fills the space, rather than six missiles. */
 .skill-field-spore .field-source{width:82px;height:40px;margin:-20px -41px;border-radius:45% 55% 34% 66%;background:radial-gradient(ellipse,#d4bdd1cc,#80618455 65%,transparent 72%);box-shadow:none}
 .field-cloud{left:var(--source-x);top:var(--source-y);width:calc(var(--reach) + 55px);height:calc(125px*var(--field-size));margin-top:calc(-62px*var(--field-size));transform-origin:0 50%;border-radius:30% 52% 44% 36%;background:radial-gradient(ellipse at 70% 45%,#cfb3c1a8,transparent 63%),radial-gradient(ellipse at 35% 64%,#a18aa2a6,transparent 65%);animation:field-cloud-bloom 1.3s both}
@@ -42,19 +42,19 @@
 .skill-field-mucus .field-source{width:52px;height:18px;margin:-9px -26px}
 .field-tether,.field-tether svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .field-tether path{fill:none;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;animation:field-whip-lash 1.25s both}
-.field-whip-shadow{stroke:#53786cbc;stroke-width:calc(15px*var(--field-size))}
-.field-whip{stroke:#c6dbc1;stroke-width:calc(7px*var(--field-size))}
-.skill-field-mucus .field-contact{height:calc(56px*var(--field-size));margin-top:calc(-22px*var(--field-size));background:linear-gradient(145deg,#dcead2dd,#83a18bc9 40%,#426c6055);animation-name:field-mucus-contact}
+.field-whip-shadow{stroke:#53786cbc;stroke-width:calc(8px*var(--field-size))}
+.field-whip{stroke:#a7bba2;stroke-width:calc(3.5px*var(--field-size))}
+.skill-field-mucus .field-contact{height:calc(56px*var(--field-size));margin-top:calc(-22px*var(--field-size));background:linear-gradient(145deg,#c1d0b8dd,#83a18bc9 40%,#426c6055);animation-name:field-mucus-contact}
 .skill-field-mucus .field-fleck{height:24px;width:7px;animation-name:field-mucus-drip}
 /* Moth: three broad pressure crescents, wing-height, with fading trailing edges. */
 .skill-field-wing .field-source{width:90px;height:95px;margin:-48px -45px;background:none;border:0;box-shadow:none;border-left:5px solid var(--field-light);border-radius:70% 20% 55% 0}
-.field-gust{left:var(--source-x);top:var(--source-y);width:calc((90px + var(--i)*16px)*var(--field-size));height:calc((115px + var(--i)*17px)*var(--field-size));margin-top:calc(-65px*var(--field-size));border-left:calc(7px*var(--field-size)) solid var(--field-light);border-bottom:2px solid #b6bf91b3;border-radius:85% 0 65% 10%;box-shadow:-13px 5px 0 -8px #d9cba6a0,-26px 10px 0 -17px #d9cba670;animation:field-gust-sweep 1.25s both}
+.field-gust{left:var(--source-x);top:var(--source-y);width:calc((90px + var(--i)*16px)*var(--field-size));height:calc((115px + var(--i)*17px)*var(--field-size));margin-top:calc(-65px*var(--field-size));border-left:calc(3.5px*var(--field-size)) solid var(--field-light);border-bottom:2px solid #b6bf91b3;border-radius:85% 0 65% 10%;box-shadow:-13px 5px 0 -8px #d9cba6a0,-26px 10px 0 -17px #d9cba670;animation:field-gust-sweep 1.25s both}
 .skill-field-wing .field-contact{background:none;border-left:5px solid var(--field-light);border-bottom:3px solid var(--skill);border-radius:70% 0 65% 0;animation-name:field-wing-contact}
 .skill-field-wing .field-fleck{width:5px;height:5px;box-shadow:9px -3px 0 #d9cba6a0,-4px -9px 0 #d9cba680}
 /* Rabbit: launch dust stays at the feet; three ivory claw cuts land on the hero. */
 .skill-field-claw .field-source{display:none}
-.skill-field-claw .field-contact{background:radial-gradient(ellipse,#f4e5c17a,transparent 67%);animation-name:field-claw-impact}
-.field-claw-mark{left:calc(var(--target-x) + (var(--i) - 1)*19px*var(--field-size));top:var(--target-y);width:calc(13px*var(--field-size));height:calc((115px - var(--i)*10px)*var(--field-size));margin-top:calc(-55px*var(--field-size));background:linear-gradient(90deg,#806d4b, #f4e5c1 35%,#fff3d8 65%,#bcae80);clip-path:polygon(52% 0,100% 36%,72% 80%,16% 100%,38% 68%,20% 30%);transform-origin:50% 30%;animation:field-claw-cut 1.3s both;filter:drop-shadow(5px 2px 0 #223f3588)}
+.skill-field-claw .field-contact{background:radial-gradient(ellipse,#d9c7a57a,transparent 67%);animation-name:field-claw-impact}
+.field-claw-mark{left:calc(var(--target-x) + (var(--i) - 1)*19px*var(--field-size));top:var(--target-y);width:calc(9px*var(--field-size));height:calc((115px - var(--i)*10px)*var(--field-size));margin-top:calc(-55px*var(--field-size));background:linear-gradient(90deg,#806d4b, #d9c7a5 35%,#e0d3b9 65%,#bcae80);clip-path:polygon(55% 0,69% 18%,100% 36%,77% 49%,82% 65%,62% 80%,16% 100%,38% 68%,23% 51%,32% 39%,20% 30%);transform-origin:50% 30%;animation:field-claw-cut 1.3s both;filter:drop-shadow(5px 2px 0 #223f3588)}
 .field-ground-dust{left:var(--source-x);top:calc(var(--source-y) + 35px);width:calc(85px*var(--field-size));height:24px;margin-left:-35px;border-radius:50%;background:radial-gradient(ellipse,#c2b18a99,#6b795840 58%,transparent 73%);animation:field-rabbit-dust 1.2s both}
 .skill-field-claw .field-fleck{width:16px;height:4px;border-radius:100% 0 90% 0}
 .field-dodged .field-contact,.field-dodged .field-claw-mark,.field-dodged .field-fleck{display:none}
@@ -89,3 +89,10 @@
 .arena.scene-paused .field-attack,.arena.cinema-lite .field-attack{display:none}
 .arena.scene-paused[data-skill^=field-] .enemy-motion,.arena.cinema-lite[data-skill^=field-] .enemy-motion{animation:none!important}
 @media(prefers-reduced-motion:reduce){.field-attack{display:none!important}.arena[data-skill^=field-] .enemy-motion{animation:none!important}}
+
+/* Feathered pigment, not self-lit UI lines. Shape and timing remain species-specific. */
+.field-contact{mask-image:radial-gradient(ellipse,#000 36%,#000b 55%,transparent 75%)}
+.field-claw-mark{mask-image:linear-gradient(180deg,transparent,#000b 12%,#000 35%,#000a 80%,transparent);filter:none}
+.field-gust{mask-image:linear-gradient(120deg,#000 15%,#000c 48%,transparent 83%);box-shadow:-11px 4px 0 -8px #acb69760;border-bottom-color:#9fa98c66}
+.field-mote{box-shadow:inset 1px 2px 0 var(--field-light),inset -2px -1px 0 var(--field-dark)}
+.field-whip-shadow{opacity:.55}.field-whip{opacity:.75}

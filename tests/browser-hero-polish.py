@@ -38,6 +38,7 @@ def joints(page):
             backKnee:point('.hero-leg-back',621,665), frontKnee:point('.hero-leg-front',817,678),
             backToe:point('.hero-shin-back',591,969), frontToe:point('.hero-shin-front',1020,995),
             sword:point('.hero-sword-hand',1510,25),
+            hip:point('.hero-upper-body',660,450),
             body:getComputedStyle(document.querySelector('.hero-upper-body')).transform,
             thigh:getComputedStyle(document.querySelector('.hero-leg-front')).transform,
             shin:getComputedStyle(document.querySelector('.hero-shin-front')).transform};
@@ -68,8 +69,11 @@ with sync_playwright() as p:
         assert knee['sword']['y']<ground+22, (width,knee,ground)
         page.locator('#arena').screenshot(path=f'/tmp/mosslight-hero-kneel-{width}.png')
         seek(page,1200); settled=joints(page)
-        assert settled['head']['y']>knee['head']['y']+35, (width,knee,settled)
+        assert settled['head']['y']>knee['head']['y']+5, (width,knee,settled)
         assert settled['body']!=knee['body'], settled
+        assert settled['head']['y'] < settled['hip']['y']-25, settled
+        assert page.locator('.hero-upper-body').evaluate('(el)=>{const m=new DOMMatrix(getComputedStyle(el).transform);return Math.abs(Math.atan2(m.b,m.a)*180/Math.PI)}') <= 40
+        assert page.locator('.hero-sword-hand').evaluate('(el)=>{const m=new DOMMatrix(getComputedStyle(el).transform);return Math.abs(Math.atan2(m.b,m.a)*180/Math.PI)}') <= 30
         assert abs(settled['backKnee']['y']-knee['backKnee']['y'])<9, settled
         page.locator('#arena').screenshot(path=f'/tmp/mosslight-hero-settled-{width}.png')
         geometry.append({'width':width,'knees_ground_delta':[round(knee['backKnee']['y']-ground,1),round(knee['frontKnee']['y']-ground,1)],'head_fall':round(settled['head']['y']-rest['head']['y'],1)})

@@ -28,7 +28,7 @@ test('five boss skills telegraph and land their existing charged damage exactly 
 test('each elite skill observes its species damage and cadence without an extra hit',()=>{
  for(const mob of ['eliteSlime','eliteMushroom','eliteMoth','eliteSnail','eliteRabbit']){
   const h=ready(`boss=false;currentMob='${mob}';enemyClock=1.3`),before=h.run('s.heroHp'),expected=h.run('incomingDamage()'),skill=h.run('enemySkill().id');
-  assert.equal(h.run('enemyAttack()'),h.run('Math.round(18*1.2**5*MOBS[currentMob].atk)'));
+  assert.equal(h.run('enemyAttack()'),h.run('Math.round(18*1.2**5*MOBS[currentMob].atk*1.15)'));
   assert.equal(h.run('enemyInterval()'),h.run('MOBS[currentMob].interval'));
   assert.equal(h.nodes.get('boss-pattern').hidden,false);
   h.run('monsterHit(()=>.99)');assert.equal(before-h.run('s.heroHp'),expected);
@@ -56,7 +56,7 @@ test('golden fox arrival, cast and victory share bounded presentation without re
  assert.equal(bursts(h).filter(n=>n.className.includes('skill-arrive')).length,1);
  assert.equal(h.run('JSON.stringify(s)'),before);
  h.run('monsterHit(()=>.99)');assert.ok(bursts(h).some(n=>n.className.includes('skill-fox skill-cast')));
- h.run('Math.random=()=>.99;damage(hp+1)');
+ h.run('Math.random=()=>.99;damage(hp*2+1)');
  assert.equal(h.run('phase'),'victory');const earned=h.run('JSON.stringify([s.gold,s.inventory,s.gear,s.total,s.battleReward])');
  h.run('pendingTimers.get(strikeTimers.victory).fn();for(let i=0;i<5;i++){renderEncounter();showBattleReward(true)}');
  assert.equal(bursts(h).filter(n=>n.className.includes('skill-victory')).length,1);
@@ -89,7 +89,7 @@ test('hero contact uses no gameplay RNG, coalesces procs, and completes before t
 
 test('final hit retains its cosmetic contact through victory but cancels across encounters',()=>{
  const h=ready("boss=false;currentMob='treasure'");timers(h);
- h.run('Math.random=()=>.99;damage(hp+1)');
+ h.run('Math.random=()=>.99;damage(hp*2+1)');
  assert.equal(h.run('phase'),'victory');assert.ok(h.run('pendingHeroContact!==null'));
  assert.ok(h.run('pendingTimers.has(strikeTimers.hero)&&pendingTimers.has(strikeTimers.contact)'));
  h.run('pendingTimers.get(strikeTimers.contact).fn()');assert.equal(h.nodes.get('impact-layer').children.length,1);

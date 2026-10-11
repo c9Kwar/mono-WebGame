@@ -26,19 +26,19 @@ test('all bosses and variants have three reachable guaranteed choices and correc
   }assert.equal(seen.size,3);
  }
 });
-test('boss armor penetration affects defense before mitigation; regular enemies are unchanged',()=>{
+test('boss armor penetration affects defense before mitigation; regular enemies use the chapter curve',()=>{
  const h=harness(base);h.run("boss=true;bossId=4;bossTier='mystic';bossStrikes=0;hp=maxHp=100;s.guard=10");
- assert.equal(h.run('incomingDamage()'),h.run('Math.max(1,Math.round((1000*12-heroDefense()*.45)*(1-mitigation())*(1-bossMitigation())))'));
- h.run("boss=false;currentMob='slime';s.stage=1;s.guard=1");assert.equal(h.run('incomingDamage()'),h.run('Math.max(1,Math.round((18-heroDefense())*(1-mitigation())))'));
+ assert.equal(h.run('incomingDamage()'),h.run('Math.max(1,Math.round((1900*12-heroDefense()*.45)*(1-mitigation())*(1-bossMitigation())))'));
+ h.run("boss=false;currentMob='slime';s.stage=1;s.guard=1");assert.equal(h.run('incomingDamage()'),h.run('Math.max(1,Math.round((20-heroDefense())*(1-mitigation())))'));
  assert.ok(h.run("bossPenetration(4,'mystic')<1"));
 });
 test('regeneration uses elapsed combat time, caps HP and never runs while hidden, paused or dead',()=>{
  const h=harness(base);h.run("boss=true;bossId=4;bossTier='normal';bossLeft=60;spawn();hp=100000;s.heroHp=heroMaxHp();attackClock=enemyClock=0;stepCombat(.1)");
- assert.ok(Math.abs(h.run('hp')-100540)<1e-8);
+ assert.ok(Math.abs(h.run('hp')-100900)<1e-8);
  for(const setup of ['s.paused=true','s.paused=false;document.hidden=true','document.hidden=false;phase="victory";s.rewardPending=false']){h.run(setup);const before=h.run('hp');h.run('stepCombat(.1)');assert.equal(h.run('hp'),before)}
  h.run('phase="combat";hp=maxHp-1;regenerateBoss(1)');assert.equal(h.run('hp'),h.run('maxHp'));
  h.run('hp=0;regenerateBoss(1)');assert.equal(h.run('hp'),0);
- assert.equal(h.run('bossRegenPerSecond(4,"normal",1)'),0);assert.equal(h.run('bossRegenPerSecond(4,"normal",.5)'),2700);
+ assert.equal(h.run('bossRegenPerSecond(4,"normal",1)'),0);assert.equal(h.run('bossRegenPerSecond(4,"normal",.5)'),4500);
 });
 test('field/crafting tiers stop at T3 and new boss reward snapshots retain tier without duplication',()=>{
  const h=harness({...base,gold:1e9});assert.equal(h.run('fieldGearTier(1)'),1);assert.equal(h.run('fieldGearTier(11)'),3);assert.equal(h.run('fieldGearTier(999)'),3);

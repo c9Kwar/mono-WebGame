@@ -42,7 +42,7 @@ test('every boss first-clear and variant reward respects T1–T3 including mythi
 });
 
 test('milestone equipment follows its target stage, not claim time, and cannot be claimed twice',()=>{
- for(const [target,tier]of [[6,2],[11,3],[21,3],[51,3],[991,3]])for(const roll of [0,.05,.3]){
+ for(const [target,tier]of [[3,1],[6,2],[11,3],[21,3],[26,3],[30,3]])for(const roll of [0,.05,.3]){
   const h=harness(base);assert.equal(h.run(`claimMilestone(${target},()=>${roll})`),true);
   assert.equal(h.run('s.gear.length'),1);assert.equal(h.run('s.gear[0].tier'),tier);
   assert.equal(h.run(`claimMilestone(${target},()=>${roll})`),false);assert.equal(h.run('s.gear.length'),1);

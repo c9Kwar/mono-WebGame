@@ -14,6 +14,7 @@ TABS = ['battle', 'boss', 'equipment', 'inventory', 'shop', 'collection', 'codex
 
 def check_art(locator):
     """Measure rendered crops, so CSS overrides cannot silently distort a sheet."""
+    locator.evaluate_all("async frames => Promise.all(frames.map(frame => frame.querySelector('img').decode()))")
     measurements = locator.evaluate_all('''frames => frames.map(frame => {
         const image = frame.querySelector('img'), box = frame.getBoundingClientRect();
         const picture = image.getBoundingClientRect(), style = getComputedStyle(frame);

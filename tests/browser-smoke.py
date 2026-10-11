@@ -29,7 +29,7 @@ with sync_playwright() as p:
  page.locator('#save-file').set_input_files({'name':'invalid.json','mimeType':'application/json','buffer':b'{bad'})
  page.wait_for_timeout(100);assert not page.locator('#save-import-dialog').evaluate('(e)=>e.open')
  assert page.evaluate('localStorage.getItem(KEY)')==before
- legacy={'v':1,'gold':777,'total':100,'stage':6,'highestStage':25,'paused':True,'passives':{'light':3},'bossWins':[4,2,1],'attack':22,'vitality':18,'guard':15,'speed':10,'inventory':{'moss':25,'spore':10},'blueprintMisses':{'bp_shellcoat':59}}
+ legacy={'v':1,'gold':777,'total':100,'stage':6,'highestStage':25,'paused':True,'passives':{'light':3},'bossWins':[4,2,1],'attack':22,'vitality':22,'guard':18,'speed':10,'inventory':{'moss':25,'spore':10},'blueprintMisses':{'bp_shellcoat':59}}
  payload={'name':'legacy.json','mimeType':'application/json','buffer':json.dumps(legacy).encode()}
  page.locator('#save-file').set_input_files(payload)
  page.locator('#save-import-cancel').click();assert page.evaluate('localStorage.getItem(KEY)')==before

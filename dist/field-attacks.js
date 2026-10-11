@@ -47,7 +47,8 @@ function emitFieldAttack(skill,hit=true){
  }else if(skill.id==='field-mucus'){
   const tether=document.createElement('div');tether.className='field-tether';
   const d='M '+source.x+' '+source.y+' Q '+Math.round((source.x+target.x)/2)+' '+Math.round(Math.min(source.y,target.y)-60*size)+' '+target.x+' '+target.y;
-  tether.innerHTML='<svg viewBox="0 0 '+width+' '+height+'" aria-hidden="true"><path class="field-whip-shadow" d="'+d+'" pathLength="100"/><path class="field-whip" d="'+d+'" pathLength="100"/></svg>';
+  const brushId='field-brush-'+combatFxSerial++;
+  tether.innerHTML='<svg viewBox="0 0 '+width+' '+height+'" aria-hidden="true"><defs><filter id="'+brushId+'" x="-10%" y="-30%" width="120%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="7" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale="3" xChannelSelector="R" yChannelSelector="G"/></filter></defs><g filter="url(#'+brushId+')"><path class="field-whip-shadow" d="'+d+'" pathLength="100"/><path class="field-whip" d="'+d+'" pathLength="100"/></g></svg>';
   burst.append(tether);
  }else if(skill.id==='field-wing'){
   for(let i=0;i<3;i++)part('field-gust',i);

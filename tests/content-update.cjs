@@ -34,7 +34,7 @@ r('s.stage=1');assert.equal(r('chooseMob(()=>.99)'),'snail');r('s.stage=6');asse
 assert(r('Object.values(MOBS).every(m=>m.drops.every(([k])=>ITEMS[k]))'));assert(r('BOSS_TABLES.every(t=>t.every(([k])=>ITEMS[k]))'));assert(r('Object.entries(RECIPES).every(([k,v])=>ITEMS[k].slot&&CRAFT_GOLD[k]>0&&Object.keys(v).every(x=>ITEMS[x]))'));
 // Both added bosses support selection, kill rewards, cooldown and save/reload.
 for(const id of [3,4]){
- const a=harness({...base,highestStage:25});assert(a.run(`startBoss(${id},()=>.9)`));assert(a.run(`s.bossReadyAt[${id}]>Date.now()`));a.run('damage(1e12)');assert.equal(a.run('phase'),'victory');assert.equal(a.run(`s.bossWins[${id}]`),1);assert(a.run(`s.fieldNotes.bosses['${id}_normal'].wins===1`));
+ const a=harness({...base,highestStage:30,chapterOneCleared:true});assert(a.run(`startBoss(${id},()=>.9)`));assert(a.run(`s.bossReadyAt[${id}]>Date.now()`));a.run('damage(1e12)');assert.equal(a.run('phase'),'victory');assert.equal(a.run(`s.bossWins[${id}]`),1);assert(a.run(`s.fieldNotes.bosses['${id}_normal'].wins===1`));
  const gold=a.run('s.gold');a.run('finishBattleReward();finishBattleReward()');assert.equal(a.run('s.gold'),gold);
  const b=harness(JSON.parse(a.stored['mosslight.save.v1']));assert.equal(b.run(`s.bossWins[${id}]`),1);assert.equal(b.run(`s.bossReadyAt[${id}]`),a.run(`s.bossReadyAt[${id}]`));
 }

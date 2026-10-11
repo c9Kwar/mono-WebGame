@@ -2,13 +2,13 @@ const {harness,assert}=require('./harness.cjs');
 const rows=[];
 for(const spec of [
  {boss:0,attack:10,vitality:5,guard:3,speed:5,expect:'defeated'},
- {boss:0,attack:22,vitality:18,guard:15,speed:10,expect:'victory'},
+ {boss:0,attack:22,vitality:22,guard:18,speed:10,expect:'victory'},
  {boss:1,attack:35,vitality:30,guard:30,speed:15,expect:'defeated'},
  {boss:1,attack:40,vitality:50,guard:40,speed:15,expect:'victory'},
  {boss:2,attack:46,vitality:45,guard:60,speed:20,expect:'defeated'},
  {boss:2,attack:55,vitality:65,guard:60,speed:20,expect:'victory'},
- {boss:3,attack:61,vitality:65,guard:80,speed:25,expect:'victory'},
- {boss:4,attack:68,vitality:73,guard:100,speed:30,expect:'victory'}
+ {boss:3,attack:65,vitality:77,guard:85,speed:25,expect:'victory'},
+ {boss:4,attack:71,vitality:83,guard:100,speed:30,expect:'victory'}
 ]){
  const h=harness({v:1,lastSeen:Date.now(),total:100,highestStage:25,stage:6,...spec});
  h.run(`Math.random=()=>.5;boss=true;bossId=${spec.boss};bossTier='normal';bossLeft=60;spawn();s.heroHp=heroMaxHp();`);
